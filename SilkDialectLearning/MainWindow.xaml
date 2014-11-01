@@ -1,0 +1,14 @@
+﻿<Window x:Class="SilkDialectLearning.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="400" Width="852">
+    <Grid>
+        <Button Content="Button" HorizontalAlignment="Left" Height="54" Margin="752,36,0,0" VerticalAlignment="Top" Width="82" Click="Button_Click"/>
+        <ListBox HorizontalAlignment="Left" Height="323" Margin="21,36,0,0" VerticalAlignment="Top" Width="108" ItemsSource="{Binding Path=Languages}" SelectionChanged="ListBox_SelectionChanged"></ListBox>
+        <ListBox HorizontalAlignment="Left" Height="323" Margin="134,36,0,0" VerticalAlignment="Top" Width="119" ItemsSource="{Binding Path=Levels}" SelectionChanged="ListBox_SelectionChanged_1"/>
+        <ListBox HorizontalAlignment="Left" Height="323" Margin="258,36,0,0" VerticalAlignment="Top" Width="117" ItemsSource="{Binding Path=Units}" SelectionChanged="ListBox_SelectionChanged_2"/>
+        <ListBox HorizontalAlignment="Left" Height="323" Margin="380,36,0,0" VerticalAlignment="Top" Width="119" ItemsSource="{Binding Path=Lessons}" SelectionChanged="ListBox_SelectionChanged_3"/>
+        <ListBox HorizontalAlignment="Left" Height="323" Margin="504,36,0,0" VerticalAlignment="Top" Width="119" ItemsSource="{Binding Path=SceneViewModel.Scenes}"/>
+        <ListBox HorizontalAlignment="Left" Height="323" Margin="628,36,0,0" VerticalAlignment="Top" Width="119" ItemsSource="{Binding Path=SceneViewModel.SceneItems}"/>
+    </Grid>
+</Window>

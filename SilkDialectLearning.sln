@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearning", "SilkDialectLearning\SilkDialectLearning.csproj", "{522CE819-6E02-4A74-93C9-BB23F6F56F67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningDAL", "SilkDialectLearningDAL\SilkDialectLearningDAL.csproj", "{B78435D5-D203-4B0D-B610-725CADE3E7BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLEarningBLL", "SilkDialectLEarningBLL\SilkDialectLEarningBLL.csproj", "{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdPartyLibraries", "3rdPartyLibraries", "{9C3AA7B0-B45F-4C26-AF45-568E13F8AD98}"
+	ProjectSection(SolutionItems) = preProject
+		3rdPartyLibraries\Eagle.WpfControls.dll = 3rdPartyLibraries\Eagle.WpfControls.dll
+		3rdPartyLibraries\Eagle.WpfControls.pdb = 3rdPartyLibraries\Eagle.WpfControls.pdb
+		3rdPartyLibraries\LangData.3db = 3rdPartyLibraries\LangData.3db
+		3rdPartyLibraries\MahApps.Metro.dll = 3rdPartyLibraries\MahApps.Metro.dll
+		3rdPartyLibraries\MahApps.Metro.pdb = 3rdPartyLibraries\MahApps.Metro.pdb
+		3rdPartyLibraries\MahApps.Metro.xml = 3rdPartyLibraries\MahApps.Metro.xml
+		3rdPartyLibraries\NAudio.dll = 3rdPartyLibraries\NAudio.dll
+		3rdPartyLibraries\sqlite3.def = 3rdPartyLibraries\sqlite3.def
+		3rdPartyLibraries\sqlite3.dll = 3rdPartyLibraries\sqlite3.dll
+		3rdPartyLibraries\System.Data.SQLite.dll = 3rdPartyLibraries\System.Data.SQLite.dll
+		3rdPartyLibraries\System.Data.SQLite.Linq.dll = 3rdPartyLibraries\System.Data.SQLite.Linq.dll
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sqlite-dll-win32-x86-3071300", "sqlite-dll-win32-x86-3071300", "{831424E6-1703-47FB-9CDA-29981F4B865B}"
+	ProjectSection(SolutionItems) = preProject
+		3rdPartyLibraries\sqlite-dll-win32-x86-3071300\sqlite3.def = 3rdPartyLibraries\sqlite-dll-win32-x86-3071300\sqlite3.def
+		3rdPartyLibraries\sqlite-dll-win32-x86-3071300\sqlite3.dll = 3rdPartyLibraries\sqlite-dll-win32-x86-3071300\sqlite3.dll
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{522CE819-6E02-4A74-93C9-BB23F6F56F67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{522CE819-6E02-4A74-93C9-BB23F6F56F67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{522CE819-6E02-4A74-93C9-BB23F6F56F67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{522CE819-6E02-4A74-93C9-BB23F6F56F67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B78435D5-D203-4B0D-B610-725CADE3E7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B78435D5-D203-4B0D-B610-725CADE3E7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B78435D5-D203-4B0D-B610-725CADE3E7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B78435D5-D203-4B0D-B610-725CADE3E7BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{831424E6-1703-47FB-9CDA-29981F4B865B} = {9C3AA7B0-B45F-4C26-AF45-568E13F8AD98}
+	EndGlobalSection
+EndGlobal
