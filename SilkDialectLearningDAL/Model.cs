@@ -13,6 +13,17 @@ using System.Threading.Tasks;
 namespace SilkDialectLearningDAL
 {
 
+    public interface IPlayable
+    {
+        Guid Id { get; }
+        Phrase Phrase { get; }
+    }
+
+    public interface IHighlightable
+    {
+        Guid Id { get; }
+    }
+
     public class Entities : SQLiteConnection
     {
 
@@ -60,7 +71,6 @@ namespace SilkDialectLearningDAL
 
     }
 
-
     public class ModelManager
     {
         static Entities _db;
@@ -84,25 +94,6 @@ namespace SilkDialectLearningDAL
         Playing,
         Stopped,
         Paused,
-    }
-
-    public interface IPlayable
-    {
-        event EventHandler Stopped;
-        AudioStatus State { get; }
-    }
-
-    public abstract class Playable : IPlayable
-    {
-        public event EventHandler Stopped;
-
-        private void OnStop()
-        {
-            if (Stopped != null)
-                Stopped(this, new EventArgs());
-        }
-        [Ignore]
-        public AudioStatus State { get; protected set; }
     }
 
     public class User
@@ -445,6 +436,11 @@ namespace SilkDialectLearningDAL
             Scene scene = context.Query<Scene>("SELECT * FROM Scene where Id = '" + id.ToString() + "'").FirstOrDefault();
             return scene;
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public class ScenePicture
@@ -453,6 +449,7 @@ namespace SilkDialectLearningDAL
         public Guid Id { get; set; }
         public byte[] Picture { get; set; }
     }
+    
     public class SceneType
     {
         [PrimaryKey]
@@ -460,7 +457,7 @@ namespace SilkDialectLearningDAL
         public string Name { get; set; }
     }
 
-    public class SceneItem : INotifyPropertyChanged
+    public class SceneItem : IPlayable, IHighlightable, INotifyPropertyChanged
     {
         [PrimaryKey]
         public Guid Id { get; set; }
@@ -538,7 +535,20 @@ namespace SilkDialectLearningDAL
         }
     }
 
-    public class Phrase : Playable, INotifyPropertyChanged
+    public partial class Phrase
+    {
+        public event EventHandler Stopped;
+
+        private void OnStop()
+        {
+            if (Stopped != null)
+                Stopped(this, new EventArgs());
+        }
+        [Ignore]
+        public AudioStatus State { get; protected set; }
+    }
+
+    public partial class Phrase : INotifyPropertyChanged
     {
         [PrimaryKey]
         public Guid Id { get; set; }
@@ -632,8 +642,6 @@ namespace SilkDialectLearningDAL
 
     }
 
-
-
     public class Vocabulary
     {
         [PrimaryKey]
@@ -665,14 +673,37 @@ namespace SilkDialectLearningDAL
         public bool DoNotIncludeToExam { get; set; }
     }
 
-    public class Word
+    public class Word : INotifyPropertyChanged
     {
         [PrimaryKey]
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public byte[] Sound { get; set; }
-        public int SoundVol { get; set; }
+        //public byte[] Sound { get; set; }
+        //public int SoundVol { get; set; }
+
+        Guid phraseId;
+        public Guid PhraseId { get { return phraseId; } set { phraseId = value; NotifyPropertyChanged(); } }
+
+        Phrase _phrase;
+        [Ignore]
+        public Phrase Phrase
+        {
+            get
+            {
+                if (_phrase == null)
+                {
+                    _phrase = ModelManager.Db.Query<Phrase>("select * from Phrase where Id = '" + PhraseId.ToString() + "';").FirstOrDefault();
+                    if (_phrase != null)
+                        _phrase.AlreadyInDb = true;
+                }
+                return _phrase;
+            }
+            set
+            {
+                _phrase = value;
+            }
+        }
 
         public void SetVocabulary(Vocabulary vocabulary)
         {
@@ -693,6 +724,19 @@ namespace SilkDialectLearningDAL
                 return _meanings;
             }
         }
+
+        #region Notify
+        
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        
+        #endregion
     }
 
     public class WordToMeaning
@@ -711,8 +755,6 @@ namespace SilkDialectLearningDAL
 
         public IList<Word> Words = new List<Word>();
     }
-
-
 
     public class SentenceBuilding
     {

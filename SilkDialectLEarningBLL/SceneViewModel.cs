@@ -11,22 +11,158 @@ using System.Timers;
 
 namespace SilkDialectLEarningBLL
 {
-    public class SceneViewModel : INotifyPropertyChanged
+    public abstract class BaseActivity : INotifyPropertyChanged
     {
         #region Events
-        public event EventHandler SceneSelected;
-
-        public event EventHandler SceneItemSelected;
 
         public event ActivityChangedEventHandler ActivityChanged;
 
         public event HighlightItemEventHandler HighlightItem;
+
+        public event HighlightItemEventHandler StopHighlighting;
+
         #endregion
 
-        private SceneItem lastHighlighted;
-        private SceneItem lastPlayed;
+        /// <summary>
+        /// Contains the last highlighted item
+        /// </summary>
+        protected IHighlightable lastHighlighted;
+        
+        /// <summary>
+        /// Contains the timer for the heghlight
+        /// </summary>
+        protected Timer highlightTimer;
+        
+        /// <summary>
+        /// Contains the last played item
+        /// </summary>
+        protected IPlayable lastPlayed;
+
+        /// <summary>
+        /// Indicates whether an item is highlighting
+        /// </summary>
+        protected bool isHighlighting;
 
         public ViewModel ViewModel { get { return Global.GlobalViewModel; } }
+
+        Activity sceneActivity;
+        /// <summary>
+        /// Returns the current activity
+        /// </summary>
+        public Activity SceneActivity
+        {
+            get { return sceneActivity; }
+            set
+            {
+                var oldValue = sceneActivity;
+                sceneActivity = value;
+                NotifyPropertyChanged();
+                var activityChanged = ActivityChanged;
+                if (activityChanged != null)
+                {
+                    activityChanged(this, new ActivityChangedEventArgs(sceneActivity, oldValue));
+                }
+            }
+        }
+
+        protected void PlayThisItem(IPlayable sceneItem)
+        {
+            StopPlaying();
+            if (sceneItem != null)
+            {
+                lastPlayed = sceneItem;
+                sceneItem.Phrase.Play();
+            }
+            else
+            {
+                throw new Exception("SceneItem cannot be null");
+            }
+        }
+
+        protected void StopPlaying()
+        {
+            if (lastPlayed != null)
+            {
+                lastPlayed.Phrase.StopPlaying();
+            }
+        }
+
+        protected void HiglightThisItem(IHighlightable sceneItem, double interval)
+        {
+            if (sceneItem != null)
+            {
+                StopHighlight();
+                var highlightItem = HighlightItem;
+                isHighlighting = true;
+                if (highlightItem != null)
+                {
+                    lastHighlighted = sceneItem;
+                    highlightItem(this, new HighlightItemEventArgs(sceneItem));
+
+                    Timer timer = new Timer(interval);
+                    timer.Elapsed += (s, e) =>
+                    {
+                        timer.Stop();
+                        StopHighlight();
+                        timer.Dispose();
+                    };
+                    timer.Enabled = true;
+                    timer.Start();
+                    highlightTimer = timer;
+                }
+            }
+            else
+            {
+                throw new Exception("SceneItem cannot be null");
+            }
+        }
+
+        protected void StopHighlight()
+        {
+            if (isHighlighting)
+            {
+                if (lastHighlighted != null)
+                {
+                    highlightTimer.Enabled = false;
+                    var stopHighlighting = StopHighlighting;
+                    isHighlighting = false;
+                    if (stopHighlighting != null)
+                    {
+                        stopHighlighting(this, new HighlightItemEventArgs(lastHighlighted));
+                    }
+                }
+            }
+        }
+
+        #region Notify
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        #endregion
+
+    }
+
+    public class SceneViewModel : BaseActivity, INotifyPropertyChanged
+    {
+        public SceneViewModel()
+        {
+            ViewModel.LessonSelected += (s, e) => {
+                NotifyPropertyChanged("Scenes");
+            };
+        }
+
+        #region Events
+        public event EventHandler SceneSelected;
+
+        public event EventHandler SceneItemSelected;
+        #endregion
 
         /// <summary>
         /// Returns the list of scenes under the selected lesson
@@ -58,6 +194,7 @@ namespace SilkDialectLEarningBLL
             {
                 selectedScene = value;
                 NotifyPropertyChanged();
+                NotifyPropertyChanged("SceneItems");
                 var sceneSelected = SceneSelected;
                 if (sceneSelected != null)
                 {
@@ -97,26 +234,6 @@ namespace SilkDialectLEarningBLL
             }
         }
 
-        Activity sceneActivity;
-        /// <summary>
-        /// Returns the current activity
-        /// </summary>
-        public Activity SceneActivity
-        {
-            get { return sceneActivity; }
-            set
-            {
-                var oldValue = sceneActivity;
-                sceneActivity = value;
-                NotifyPropertyChanged();
-                var activityChanged = ActivityChanged;
-                if (activityChanged != null)
-                {
-                    activityChanged(this, new ActivityChangedEventArgs(sceneActivity, oldValue));
-                }
-            }
-        }
-
         /// <summary>
         /// This method will be fired when a SceneItem gets selected. And will fire the appropriate method based on Activity. 
         /// </summary>
@@ -139,39 +256,17 @@ namespace SilkDialectLEarningBLL
             {
                 throw new Exception("SelectedSceneItem is null.");
             }
-            Timer timer = new Timer(SelectedSceneItem.Phrase.SoundLength.TotalMilliseconds);
-            timer.Elapsed += (s, e) => { 
-                
-            };
+            PlayThisItem(SelectedSceneItem);
+            HiglightThisItem(SelectedSceneItem, SelectedSceneItem.Phrase.SoundLength.TotalMilliseconds);
         }
 
-        private void PlayThisItem(SceneItem sceneItem)
-        {
-            if (sceneItem != null)
-            {
-                lastPlayed = sceneItem;
-                sceneItem.Phrase.Play();
-            }
-            else
-            {
-                throw new Exception("SceneItem cannot be null");
-            }
-        }
+        private List<SceneItem> items = new List<SceneItem>();
 
-        private void HiglightThisItem(SceneItem sceneItem)
+        public void Practice()
         {
-            if (sceneItem != null)
+            if (items.Count == 0)
             {
-                var highlightItem = HighlightItem;
-                if (highlightItem != null)
-                {
-                    lastHighlighted = sceneItem;
-                    highlightItem(this, new HighlightItemEventArgs(sceneItem));
-                }
-            }
-            else
-            {
-                throw new Exception("SceneItem cannot be null");
+                items = Helper.MixItems<SceneItem>(SelectedScene.SceneItems.ToList());
             }
         }
 
@@ -189,16 +284,27 @@ namespace SilkDialectLEarningBLL
         #endregion
     }
 
+    class PracticeResult
+    {
+        public PracticeItemStatus Status { get; set; }
+    }
 
-    public delegate void HighlightItemEventHandler(SceneViewModel sender, HighlightItemEventArgs e);
+    public enum PracticeItemStatus
+    {
+        Notasked = 0,
+        Asking = 1,
+        Asked = 2 
+    }
+
+    public delegate void HighlightItemEventHandler(object sender, HighlightItemEventArgs e);
 
     public class HighlightItemEventArgs : EventArgs
     {
-        public HighlightItemEventArgs(SceneItem sceneItem)
+        public HighlightItemEventArgs(IHighlightable highlightableItem)
         {
-            SceneItem = sceneItem;
+            HighlightableItem = highlightableItem;
         }
-        public SceneItem SceneItem { get; private set; }
+        public IHighlightable HighlightableItem { get; private set; }
     }
-    
+
 }
