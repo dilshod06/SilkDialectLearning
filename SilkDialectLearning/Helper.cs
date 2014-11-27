@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Media.Imaging;
 
 namespace SilkDialectLearning
 {
     public class Assistant
     {
-        public static bool IsMp3 { get; set; }
         public static Byte[] SoundToByte(string soundPath)
         {
             FileStream fs = new FileStream(soundPath, FileMode.Open);
@@ -69,7 +65,6 @@ namespace SilkDialectLearning
                 originalPosition = stream.Position;
                 stream.Position = 0;
             }
-
             try
             {
                 byte[] readBuffer = new byte[4096];

@@ -474,8 +474,7 @@ namespace SilkDialectLearningDAL
         public Guid SceneId { get; set; }
         Guid phraseId;
         public Guid PhraseId { get { return phraseId; } set { phraseId = value; NotifyPropertyChanged(); } }
-
-
+        
         [Ignore]
         public bool HasChanges { get; set; }
 

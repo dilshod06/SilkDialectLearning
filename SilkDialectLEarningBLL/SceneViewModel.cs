@@ -71,7 +71,10 @@ namespace SilkDialectLEarningBLL
             if (sceneItem != null)
             {
                 lastPlayed = sceneItem;
-                sceneItem.Phrase.Play();
+                if (sceneItem.Phrase != null)
+                    sceneItem.Phrase.Play();
+                else
+                    throw new Exception("Scene Items Phrase cannot be null");
             }
             else
             {
@@ -83,7 +86,10 @@ namespace SilkDialectLEarningBLL
         {
             if (lastPlayed != null)
             {
-                lastPlayed.Phrase.StopPlaying();
+                if(lastPlayed.Phrase != null)
+                    lastPlayed.Phrase.StopPlaying();
+                else
+                    throw new Exception("Scene Items Phrase cannot be null");
             }
         }
 

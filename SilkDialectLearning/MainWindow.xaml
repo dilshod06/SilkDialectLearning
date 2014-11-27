@@ -1,21 +1,206 @@
-﻿<Window x:Class="SilkDialectLearning.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="597" Width="852">
+﻿<controls:MetroWindow x:Class="SilkDialectLearning.MainWindow"
+                      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                      xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+                      xmlns:local="clr-namespace:SilkDialectLearning"
+                      xmlns:converters="clr-namespace:SilkDialectLearning.Converters"
+                      Title="Silk Dialect Learning" 
+                      Height="597" Width="852"
+                      SaveWindowPosition="True"
+                      ShowIconOnTitleBar="True"
+                      ShowTitleBar="True"
+                      WindowStartupLocation="CenterScreen"
+                      GlowBrush="{DynamicResource AccentColorBrush}">
+
+    <controls:MetroWindow.Resources>
+        <ResourceDictionary>
+            <converters:ByteToImageConveter x:Key="ByteToImageConverter"/>
+            <converters:PositionToMarginConverter x:Key="PostionToMarginConverter"/>
+            <converters:SizeToWidthConverter x:Key="SizeToWidthConverter"/>
+            <converters:SizeToHeightConverter x:Key="SizeToHeightConverter"/>
+            <converters:BooleanToRadiusConverter x:Key="BooleanToRadiusConverter"/>
+        </ResourceDictionary>
+    </controls:MetroWindow.Resources>
+
+    <controls:MetroWindow.TitleTemplate>
+        <DataTemplate>
+            <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content, Converter={StaticResource ToUpperConverter}}"
+                       TextTrimming="CharacterEllipsis"
+                       HorizontalAlignment="Right"
+                       VerticalAlignment="Center"
+                       Margin="0 -1 8 0"
+                       FontSize="{DynamicResource WindowTitleFontSize}"
+                       FontFamily="{DynamicResource HeaderFontFamily}" />
+        </DataTemplate>
+    </controls:MetroWindow.TitleTemplate>
+    <controls:MetroWindow.LeftWindowCommands>
+        <controls:WindowCommands>
+            <Button Name="HomeButton" Click="HomeButton_Click">
+                <Rectangle Width="20"
+                           Height="20"
+                           Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                                     Visual="{DynamicResource appbar_home}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+        </controls:WindowCommands>
+    </controls:MetroWindow.LeftWindowCommands>
+
+    <controls:MetroWindow.Flyouts>
+        <controls:FlyoutsControl x:Name="flyoutsControl">
+            <controls:FlyoutsControl.ItemContainerStyle>
+                <Style TargetType="{x:Type controls:Flyout}">
+                    <Setter Property="Background" Value="#FF252525"/>
+                </Style>
+            </controls:FlyoutsControl.ItemContainerStyle>
+            <controls:Flyout x:Name="menu" 
+                             Header="Home" Position="Left"
+                             Theme="Dark" TitleVisibility="Collapsed"
+                             AnimateOpacity="True"
+                             IsPinned="False"
+                             >
+                <Grid Width="300">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                        <Button x:Name="PART_BackButton" DockPanel.Dock="Left"
+                                Style="{DynamicResource MetroCircleButtonStyle}"
+                                Height="40"
+                                Width="40"
+                                FontFamily="Segoe UI Symbol"
+                                FontSize="16"
+                                VerticalAlignment="Center"
+                                IsEnabled="False">
+                            <Rectangle Width="17" Height="14"
+                                       Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Stretch="Fill"
+                                     Visual="{DynamicResource appbar_arrow_right}" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                            <Button.LayoutTransform>
+                                <ScaleTransform ScaleX="-1" />
+                            </Button.LayoutTransform>
+                        </Button>
+                        <Label FontSize="20" x:Name="PART_Title"
+                               VerticalAlignment="Center" Margin="2 0 0 0"/>
+                        <Button x:Name="PART_ForwardButton"
+                                DockPanel.Dock="Right"
+                                Style="{DynamicResource MetroCircleButtonStyle}" 
+                                Height="40"
+                                Width="40" 
+                                FontFamily="Segoe UI Symbol"
+                                FontSize="16"
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="Right" 
+                                Visibility="Collapsed">
+                            <Rectangle Width="20"
+                           Height="15">
+                                <Rectangle.Fill>
+                                    <VisualBrush Stretch="Fill">
+                                        <VisualBrush.Visual>
+                                            <Canvas Width="48"
+                                        Height="48"
+                                        Clip="F1 M 0,0L 48,0L 48,48L 0,48L 0,0"
+                                        UseLayoutRounding="False">
+                                                <Path Width="25"
+                                          Height="18"
+                                          Canvas.Left="12"
+                                          Canvas.Top="15"
+                                          Stretch="Fill"
+                                          Fill="{DynamicResource BlackBrush}"
+                                          Data="F1 M 12,22L 12,26L 28.25,26L 21,33L 27.5,33L 37,24L 27.5,15L 21,15L 28.25,22L 12,22 Z " />
+                                            </Canvas>
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Button>
+                    </StackPanel>
+                    <Grid Grid.Row="1">
+                        <ContentPresenter Panel.ZIndex="1"
+                              Content="{Binding OverlayContent, RelativeSource={RelativeSource AncestorType=local:MainWindow,Mode=FindAncestor}}" />
+                        <Frame x:Name="PART_Frame"
+                               NavigationUIVisibility="Hidden"
+                               Margin="3 0 3 0"/>
+                    </Grid>
+                </Grid>
+            </controls:Flyout>
+        </controls:FlyoutsControl>
+    </controls:MetroWindow.Flyouts>
     <Grid>
-        <Button Content="Button" HorizontalAlignment="Left" Height="54" Margin="752,36,0,0" VerticalAlignment="Top" Width="82" Click="Button_Click"/>
-        <ListBox HorizontalAlignment="Left" Height="129" Margin="21,36,0,0" VerticalAlignment="Top" Width="80" ItemsSource="{Binding Path=Languages}" SelectionChanged="Languages_SelectionChanged"></ListBox>
-        <ListBox HorizontalAlignment="Left" Height="129" Margin="106,36,0,0" VerticalAlignment="Top" Width="88" ItemsSource="{Binding Path=Levels}" SelectionChanged="Levels_SelectionChanged_1"/>
-        <ListBox HorizontalAlignment="Left" Height="129" Margin="199,36,0,0" VerticalAlignment="Top" Width="95" ItemsSource="{Binding Path=Units}" SelectionChanged="Units_SelectionChanged_2">
-        </ListBox>
-        <ListBox HorizontalAlignment="Left" Height="129" Margin="299,36,0,0" VerticalAlignment="Top" Width="97" ItemsSource="{Binding Path=Lessons}" SelectionChanged="Lessons_SelectionChanged_3"/>
-        <ListBox HorizontalAlignment="Left" Height="129" Margin="401,36,0,0" VerticalAlignment="Top" Width="90" ItemsSource="{Binding Path=SceneViewModel.Scenes}" SelectionChanged="Scenes_SelectionChanged_4"/>
-        <ListBox HorizontalAlignment="Left" Height="129" Margin="496,36,0,0" VerticalAlignment="Top" Width="96" ItemsSource="{Binding Path=SceneViewModel.SceneItems}" SelectionChanged="SceneItems_SelectionChanged_5"/>
-        <Grid HorizontalAlignment="Left" Height="377" Margin="21,179,0,0" VerticalAlignment="Top" Width="669" Name="grdScene">
-            <Image Name="img"/>
-            <Grid Name="front" Background="Black" Width="{Binding ActualWidth, ElementName=img, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=img, Mode=OneWay}" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+        <Grid>
+            <Grid>
+                <Grid.Resources>
+                    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+                </Grid.Resources>
+                <TabControl Name="ScenesTabControl" ItemsSource="{Binding Path=SceneViewModel.Scenes}" SelectionChanged="TabControl_SelectionChanged">
+                    <TabControl.Resources>
+                        <ResourceDictionary>
+                            
+                        </ResourceDictionary>
+                    </TabControl.Resources>
+                    <TabControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Name}" ToolTip="{Binding Path=Description}"/>
+                        </DataTemplate>
+                    </TabControl.ItemTemplate>
+                    <TabControl.ContentTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Image Name="sceneImage" Source="{Binding Path=ScenePicture.Picture, Converter={StaticResource ByteToImageConverter}}" Loaded="sceneImage_Loaded"/>
+                                <!--<TextBlock Text="{Binding Path=ActualWidth, ElementName=sceneImage}"></TextBlock>-->
+                                <Grid Name="grd" Background="#685E5E5E" Width="{Binding ActualWidth, ElementName=sceneImage, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=sceneImage, Mode=OneWay}" Loaded="grd_Loaded">
+                                    
+                                </Grid>
+                                    <!-- <ItemsControl ItemsSource="{Binding Path=SceneItems, IsAsync=True}" Loaded="ItemsControl_Loaded">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="Black" 
+                                                        VerticalAlignment="Top" 
+                                                        HorizontalAlignment="Left" 
+                                                        CornerRadius="{Binding Path=IsRound, Converter={StaticResource BooleanToRadiusConverter}, IsAsync=True}" 
+                                                        MouseLeftButtonDown="dot_MouseLeftButtonDown" 
+                                                        Loaded="Border_Loaded" Name="sceneDot">
+                                                    <Border.Width>
+                                                        <MultiBinding Converter="{StaticResource SizeToWidthConverter}">
+                                                            <Binding Path="Size"/>
+                                                            <Binding ElementName="sceneImage" Path="ActualWidth"/>
+                                                        </MultiBinding>
+                                                    </Border.Width>                       
+                                                    <Border.Height>
+                                                        <MultiBinding Converter="{StaticResource SizeToHeightConverter}">
+                                                            <Binding Path="Size"/>
+                                                            <Binding ElementName="sceneImage" Path="ActualHeight"/>
+                                                        </MultiBinding>
+                                                    </Border.Height>
+                                                    <Border.Margin>
+                                                        <MultiBinding Converter="{StaticResource PostionToMarginConverter}">
+                                                            <Binding Path="XPos"/>
+                                                            <Binding Path="YPos"/>
+                                                            <Binding Path="Width" ElementName="sceneDot"/>
+                                                            <Binding Path="Height" ElementName="sceneDot"/>
+                                                            <Binding ElementName="sceneImage" Path="ActualWidth"/>
+                                                            <Binding ElementName="sceneImage" Path="ActualHeight"/>
+                                                        </MultiBinding>
+                                                    </Border.Margin>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>-->
+                            </Grid>
+                        </DataTemplate>
+                    </TabControl.ContentTemplate>
+                </TabControl>
+            </Grid>
+            <RadioButton Content="Learn" HorizontalAlignment="Left" Height="18" Margin="734,45,0,0" VerticalAlignment="Top" Width="110" Checked="RadioButton_Checked"/>
+            <RadioButton Content="Practice" HorizontalAlignment="Left" Height="18" Margin="734,22,0,0" VerticalAlignment="Top" Width="110" Checked="RadioButton_Checked"/>
         </Grid>
-        <RadioButton Content="Learn" HorizontalAlignment="Left" Height="18" Margin="642,36,0,0" VerticalAlignment="Top" Width="110" Checked="RadioButton_Checked"/>
-        <RadioButton Content="Practice" HorizontalAlignment="Left" Height="18" Margin="642,59,0,0" VerticalAlignment="Top" Width="110" Checked="RadioButton_Checked"/>
+
     </Grid>
-</Window>
+</controls:MetroWindow>
