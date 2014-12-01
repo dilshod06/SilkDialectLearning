@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.30723.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningDAL", "SilkDialectLearningDAL\SilkDialectLearningDAL.csproj", "{B78435D5-D203-4B0D-B610-725CADE3E7BD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLEarningBLL", "SilkDialectLEarningBLL\SilkDialectLEarningBLL.csproj", "{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningBLL", "SilkDialectLEarningBLL\SilkDialectLearningBLL.csproj", "{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdPartyLibraries", "3rdPartyLibraries", "{9C3AA7B0-B45F-4C26-AF45-568E13F8AD98}"
 	ProjectSection(SolutionItems) = preProject

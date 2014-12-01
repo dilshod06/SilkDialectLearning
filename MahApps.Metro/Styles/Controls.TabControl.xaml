@@ -145,6 +145,7 @@
                 Value="10" />
         <Setter Property="MinHeight"
                 Value="10" />
+        <Setter Property="Height" Value="35"/>
         <Setter Property="BorderThickness"
                 Value="0" />
         <Setter Property="BorderBrush"
@@ -166,7 +167,7 @@
                             BorderBrush="{TemplateBinding BorderBrush}"
                             Background="{TemplateBinding Background}"
                             SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
-                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch">
+                        <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Center">
                             <StackPanel.Resources>
                                 <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
                             </StackPanel.Resources>
@@ -181,8 +182,8 @@
                                               ContentSource="Header"
                                               RecognizesAccessKey="True" />
                             <Rectangle x:Name="Underline" 
-                                       Margin="0, 1, 0, 0" 
-                                       Height="2" 
+                                       Margin="0, 1, 0, -12" 
+                                       Height="5"
                                        HorizontalAlignment="Stretch" 
                                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, 
                                            Path=(Controls:TabControlHelper.IsUnderlined), Converter={StaticResource BooleanToVisibilityConverter}}" />
@@ -208,18 +209,15 @@
                                     Value="{DynamicResource GrayNormalBrush}" />
                             <Setter Property="Fill"
                                     TargetName="Underline"
-                                    Value="{DynamicResource GrayNormalBrush}" />
+                                    Value="{DynamicResource AccentColorBrush}" />
                         </Trigger>
                         <Trigger SourceName="ContentSite" Property="IsMouseOver" Value="True">
                             <Setter Property="TextElement.Foreground"
                                     TargetName="ContentSite"
                                     Value="{DynamicResource GrayHoverBrush}" />
-                            <Setter Property="Fill"
-                                    TargetName="Underline"
-                                    Value="{DynamicResource GrayHoverBrush}" />
                             <Setter TargetName="Border" Property="Background">
                                 <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource AccentColor3}"/>
+                                    <SolidColorBrush Color="{DynamicResource AccentColor2}"/>
                                 </Setter.Value>
                             </Setter>
                         </Trigger>
@@ -230,9 +228,6 @@
                             </MultiTrigger.Conditions>
                             <Setter Property="TextElement.Foreground"
                                     TargetName="ContentSite"
-                                    Value="{DynamicResource HighlightBrush}" />
-                            <Setter Property="Fill"
-                                    TargetName="Underline"
                                     Value="{DynamicResource HighlightBrush}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>

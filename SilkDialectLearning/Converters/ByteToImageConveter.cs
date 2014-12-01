@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -13,12 +14,12 @@ namespace SilkDialectLearning.Converters
             byte[] array = (byte[])value;
             BitmapImage image = new BitmapImage();
             MemoryStream ms = new MemoryStream(array);
+            System.Drawing.Bitmap img = new Bitmap(ms);
             image.BeginInit();
             image.StreamSource = ms;
             image.EndInit();
             return image as ImageSource;
         }
-
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             return null;

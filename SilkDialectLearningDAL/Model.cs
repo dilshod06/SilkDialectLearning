@@ -7,7 +7,6 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SilkDialectLearningDAL
@@ -449,7 +448,7 @@ namespace SilkDialectLearningDAL
         public Guid Id { get; set; }
         public byte[] Picture { get; set; }
     }
-    
+
     public class SceneType
     {
         [PrimaryKey]
@@ -474,7 +473,7 @@ namespace SilkDialectLearningDAL
         public Guid SceneId { get; set; }
         Guid phraseId;
         public Guid PhraseId { get { return phraseId; } set { phraseId = value; NotifyPropertyChanged(); } }
-        
+
         [Ignore]
         public bool HasChanges { get; set; }
 
@@ -591,31 +590,39 @@ namespace SilkDialectLearningDAL
         [Ignore]
         public TimeSpan SoundLength { get; set; }
 
-        public void Play(int playFrom = 0)
+        public async Task Play(int playFrom = 0)
         {
             if (_sound == null)
             {
                 throw new InvalidOperationException("Phrase.Sound is not initialized yet.");
             }
-            if (audioOutput.PlaybackState == PlaybackState.Playing)
+            await Task.Run(() => 
             {
-                audioOutput.Stop();
-            }
-            mp3Reader.CurrentTime = TimeSpan.FromMilliseconds(playFrom);
-            audioOutput.Play();
-            State = AudioStatus.Playing;
+                if (audioOutput.PlaybackState == PlaybackState.Playing)
+                {
+                    audioOutput.Stop();
+                }
+                mp3Reader.CurrentTime = TimeSpan.FromMilliseconds(playFrom);
+                audioOutput.Play();
+                State = AudioStatus.Playing;
+            });
+            
         }
 
-        public void StopPlaying()
+        public async Task StopPlaying()
         {
             if (_sound == null)
-                return;
-
-            if (audioOutput.PlaybackState != PlaybackState.Paused)
             {
-                audioOutput.Stop();
-                State = AudioStatus.Stopped;
+                throw new InvalidOperationException("Phrase.Sound is not initialized yet.");
             }
+            await Task.Run(() => 
+            {
+                if (audioOutput.PlaybackState != PlaybackState.Stopped)
+                {
+                    audioOutput.Stop();
+                    State = AudioStatus.Stopped;
+                }
+            });
         }
 
         private WaveOut audioOutput;
@@ -625,7 +632,6 @@ namespace SilkDialectLearningDAL
         {
             try
             {
-                //waveReader = new WaveFileReader(Helper.byteArrayToStream(this.Sound));
                 mp3Reader = new Mp3FileReader(Helper.byteArrayToStream(this.Sound));
                 SoundLength = mp3Reader.TotalTime;
                 var wc = new WaveChannel32(mp3Reader);
@@ -725,7 +731,7 @@ namespace SilkDialectLearningDAL
         }
 
         #region Notify
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
@@ -734,7 +740,7 @@ namespace SilkDialectLearningDAL
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-        
+
         #endregion
     }
 

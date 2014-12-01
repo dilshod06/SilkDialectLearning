@@ -1,4 +1,4 @@
-﻿using SilkDialectLEarningBLL;
+﻿using SilkDialectLearningBLL;
 using SilkDialectLearningDAL;
 using System.Windows.Controls;
 

@@ -7,7 +7,7 @@
     <ProjectGuid>{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SilkDialectLEarningBLL</RootNamespace>
+    <RootNamespace>SilkDialectLearningBLL</RootNamespace>
     <AssemblyName>SilkDialectLEarningBLL</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

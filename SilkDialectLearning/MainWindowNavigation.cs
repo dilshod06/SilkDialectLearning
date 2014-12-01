@@ -65,23 +65,7 @@ namespace SilkDialectLearning
             if (CanGoBack)
                 GoBack();
         }
-        [System.Diagnostics.DebuggerNonUserCode]
-        void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            PART_Frame.FragmentNavigation -= PART_Frame_FragmentNavigation;
-            PART_Frame.Navigating -= PART_Frame_Navigating;
-            PART_Frame.NavigationFailed -= PART_Frame_NavigationFailed;
-            PART_Frame.NavigationProgress -= PART_Frame_NavigationProgress;
-            PART_Frame.NavigationStopped -= PART_Frame_NavigationStopped;
-            PART_Frame.LoadCompleted -= PART_Frame_LoadCompleted;
-            PART_Frame.Navigated -= PART_Frame_Navigated;
-
-            PART_ForwardButton.Click -= PART_ForwardButton_Click;
-            PART_BackButton.Click -= PART_BackButton_Click;
-
-            this.Loaded -= MainWindow_Loaded;
-            this.Closing -= MainWindow_Closing;
-        }
+        
 
         //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_Navigated(object sender, NavigationEventArgs e)

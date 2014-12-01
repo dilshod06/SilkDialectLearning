@@ -4,6 +4,11 @@
                       xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
                       xmlns:local="clr-namespace:SilkDialectLearning"
                       xmlns:converters="clr-namespace:SilkDialectLearning.Converters"
+                      xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                      xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions" 
+                      xmlns:Actions="clr-namespace:SilkDialectLearning.Actions"
+                      xmlns:bl="clr-namespace:SilkDialectLearningBLL"
+                      xmlns:views="clr-namespace:SilkDialectLearning.Views"
                       Title="Silk Dialect Learning" 
                       Height="597" Width="852"
                       SaveWindowPosition="True"
@@ -14,14 +19,45 @@
 
     <controls:MetroWindow.Resources>
         <ResourceDictionary>
-            <converters:ByteToImageConveter x:Key="ByteToImageConverter"/>
-            <converters:PositionToMarginConverter x:Key="PostionToMarginConverter"/>
-            <converters:SizeToWidthConverter x:Key="SizeToWidthConverter"/>
-            <converters:SizeToHeightConverter x:Key="SizeToHeightConverter"/>
-            <converters:BooleanToRadiusConverter x:Key="BooleanToRadiusConverter"/>
+            <Style TargetType="Border" x:Key="TabItemHeader">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource  GrayBrush8}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
+                        <Setter Property="Background" Value="#11000000"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <Style TargetType="{x:Type TabItem}" x:Key="TabItemStyle">
+                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type TabItem}">
+                            <Grid>
+                                <Border Style="{StaticResource TabItemHeader}" Margin="0 0 -2 5" BorderThickness="0 0 6 0">
+                                    <Grid>
+                                        <TextBlock Name="TextBlockArrow" Visibility="Hidden" Text="u" FontSize="24" FontFamily="Wingdings 3" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="-3 0 -1 0" Foreground="#FFDDDDDD"/>
+                                        <ContentPresenter x:Name="ContentSite" ContentSource="Header" Margin="8 6 0 28" Height="20">
+                                            <ContentPresenter.LayoutTransform>
+                                                <RotateTransform Angle="90" />
+                                            </ContentPresenter.LayoutTransform>
+                                        </ContentPresenter>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Panel.ZIndex" Value="500" />
+                                    <Setter TargetName="TextBlockArrow" Property="Visibility" Value="Visible"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
-
     <controls:MetroWindow.TitleTemplate>
         <DataTemplate>
             <TextBlock Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Content, Converter={StaticResource ToUpperConverter}}"
@@ -47,7 +83,20 @@
             </Button>
         </controls:WindowCommands>
     </controls:MetroWindow.LeftWindowCommands>
-
+    <controls:MetroWindow.RightWindowCommands>
+        <controls:WindowCommands>
+            <Button>
+                <Rectangle Width="20"
+                           Height="20"
+                           Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+                    <Rectangle.OpacityMask>
+                        <VisualBrush Stretch="Fill"
+                                     Visual="{DynamicResource appbar_settings}" />
+                    </Rectangle.OpacityMask>
+                </Rectangle>
+            </Button>
+        </controls:WindowCommands>
+    </controls:MetroWindow.RightWindowCommands>
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl x:Name="flyoutsControl">
             <controls:FlyoutsControl.ItemContainerStyle>
@@ -66,7 +115,7 @@
                         <RowDefinition Height="50" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <DockPanel Grid.Row="0">
                         <Button x:Name="PART_BackButton" DockPanel.Dock="Left"
                                 Style="{DynamicResource MetroCircleButtonStyle}"
                                 Height="40"
@@ -120,7 +169,26 @@
                                 </Rectangle.Fill>
                             </Rectangle>
                         </Button>
-                    </StackPanel>
+                        <Button x:Name="PART_AddButton"
+                                DockPanel.Dock="Right"
+                                Margin="0 0 10 0"
+                                Style="{DynamicResource MetroCircleAddButtonStyle}" 
+                                Height="40"
+                                Width="40" 
+                                FontFamily="Segoe UI Symbol"
+                                FontSize="16"
+                                VerticalAlignment="Center" 
+                                HorizontalAlignment="Right">
+
+                            <Rectangle Width="17" Height="14"
+                                       Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+                                <Rectangle.OpacityMask>
+                                    <VisualBrush Stretch="Fill"
+                                     Visual="{DynamicResource appbar_add}" />
+                                </Rectangle.OpacityMask>
+                            </Rectangle>
+                        </Button>
+                    </DockPanel>
                     <Grid Grid.Row="1">
                         <ContentPresenter Panel.ZIndex="1"
                               Content="{Binding OverlayContent, RelativeSource={RelativeSource AncestorType=local:MainWindow,Mode=FindAncestor}}" />
@@ -134,73 +202,15 @@
     </controls:MetroWindow.Flyouts>
     <Grid>
         <Grid>
-            <Grid>
-                <Grid.Resources>
-                    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
-                </Grid.Resources>
-                <TabControl Name="ScenesTabControl" ItemsSource="{Binding Path=SceneViewModel.Scenes}" SelectionChanged="TabControl_SelectionChanged">
-                    <TabControl.Resources>
-                        <ResourceDictionary>
-                            
-                        </ResourceDictionary>
-                    </TabControl.Resources>
-                    <TabControl.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=Name}" ToolTip="{Binding Path=Description}"/>
-                        </DataTemplate>
-                    </TabControl.ItemTemplate>
-                    <TabControl.ContentTemplate>
-                        <DataTemplate>
-                            <Grid>
-                                <Image Name="sceneImage" Source="{Binding Path=ScenePicture.Picture, Converter={StaticResource ByteToImageConverter}}" Loaded="sceneImage_Loaded"/>
-                                <!--<TextBlock Text="{Binding Path=ActualWidth, ElementName=sceneImage}"></TextBlock>-->
-                                <Grid Name="grd" Background="#685E5E5E" Width="{Binding ActualWidth, ElementName=sceneImage, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=sceneImage, Mode=OneWay}" Loaded="grd_Loaded">
-                                    
-                                </Grid>
-                                    <!-- <ItemsControl ItemsSource="{Binding Path=SceneItems, IsAsync=True}" Loaded="ItemsControl_Loaded">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Background="Black" 
-                                                        VerticalAlignment="Top" 
-                                                        HorizontalAlignment="Left" 
-                                                        CornerRadius="{Binding Path=IsRound, Converter={StaticResource BooleanToRadiusConverter}, IsAsync=True}" 
-                                                        MouseLeftButtonDown="dot_MouseLeftButtonDown" 
-                                                        Loaded="Border_Loaded" Name="sceneDot">
-                                                    <Border.Width>
-                                                        <MultiBinding Converter="{StaticResource SizeToWidthConverter}">
-                                                            <Binding Path="Size"/>
-                                                            <Binding ElementName="sceneImage" Path="ActualWidth"/>
-                                                        </MultiBinding>
-                                                    </Border.Width>                       
-                                                    <Border.Height>
-                                                        <MultiBinding Converter="{StaticResource SizeToHeightConverter}">
-                                                            <Binding Path="Size"/>
-                                                            <Binding ElementName="sceneImage" Path="ActualHeight"/>
-                                                        </MultiBinding>
-                                                    </Border.Height>
-                                                    <Border.Margin>
-                                                        <MultiBinding Converter="{StaticResource PostionToMarginConverter}">
-                                                            <Binding Path="XPos"/>
-                                                            <Binding Path="YPos"/>
-                                                            <Binding Path="Width" ElementName="sceneDot"/>
-                                                            <Binding Path="Height" ElementName="sceneDot"/>
-                                                            <Binding ElementName="sceneImage" Path="ActualWidth"/>
-                                                            <Binding ElementName="sceneImage" Path="ActualHeight"/>
-                                                        </MultiBinding>
-                                                    </Border.Margin>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Grid>-->
-                            </Grid>
-                        </DataTemplate>
-                    </TabControl.ContentTemplate>
-                </TabControl>
-            </Grid>
-            <RadioButton Content="Learn" HorizontalAlignment="Left" Height="18" Margin="734,45,0,0" VerticalAlignment="Top" Width="110" Checked="RadioButton_Checked"/>
-            <RadioButton Content="Practice" HorizontalAlignment="Left" Height="18" Margin="734,22,0,0" VerticalAlignment="Top" Width="110" Checked="RadioButton_Checked"/>
+            <Grid.Resources>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+            </Grid.Resources>
+            <TabControl Name="MainTabControl" TabStripPlacement="Right">
+                <TabItem Header="Scene" Style="{DynamicResource TabItemStyle}">
+                    <views:SceneView ViewModel="{Binding Path=ViewModel}"/>
+                </TabItem>
+                <TabItem Header="Vocab" Style="{DynamicResource TabItemStyle}"></TabItem>
+            </TabControl>
         </Grid>
-
     </Grid>
 </controls:MetroWindow>

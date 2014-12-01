@@ -1,17 +1,17 @@
 ﻿using SilkDialectLearningDAL;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SilkDialectLEarningBLL
+namespace SilkDialectLearningBLL
 {
     public class ViewModel : INotifyPropertyChanged
     {
+        public ViewModel()
+        {
+
+        }
         public ViewModel(string dbPath, string userName = "", string password = "", bool createDatabase = false)
         {
             var db = new Entities(dbPath, createDatabase);
@@ -171,8 +171,6 @@ namespace SilkDialectLEarningBLL
                 }
                 return lessons;
             }
-
-
         }
 
         private Lesson selectedLesson;

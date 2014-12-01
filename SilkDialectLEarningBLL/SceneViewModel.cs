@@ -5,11 +5,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace SilkDialectLEarningBLL
+namespace SilkDialectLearningBLL
 {
     public abstract class BaseActivity : INotifyPropertyChanged
     {
@@ -27,12 +26,12 @@ namespace SilkDialectLEarningBLL
         /// Contains the last highlighted item
         /// </summary>
         protected IHighlightable lastHighlighted;
-        
+
         /// <summary>
         /// Contains the timer for the heghlight
         /// </summary>
         protected Timer highlightTimer;
-        
+
         /// <summary>
         /// Contains the last played item
         /// </summary>
@@ -64,15 +63,14 @@ namespace SilkDialectLEarningBLL
                 }
             }
         }
-
-        protected void PlayThisItem(IPlayable sceneItem)
+        protected async Task PlayThisItem(IPlayable sceneItem)
         {
-            StopPlaying();
+            await StopPlaying();
             if (sceneItem != null)
             {
                 lastPlayed = sceneItem;
                 if (sceneItem.Phrase != null)
-                    sceneItem.Phrase.Play();
+                    await sceneItem.Phrase.Play();
                 else
                     throw new Exception("Scene Items Phrase cannot be null");
             }
@@ -82,14 +80,12 @@ namespace SilkDialectLEarningBLL
             }
         }
 
-        protected void StopPlaying()
+        protected async Task StopPlaying()
         {
             if (lastPlayed != null)
             {
-                if(lastPlayed.Phrase != null)
-                    lastPlayed.Phrase.StopPlaying();
-                else
-                    throw new Exception("Scene Items Phrase cannot be null");
+                if (lastPlayed.Phrase != null)
+                    await lastPlayed.Phrase.StopPlaying();
             }
         }
 
@@ -104,7 +100,6 @@ namespace SilkDialectLEarningBLL
                 {
                     lastHighlighted = sceneItem;
                     highlightItem(this, new HighlightItemEventArgs(sceneItem));
-
                     Timer timer = new Timer(interval);
                     timer.Elapsed += (s, e) =>
                     {
@@ -159,9 +154,24 @@ namespace SilkDialectLEarningBLL
     {
         public SceneViewModel()
         {
-            ViewModel.LessonSelected += (s, e) => {
+            ViewModel.LessonSelected += (s, e) =>
+            {
                 NotifyPropertyChanged("Scenes");
             };
+            ActivityChanged += SceneViewModel_ActivityChanged;
+            SceneSelected += SceneViewModel_SceneSelected;
+        }
+
+        async void SceneViewModel_SceneSelected(object sender, EventArgs e)
+        {
+            await StopPlaying();
+            StopHighlight();
+        }
+
+        async void SceneViewModel_ActivityChanged(object sender, ActivityChangedEventArgs e)
+        {
+            await StopPlaying();
+            StopHighlight();
         }
 
         #region Events
@@ -223,6 +233,7 @@ namespace SilkDialectLEarningBLL
                 }
                 return sceneItems;
             }
+
         }
 
         SceneItem selectedSceneItem;
@@ -254,6 +265,8 @@ namespace SilkDialectLEarningBLL
             {
                 Learn();
             }
+
+
         }
 
         private void Learn()
@@ -299,7 +312,7 @@ namespace SilkDialectLEarningBLL
     {
         Notasked = 0,
         Asking = 1,
-        Asked = 2 
+        Asked = 2
     }
 
     public delegate void HighlightItemEventHandler(object sender, HighlightItemEventArgs e);

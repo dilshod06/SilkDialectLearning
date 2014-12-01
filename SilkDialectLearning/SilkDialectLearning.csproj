@@ -49,10 +49,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\3rdPartyLibraries\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -70,10 +75,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Converters\EnumToBooleanConverter.cs" />
+    <Compile Include="Views\SceneView.xaml.cs">
+      <DependentUpon>SceneView.xaml</DependentUpon>
+    </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Compile Include="Actions\AnimateBorderAction.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -109,6 +119,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\MetroTabControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SceneView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -157,9 +171,9 @@
       <Project>{942d11c4-29f5-46c4-8c14-4b976d56c637}</Project>
       <Name>MahApps.Metro.NET45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SilkDialectLEarningBLL\SilkDialectLEarningBLL.csproj">
+    <ProjectReference Include="..\SilkDialectLEarningBLL\SilkDialectLearningBLL.csproj">
       <Project>{563c5ece-4ad2-4ec8-abaa-7b4523c36174}</Project>
-      <Name>SilkDialectLEarningBLL</Name>
+      <Name>SilkDialectLearningBLL</Name>
     </ProjectReference>
     <ProjectReference Include="..\SilkDialectLearningDAL\SilkDialectLearningDAL.csproj">
       <Project>{b78435d5-d203-4b0d-b610-725cade3e7bd}</Project>
