@@ -1,5 +1,6 @@
 ﻿using SilkDialectLearningDAL;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -17,8 +18,238 @@ namespace SilkDialectLearningBLL
             var db = new Entities(dbPath, createDatabase);
             Db = db;
             languages = new ObservableCollection<Language>(db.GetEntities<Language>());
+            Languages.CollectionChanged += Languages_CollectionChanged;
+            PropertyChanged += ViewModel_PropertyChanged;
         }
 
+        void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Levels")
+            {
+                Levels.CollectionChanged += Levels_CollectionChanged;
+            }
+        }
+
+
+        #region Methods
+
+        /// <summary>
+        /// this Method deletes language cascade Language.Levels.Units.Lessons.Scenes.SceneItems
+        /// </summary>
+        /// <param name="language"></param>
+        private int DeleteLanguage(Language language)
+        {
+            ObservableCollection<Level> levels = language.Levels;
+            if (levels.Count > 0)
+            {
+                foreach (Level level in levels)
+                {
+                    DeleteLevel(level);
+                }
+            }
+            return Db.Delete(language);
+        }
+
+        private int DeleteLevel(Level level)
+        {
+            ObservableCollection<Unit> units = level.Units;
+            if (units.Count > 0)
+            {
+                foreach (Unit unit in units)
+                {
+                    DeleteUnit(unit);
+                }
+            }
+            return Db.Delete(level);
+        }
+
+        private int DeleteUnit(Unit unit)
+        {
+            ObservableCollection<Lesson> lessons = unit.Lessons;
+            if (lessons.Count > 0)
+            {
+                foreach (Lesson lesson in lessons)
+                {
+                    DeleteLesson(lesson);
+                }
+            }
+            return Db.Delete(unit);
+        }
+
+        private int DeleteLesson(Lesson lesson)
+        {
+            IList<Scene> scenes = lesson.Scenes;
+            if (scenes.Count > 0)
+            {
+                foreach (Scene scene in scenes)
+                {
+                    DeleteScene(scene);
+                }
+            }
+            if (lesson.Vocabularies.Count > 0)
+            {
+
+            }
+            if (lesson.SentenceBuildings.Count > 0)
+            {
+
+            }
+            return Db.Delete(lesson);
+        }
+
+        private int DeleteScene(Scene scene)
+        {
+            ObservableCollection<SceneItem> sceneItems = scene.SceneItems;
+            if (sceneItems.Count > 0)
+            {
+                foreach (SceneItem sceneItem in sceneItems)
+                {
+                    DeleteSceneItem(sceneItem);
+                }
+            }
+            if (scene.ScenePicture != null)
+                Db.Delete(scene.ScenePicture);
+            return Db.Delete(scene);
+        }
+
+        private int DeleteSceneItem(SceneItem sceneItem)
+        {
+            if (sceneItem.Phrase != null)
+                DeletePhrase(sceneItem.Phrase);
+
+            return Db.Delete(sceneItem);
+        }
+
+        private int DeletePhrase(Phrase phrase)
+        {
+            return Db.Delete(phrase);
+        }
+
+        private void DeleteVocabualary()
+        {
+            //TODO: Delete Vocabualary
+        }
+
+
+        /// <summary>
+        /// This method works when Languages Collection Changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Languages_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var newItems = e.NewItems;
+            var oldItems = e.OldItems;
+            if (newItems != null)
+            {
+                if (newItems.Count > 0)
+                {
+                    Language addedLanguage = (newItems.SyncRoot as object[])[0] as Language;
+                    if (addedLanguage != null)
+                        Db.Insert(addedLanguage, typeof(Language));
+                }
+            }
+            else if (oldItems != null)
+            {
+                if (oldItems.Count > 0)
+                {
+                    Language deletedLanguage = (oldItems.SyncRoot as object[])[0] as Language;
+                    int result = DeleteLanguage(deletedLanguage);
+                }
+            }
+        }
+
+        /// <summary>
+        /// This method works when Levels Collection Changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Levels_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var newItems = e.NewItems;
+            var oldItems = e.OldItems;
+            if (newItems != null)
+            {
+                if (newItems.Count > 0)
+                {
+                    Level addedLevel = (newItems.SyncRoot as object[])[0] as Level;
+                    if (addedLevel != null)
+                    {
+                        this.SelectedLanguage.InsertLevel(addedLevel);
+                        NotifyPropertyChanged("Levels");
+                    }
+                }
+            }
+            else if (oldItems != null)
+            {
+                if (oldItems.Count > 0)
+                {
+                    Level deletedLevel = (oldItems.SyncRoot as object[])[0] as Level;
+                    DeleteLevel(deletedLevel);
+                    NotifyPropertyChanged("Levels");
+                }
+            }
+        }
+
+        /// <summary>
+        /// This method works when Units Collection Changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Units_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var newItems = e.NewItems;
+            var oldItems = e.OldItems;
+            if (newItems != null)
+            {
+                if (newItems.Count > 0)
+                {
+                    Unit addedUnit = (newItems.SyncRoot as object[])[0] as Unit;
+                    if (addedUnit != null)
+                        this.SelectedLevel.InsertUnit(addedUnit);
+                }
+            }
+            else if (oldItems != null)
+            {
+                if (oldItems.Count > 0)
+                {
+                    Unit deletedUnit = (oldItems.SyncRoot as object[])[0] as Unit;
+                    DeleteUnit(deletedUnit);
+                }
+            }
+        }
+
+        /// <summary>
+        /// This method works when Lesson Collection Changed
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Lessons_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            var newItems = e.NewItems;
+            var oldItems = e.OldItems;
+            if (newItems != null)
+            {
+                if (newItems.Count > 0)
+                {
+                    Lesson addedLesson = (newItems.SyncRoot as object[])[0] as Lesson;
+                    int result = addedLesson.Unit.InsertLesson(addedLesson);
+                }
+            }
+            else if (oldItems != null)
+            {
+                if (oldItems.Count > 0)
+                {
+                    Lesson deletedLesson = (oldItems.SyncRoot as object[])[0] as Lesson;
+                    DeleteLesson(deletedLesson);
+                }
+            }
+        }
+
+
+        #endregion
+
+        #region Events
         /// <summary>
         /// Will be raised when a language gets selected
         /// </summary>
@@ -39,12 +270,15 @@ namespace SilkDialectLearningBLL
         /// </summary>
         public event EventHandler LessonSelected;
 
+        #endregion
+
+        #region Properties
         /// <summary>
         /// Access to the database
         /// </summary>
         internal Entities Db { get; private set; }
 
-        User user;
+        private User user;
         /// <summary>
         /// Returns the current logged in user
         /// </summary>
@@ -117,6 +351,7 @@ namespace SilkDialectLearningBLL
                 }
             }
         }
+
 
         /// <summary>
         /// Returns the list of units under selected level
@@ -192,7 +427,7 @@ namespace SilkDialectLearningBLL
             }
         }
 
-        SceneViewModel sceneViewModel;
+        private SceneViewModel sceneViewModel;
         public SceneViewModel SceneViewModel
         {
             get
@@ -204,6 +439,7 @@ namespace SilkDialectLearningBLL
                 return sceneViewModel;
             }
         }
+        #endregion
 
         #region NotifyPropertyChanged
 

@@ -10,7 +10,7 @@
         <Setter Property="Foreground"
                 Value="{DynamicResource LabelTextBrush}" />
         <Setter Property="FontSize"
-                Value="{DynamicResource ContentFontSize}" />
+                Value="{DynamicResource NormalFontSize}" />
         <Setter Property="FontFamily"
                 Value="{DynamicResource ContentFontFamily}" />
         <Setter Property="HorizontalContentAlignment"
@@ -86,7 +86,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="18" x:Name="LeftCol" />
+                            <ColumnDefinition Width="25" x:Name="LeftCol" />
                             <ColumnDefinition Width="*" x:Name="RightCol" />
                         </Grid.ColumnDefinitions>
                         <Grid x:Name="PART_CHECKBOX">
@@ -97,40 +97,40 @@
                                      Stroke="{DynamicResource CheckBoxBrush}"
                                      StrokeThickness="1"
                                      Fill="{DynamicResource WhiteBrush}"
-                                     Width="18"
-                                     Height="18" />
+                                     Width="25"
+                                     Height="25" />
                             <Ellipse x:Name="hover"
                                      Stroke="{TemplateBinding Controls:ControlsHelper.MouseOverBorderBrush}"
                                      StrokeThickness="1"
                                      Fill="{DynamicResource WhiteBrush}"
                                      Opacity="0"
-                                     Width="18"
-                                     Height="18" />
+                                     Width="25"
+                                     Height="25" />
                             <Ellipse x:Name="pressed"
                                      Opacity="0"
                                      Stroke="{DynamicResource HighlightBrush}"
                                      StrokeThickness="1"
                                      Fill="{DynamicResource WhiteBrush}"
-                                     Width="18"
-                                     Height="18" />
+                                     Width="25"
+                                     Height="25" />
                             <Ellipse x:Name="focused"
                                      Opacity="0"
                                      Stroke="{TemplateBinding Controls:ControlsHelper.FocusBorderBrush}"
                                      StrokeThickness="1"
                                      Fill="{DynamicResource WhiteBrush}"
-                                     Width="18"
-                                     Height="18" />
+                                     Width="25"
+                                     Height="25" />
                             <Ellipse x:Name="Checked1"
                                      Fill="{DynamicResource HighlightBrush}"
                                      Opacity="0"
-                                     Width="10"
-                                     Height="10" />
+                                     Width="15"
+                                     Height="15" />
                             <Ellipse x:Name="disabled"
                                      Opacity="0"
                                      StrokeThickness="1"
                                      Fill="{DynamicResource SemiTransparentWhiteBrush}"
-                                     Width="18"
-                                     Height="18" />
+                                     Width="25"
+                                     Height="25" />
                         </Grid>
                         <ContentPresenter x:Name="contentPresenter"
                                           ContentTemplate="{TemplateBinding ContentTemplate}"
@@ -150,7 +150,7 @@
                                     Value="*" />
                             <Setter TargetName="RightCol"
                                     Property="Width"
-                                    Value="18" />
+                                    Value="25" />
                             <Setter TargetName="PART_CHECKBOX"
                                     Property="Grid.Column"
                                     Value="1" />

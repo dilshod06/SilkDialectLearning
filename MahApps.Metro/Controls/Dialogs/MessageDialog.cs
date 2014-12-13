@@ -52,6 +52,8 @@ namespace MahApps.Metro.Controls.Dialogs
             RoutedEventHandler secondAuxHandler = null;
             KeyEventHandler secondAuxKeyHandler = null;
 
+            KeyEventHandler escapeKeyHandler = null;
+
             Action cleanUpHandlers = () =>
             {
                 PART_NegativeButton.Click -= negativeHandler;
@@ -63,6 +65,16 @@ namespace MahApps.Metro.Controls.Dialogs
                 PART_AffirmativeButton.KeyDown -= affirmativeKeyHandler;
                 PART_FirstAuxiliaryButton.KeyDown -= firstAuxKeyHandler;
                 PART_SecondAuxiliaryButton.KeyDown -= secondAuxKeyHandler;
+            };
+
+            escapeKeyHandler = (sender, e) =>
+            {
+                if (e.Key == Key.Escape)
+                {
+                    cleanUpHandlers();
+
+                    tcs.TrySetResult(MessageDialogResult.Negative);
+                }
             };
 
             negativeKeyHandler = (sender, e) =>
@@ -145,7 +157,7 @@ namespace MahApps.Metro.Controls.Dialogs
             PART_AffirmativeButton.KeyDown += affirmativeKeyHandler;
             PART_FirstAuxiliaryButton.KeyDown += firstAuxKeyHandler;
             PART_SecondAuxiliaryButton.KeyDown += secondAuxKeyHandler;
-
+            this.KeyDown += escapeKeyHandler;
             PART_NegativeButton.Click += negativeHandler;
             PART_AffirmativeButton.Click += affirmativeHandler;
             PART_FirstAuxiliaryButton.Click += firstAuxHandler;

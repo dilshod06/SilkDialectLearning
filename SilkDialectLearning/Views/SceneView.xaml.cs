@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -24,26 +25,23 @@ namespace SilkDialectLearning.Views
     /// </summary>
     public partial class SceneView : UserControl
     {
+        public static readonly DependencyProperty ViewModelProperty = DependencyProperty.Register("ViewModel", typeof(ViewModel), typeof(SceneView), new PropertyMetadata(null));
+
         public ViewModel ViewModel
         {
             get { return (ViewModel)GetValue(ViewModelProperty); }
             set { SetValue(ViewModelProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ViewModel.  This enables animation, styling, binding, etc...
-        public static DependencyProperty ViewModelProperty =
-            DependencyProperty.Register("ViewModel", typeof(ViewModel), typeof(SceneView));
-
-
         private Dictionary<Border, SceneItem> items;
         private Storyboard storyBoard;
-        //public ViewModel ViewModel { get; set; }
+
         public SceneView()
         {
             InitializeComponent();
-            
+
         }
-        void SceneViewModel_StopHighlighting(object sender, HighlightItemEventArgs e)
+        private void SceneViewModel_StopHighlighting(object sender, HighlightItemEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -54,7 +52,7 @@ namespace SilkDialectLearning.Views
             }), null);
         }
 
-        void SceneViewModel_HighlightItem(object sender, HighlightItemEventArgs e)
+        private void SceneViewModel_HighlightItem(object sender, HighlightItemEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
@@ -80,11 +78,10 @@ namespace SilkDialectLearning.Views
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var scene = (sender as TabControl).SelectedItem as Scene;
-            if (scene != null)
-            {
-                ViewModel.SceneViewModel.SelectedScene = scene;
-            }
+            var tabControl = sender as TabControl;
+            if (tabControl.SelectedIndex == -1)
+                tabControl.SelectedIndex = 0;
+
             items = new Dictionary<Border, SceneItem>();
         }
 
@@ -97,7 +94,8 @@ namespace SilkDialectLearning.Views
             }
 
         }
-        void dot_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+
+        private void dot_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             try
             {
@@ -108,18 +106,30 @@ namespace SilkDialectLearning.Views
                 MessageBox.Show(ex.Message);
             }
         }
-        bool loaded;
+
+        private bool loaded;
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            items = new Dictionary<Border, SceneItem>();
             if (!loaded && !DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
-                this.ViewModel = this.DataContext as ViewModel;
+                this.ViewModel = (this.DataContext as MainViewModel).ViewModel;
                 ViewModel.SceneViewModel.HighlightItem += SceneViewModel_HighlightItem;
                 ViewModel.SceneViewModel.StopHighlighting += SceneViewModel_StopHighlighting;
-                items = new Dictionary<Border, SceneItem>();
+                ViewModel.LessonSelected += ViewModel_LessonSelected;
                 loaded = true;
             }
-
         }
+
+        void ViewModel_LessonSelected(object sender, EventArgs e)
+        {
+            if (uiPanel.Visibility != System.Windows.Visibility.Visible)
+                uiPanel.Visibility = System.Windows.Visibility.Visible;
+        }
+        private void ScenesTabControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            (sender as TabControl).SelectedIndex = 0;
+        }
+
     }
 }

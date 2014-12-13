@@ -1,0 +1,50 @@
+﻿<controls:Flyout x:Class="SilkDialectLearning.Flyouts.SceneMenuFlyout"
+	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	  mc:Ignorable="d" 
+	  d:DesignHeight="300" d:DesignWidth="300"
+	  AnimateOnPositionChange="True" 
+							 AnimateOpacity="True"
+							 MenuCloseButtonVisibility="Collapsed"
+							 CloseButtonVisibility="Visible"
+							 Position="Bottom"
+							 PinButtonVisibility="Collapsed"
+							 IsPinned="False"
+							 Theme="Dark">
+	<StackPanel Height="80"
+							Margin="5,5,5,5"
+							HorizontalAlignment="Right"
+							Orientation="Horizontal">
+		<StackPanel Orientation="Vertical" Margin="10">
+			<Button Width="40" HorizontalAlignment="Center"
+							Height="40"
+							FontFamily="Segoe UI Symbol"
+							FontSize="16"
+							Style="{DynamicResource MetroCircleButtonStyle}">
+				<Rectangle Width="20"
+								   Height="20" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+					<Rectangle.OpacityMask>
+						<VisualBrush Stretch="Fill"
+									 Visual="{DynamicResource appbar_add}" />
+					</Rectangle.OpacityMask>
+				</Rectangle>
+			</Button>
+			<TextBlock Text="Add" HorizontalAlignment="Center"/>
+		</StackPanel>
+		<StackPanel Orientation="Vertical" Margin="10">
+			<Button Width="40" HorizontalAlignment="Center"
+							Height="40"
+							FontFamily="Segoe UI Symbol"
+							FontSize="16"
+							Content="&#xe107;"
+							Style="{DynamicResource MetroCircleButtonStyle}" Click="Button_Click">
+			</Button>
+			<TextBlock Text="Delete" HorizontalAlignment="Center"/>
+		</StackPanel>
+
+	</StackPanel>
+</controls:Flyout>
+

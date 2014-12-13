@@ -8,18 +8,19 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Colors.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Fonts.xaml" />
     </ResourceDictionary.MergedDictionaries>
-
+    <!--Margin="10,-10,5,25"-->
     <DataTemplate x:Key="HeaderTemplate"
                   x:Shared="False">
         <DockPanel x:Name="dpHeader"
-                   Margin="10,-10,10,0"
+                   Margin="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=HeaderMargin}"
                    VerticalAlignment="Center"
                    LastChildFill="True">
-            <Button x:Name="nav" ToolTip="Close"
+
+            <Button x:Name="MenuCloseButton" ToolTip="Close"
                     Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=CloseCommand, Mode=OneWay}"
-                    DockPanel.Dock="Left"
-                    Style="{DynamicResource MetroClose}"
-                    Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=CloseButtonVisibility}"
+                    DockPanel.Dock="Right"
+                    Style="{DynamicResource MetroCircleCloseButtonStyle}"
+                    Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=MenuCloseButtonVisibility}"
                     Height="35"
                     Width="35"
                     FontFamily="Segoe UI Symbol"
@@ -32,27 +33,41 @@
                                                      Value="False" />
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
-                <!--<Rectangle Width="12"
-                           Height="12"
+            </Button>
+            
+            <Button x:Name="nav"
+                    Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=CloseCommand, Mode=OneWay}"
+                    DockPanel.Dock="Left"
+                    Style="{DynamicResource MetroCircleButtonStyle}"
+                    Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=CloseButtonVisibility}"
+                    Height="40"
+                    Width="40"
+                    FontFamily="Segoe UI Symbol"
+                    Foreground="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=Foreground}"
+                    FontSize="16"
+                    VerticalAlignment="Bottom">
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="Click">
+                        <Actions:SetFlyoutOpenAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}}"
+                                                     Value="False" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+                <Rectangle Width="17" Height="14"
                            Fill="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}, Path=Foreground}">
                     <Rectangle.OpacityMask>
                         <VisualBrush Stretch="Fill"
-                                     Visual="{DynamicResource appbar_close}" />
+                                     Visual="{DynamicResource appbar_arrow_right}" />
                     </Rectangle.OpacityMask>
-                </Rectangle>-->
+                </Rectangle>
             </Button>
+           
             <ToggleButton Width="35" Name="Pin" DockPanel.Dock="Right"
+                          Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=PinButtonVisibility}"
+                          IsChecked="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=IsPinned}"
+                          
                           Height="35"
                           Margin="0, 10, 0, 0"
-                          Style="{DynamicResource MetroPinnedCircleToggleButtonStyle}" ToolTip="Toggle pin status">
-                <!--<Rectangle Width="15" 
-                           Height="15"
-                           Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}">
-                    <Rectangle.OpacityMask>
-                        <VisualBrush Stretch="Fill"
-                                     Visual="{DynamicResource appbar_pin}" />
-                    </Rectangle.OpacityMask>
-                </Rectangle>-->
+                          Style="{DynamicResource MetroPinnedCircleToggleButtonStyle}" ToolTip="Toggle pin status" >
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="Click">
                         <Actions:SetIsPinnedAction TargetObject="{Binding RelativeSource={RelativeSource AncestorType={x:Type Controls:Flyout}}}"
@@ -60,6 +75,7 @@
                     </i:EventTrigger>
                 </i:Interaction.Triggers>
             </ToggleButton>
+                     
             <TextBlock Text="{Binding}"
                        x:Name="PART_BackButton"
                        Visibility="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=TitleVisibility}"
@@ -116,7 +132,7 @@
     <ControlTemplate x:Key="FlyoutTemplate"
                      TargetType="{x:Type Controls:Flyout}">
         <Grid x:Name="root"
-              Margin="{TemplateBinding Margin}"
+              Margin="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:Flyout}}, Path=FlyoutMargin}"
               Background="{TemplateBinding Background}">
             <Grid.RenderTransform>
                 <TranslateTransform />

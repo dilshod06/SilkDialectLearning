@@ -16,7 +16,7 @@
     <Color x:Key="GrayNormal">#FFBEBEBE</Color>
     <Color x:Key="GrayHover">#FF333333</Color>
 
-    <Color x:Key="FlyoutColor">#FFFFFFFF</Color>
+    <Color x:Key="FlyoutColor">White</Color>
 
     <!-- re-set brushes too -->
     <SolidColorBrush x:Key="BlackBrush" Color="{StaticResource BlackColor}" options:Freeze="True" />

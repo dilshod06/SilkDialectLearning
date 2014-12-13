@@ -1,21 +1,58 @@
 ﻿using MahApps.Metro.Controls;
+using SilkDialectLearningBLL;
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Markup;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
+using System.Windows.Shapes;
 
-namespace SilkDialectLearning
+namespace SilkDialectLearning.Flyouts
 {
     /// <summary>
-    /// A reimplementation of NavigationWindow based on MetroWindow.
+    /// Interaction logic for HomeFlyout.xaml
     /// </summary>
-    /// <see cref="System.Windows.Navigation.NavigationWindow"/>
     [ContentProperty("OverlayContent")]
-    public partial class MainWindow : MetroWindow, IUriContext
+    public partial class HomeFlyout : Flyout, IUriContext
     {
+        public HomeFlyout()
+        {
+            InitializeComponent();
+            this.Loaded += HomeFlyout_Loaded;
+        }
+        private bool loaded;
+        void HomeFlyout_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (!loaded && !DesignerProperties.GetIsInDesignMode(new DependencyObject()))
+            {
+                var mainWindowViewModel = (sender as Flyout).DataContext as MainViewModel;
+                if(mainWindowViewModel != null)
+                 this.Navigate(new Navigation.LanguagesPage(this, mainWindowViewModel));
+
+                PART_Frame.Navigated += PART_Frame_Navigated;
+                PART_Frame.Navigating += PART_Frame_Navigating;
+                PART_Frame.NavigationFailed += PART_Frame_NavigationFailed;
+                PART_Frame.NavigationProgress += PART_Frame_NavigationProgress;
+                PART_Frame.NavigationStopped += PART_Frame_NavigationStopped;
+                PART_Frame.LoadCompleted += PART_Frame_LoadCompleted;
+                PART_Frame.FragmentNavigation += PART_Frame_FragmentNavigation;
+                PART_BackButton.Click += PART_BackButton_Click;
+                PART_ForwardButton.Click += PART_ForwardButton_Click;
+                loaded = true;
+            }
+        }
+
         [System.Diagnostics.DebuggerNonUserCode]
         void PART_ForwardButton_Click(object sender, RoutedEventArgs e)
         {
@@ -65,7 +102,7 @@ namespace SilkDialectLearning
             if (CanGoBack)
                 GoBack();
         }
-        
+
 
         //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_Navigated(object sender, NavigationEventArgs e)
@@ -276,5 +313,25 @@ namespace SilkDialectLearning
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.LoadCompleted"/>
         public event LoadCompletedEventHandler LoadCompleted;
+    }
+
+    public class TitleToToolTipConveter : IValueConverter
+    {
+
+        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            if (value != null)
+            {
+                string titles = (value as string);
+                string title = titles.Substring(0, titles.Length - 1);
+                return string.Format("Add {0}", title);
+            }
+            return null;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        {
+            return null;
+        }
     }
 }

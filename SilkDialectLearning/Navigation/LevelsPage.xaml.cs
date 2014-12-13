@@ -1,4 +1,5 @@
-﻿using SilkDialectLearningBLL;
+﻿using SilkDialectLearning.Flyouts;
+using SilkDialectLearningBLL;
 using SilkDialectLearningDAL;
 using System.Windows.Controls;
 
@@ -9,14 +10,14 @@ namespace SilkDialectLearning.Navigation
     /// </summary>
     public partial class LevelsPage : Page
     {
-        public ViewModel ViewModel { get; set; }
-        public MainWindow MainWindow { get; set; }
-        public LevelsPage(MainWindow MainWindow, ViewModel ViewModel)
+        public MainViewModel MainViewModel { get; set; }
+        public HomeFlyout HomeFlyout { get; set; }
+        public LevelsPage(HomeFlyout HomeFlyout, MainViewModel MainViewModel)
         {
-            this.MainWindow = MainWindow;
-            this.ViewModel = ViewModel;
+            this.HomeFlyout = HomeFlyout;
+            this.MainViewModel = MainViewModel;
             InitializeComponent();
-            this.DataContext = this.ViewModel;
+            this.DataContext = this.MainViewModel;
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -24,8 +25,8 @@ namespace SilkDialectLearning.Navigation
             if (e.AddedItems.Count > 0)
             {
                 Level level = e.AddedItems[0] as Level;
-                ViewModel.SelectedLevel = level;
-                this.MainWindow.Navigate(new UnitsPage(this.MainWindow, this.ViewModel));
+                MainViewModel.ViewModel.SelectedLevel = level;
+                this.HomeFlyout.Navigate(new UnitsPage(this.HomeFlyout, this.MainViewModel));
             }
         }
     }

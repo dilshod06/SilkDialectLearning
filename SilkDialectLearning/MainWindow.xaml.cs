@@ -11,64 +11,24 @@ namespace SilkDialectLearning
     /// A reimplementation of NavigationWindow based on MetroWindow.
     /// </summary>
 
-    public partial class MainWindow : MetroWindow, IUriContext
+    public partial class MainWindow : MetroWindow
     {
-        
-        public ViewModel ViewModel { get; private set; }
-
+        public MainViewModel MainWindowViewModel;
         public MainWindow()
         {
-            InitializeDatabaseFile();
+            MainWindowViewModel = new MainViewModel();
+            this.DataContext = MainWindowViewModel;
             InitializeComponent();
-            this.DataContext = ViewModel;
             this.Loaded += MainWindow_Loaded;
-            this.Closing += MainWindow_Closing;
+        }
+
+        void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            
         }
        
-        private void InitializeDatabaseFile()
-        {
-            DirectoryInfo currentDir = new DirectoryInfo(".\\");
-            if (!currentDir.GetFiles().Any(f => f.Name == "SilkDialectLearning.db"))
-            {
-                MessageBox.Show("Database file not found! We will create one for you");
-                Global.CreateDatabase = true;
-            }
-            Global.DatabasePath = currentDir.FullName + "SilkDialectLearning.db";
-            ViewModel = Global.GlobalViewModel;
-        }
         
-        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            this.Navigate(new Navigation.LanguagesPage(this, this.ViewModel));
-            PART_Frame.Navigated += PART_Frame_Navigated;
-            PART_Frame.Navigating += PART_Frame_Navigating;
-            PART_Frame.NavigationFailed += PART_Frame_NavigationFailed;
-            PART_Frame.NavigationProgress += PART_Frame_NavigationProgress;
-            PART_Frame.NavigationStopped += PART_Frame_NavigationStopped;
-            PART_Frame.LoadCompleted += PART_Frame_LoadCompleted;
-            PART_Frame.FragmentNavigation += PART_Frame_FragmentNavigation;
-            PART_BackButton.Click += PART_BackButton_Click;
-            PART_ForwardButton.Click += PART_ForwardButton_Click;
-        }
-
-        [System.Diagnostics.DebuggerNonUserCode]
-        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            PART_Frame.FragmentNavigation -= PART_Frame_FragmentNavigation;
-            PART_Frame.Navigating -= PART_Frame_Navigating;
-            PART_Frame.NavigationFailed -= PART_Frame_NavigationFailed;
-            PART_Frame.NavigationProgress -= PART_Frame_NavigationProgress;
-            PART_Frame.NavigationStopped -= PART_Frame_NavigationStopped;
-            PART_Frame.LoadCompleted -= PART_Frame_LoadCompleted;
-            PART_Frame.Navigated -= PART_Frame_Navigated;
-
-            PART_ForwardButton.Click -= PART_ForwardButton_Click;
-            PART_BackButton.Click -= PART_BackButton_Click;
-
-            this.Loaded -= MainWindow_Loaded;
-            this.Closing -= MainWindow_Closing;
-        }
-        
+                
         private void ToggleFlyout(int index)
         {
             var flyout = this.Flyouts.Items[index] as Flyout;
@@ -80,6 +40,17 @@ namespace SilkDialectLearning
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
             this.ToggleFlyout(0);
+        }
+
+        private void MetroWindow_MouseRightButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (MainWindowViewModel.ViewModel.SelectedLesson != null && MainWindowViewModel.ViewModel.SceneViewModel.SelectedScene != null)
+                ToggleFlyout(1);
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.ToggleFlyout(2);
         }
     }
 }

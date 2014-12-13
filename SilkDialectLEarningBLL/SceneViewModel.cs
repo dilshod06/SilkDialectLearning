@@ -160,6 +160,15 @@ namespace SilkDialectLearningBLL
             };
             ActivityChanged += SceneViewModel_ActivityChanged;
             SceneSelected += SceneViewModel_SceneSelected;
+            this.PropertyChanged += SceneViewModel_PropertyChanged;
+        }
+
+        void SceneViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "Levels")
+            {
+                
+            }
         }
 
         async void SceneViewModel_SceneSelected(object sender, EventArgs e)
@@ -303,7 +312,7 @@ namespace SilkDialectLearningBLL
         #endregion
     }
 
-    class PracticeResult
+    public class PracticeResult
     {
         public PracticeItemStatus Status { get; set; }
     }

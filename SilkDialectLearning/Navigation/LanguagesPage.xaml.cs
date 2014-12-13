@@ -1,4 +1,5 @@
-﻿using SilkDialectLearningBLL;
+﻿using SilkDialectLearning.Flyouts;
+using SilkDialectLearningBLL;
 using SilkDialectLearningDAL;
 using System.Windows.Controls;
 
@@ -9,14 +10,14 @@ namespace SilkDialectLearning.Navigation
     /// </summary>
     public partial class LanguagesPage : Page
     {
-        public ViewModel ViewModel { get; set; }
-        public MainWindow MainWindow { get; set; }
-        public LanguagesPage(MainWindow MainWindow, ViewModel ViewModel)
+        public MainViewModel MainViewModel { get; set; }
+        public HomeFlyout HomeFlyout { get; set; }
+        public LanguagesPage(HomeFlyout HomeFlyout, MainViewModel MainWindowViewModel)
         {
-            this.ViewModel = ViewModel;
-            this.MainWindow = MainWindow;
+            this.MainViewModel = MainWindowViewModel;
+            this.HomeFlyout = HomeFlyout;
             InitializeComponent();
-            this.DataContext = this.ViewModel;
+            this.DataContext = this.MainViewModel;
         }
 
         private void Languages_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -24,9 +25,15 @@ namespace SilkDialectLearning.Navigation
             if (e.AddedItems.Count > 0)
             {
                 Language language = e.AddedItems[0] as Language;
-                ViewModel.SelectedLanguage = language;
-                this.MainWindow.Navigate(new LevelsPage(this.MainWindow, this.ViewModel));
+                MainViewModel.ViewModel.SelectedLanguage = language;
+                this.HomeFlyout.Navigate(new LevelsPage(this.HomeFlyout, this.MainViewModel));
             }
+        }
+
+        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            var doc = (((sender as Button).Parent as StackPanel).Parent as DockPanel);
+            var a = VisualTreeHelpers.FindAncestor<ListBoxItem>(doc);
         }
     }
 }

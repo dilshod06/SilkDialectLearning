@@ -41,7 +41,7 @@ namespace MahApps.Metro.Controls
             add { AddHandler(ClosingFinishedEvent, value); }
             remove { RemoveHandler(ClosingFinishedEvent, value); }
         }
-
+        
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register("Header", typeof(string), typeof(Flyout), new PropertyMetadata(default(string)));
         public static readonly DependencyProperty PositionProperty = DependencyProperty.Register("Position", typeof(Position), typeof(Flyout), new PropertyMetadata(Position.Left, PositionChanged));
         public static readonly DependencyProperty IsPinnedProperty = DependencyProperty.Register("IsPinned", typeof(bool), typeof(Flyout), new PropertyMetadata(true));
@@ -54,8 +54,29 @@ namespace MahApps.Metro.Controls
         public static readonly DependencyProperty ThemeProperty = DependencyProperty.Register("Theme", typeof(FlyoutTheme), typeof(Flyout), new FrameworkPropertyMetadata(FlyoutTheme.Dark, ThemeChanged));
         public static readonly DependencyProperty ExternalCloseButtonProperty = DependencyProperty.Register("ExternalCloseButton", typeof(MouseButton), typeof(Flyout), new PropertyMetadata(MouseButton.Left));
         public static readonly DependencyProperty CloseButtonVisibilityProperty = DependencyProperty.Register("CloseButtonVisibility", typeof(Visibility), typeof(Flyout), new FrameworkPropertyMetadata(Visibility.Visible));
+        public static readonly DependencyProperty MenuCloseButtonVisibilityProperty = DependencyProperty.Register("MenuCloseButtonVisibility", typeof(Visibility), typeof(Flyout), new FrameworkPropertyMetadata(Visibility.Visible));
         public static readonly DependencyProperty TitleVisibilityProperty = DependencyProperty.Register("TitleVisibility", typeof(Visibility), typeof(Flyout), new FrameworkPropertyMetadata(Visibility.Visible));
+        public static readonly DependencyProperty PinButtonVisibilityProperty = DependencyProperty.Register("PinButtonVisibility", typeof(Visibility), typeof(Flyout), new FrameworkPropertyMetadata(Visibility.Visible));
+        public static readonly DependencyProperty FlyoutMarginProperty = DependencyProperty.Register("FlyoutMargin", typeof(Thickness), typeof(Flyout), new FrameworkPropertyMetadata(new Thickness(0)));
+        public static readonly DependencyProperty HeaderMarginProperty = DependencyProperty.Register("HeaderMargin", typeof(Thickness), typeof(Flyout), new FrameworkPropertyMetadata(new Thickness(10)));
 
+
+        public Thickness HeaderMargin
+        {
+            get { return (Thickness)GetValue(HeaderMarginProperty); }
+            set { SetValue(HeaderMarginProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets/ sets if the Margin changed this flyout
+        /// </summary>
+        public Thickness FlyoutMargin
+        {
+            get { return (Thickness)GetValue(FlyoutMarginProperty); }
+            set { SetValue(FlyoutMarginProperty, value); }
+        }
+       
+        
         /// <summary>
         /// Gets/sets if the title is visible in this flyout.
         /// </summary>
@@ -72,6 +93,25 @@ namespace MahApps.Metro.Controls
         {
             get { return (Visibility)GetValue(CloseButtonVisibilityProperty); }
             set { SetValue(CloseButtonVisibilityProperty, value); }
+        }
+
+
+        /// <summary>
+        /// Gets/sets if the close button is visible in this flyout.
+        /// </summary>
+        public Visibility MenuCloseButtonVisibility
+        {
+            get { return (Visibility)GetValue(MenuCloseButtonVisibilityProperty); }
+            set { SetValue(MenuCloseButtonVisibilityProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets/sets if the pin button is visible in this flyout
+        /// </summary>
+        public Visibility PinButtonVisibility
+        {
+            get { return (Visibility)GetValue(PinButtonVisibilityProperty); }
+            set { SetValue(PinButtonVisibilityProperty, value); }
         }
 
         /// <summary>
@@ -215,7 +255,7 @@ namespace MahApps.Metro.Controls
             {
                 case FlyoutTheme.Accent:
                     ThemeManager.ChangeAppStyle(this.Resources, windowAccent, windowTheme);
-                    this.SetResourceReference(BackgroundProperty, "HighlightBrush");
+                    this.SetResourceReference(BackgroundProperty, "AccentColorBrush");
                     this.SetResourceReference(ForegroundProperty, "IdealForegroundColorBrush");
                 break;
 

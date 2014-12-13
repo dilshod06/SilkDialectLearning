@@ -1,4 +1,5 @@
-﻿using SilkDialectLearningBLL;
+﻿using SilkDialectLearning.Flyouts;
+using SilkDialectLearningBLL;
 using SilkDialectLearningDAL;
 using System.Windows.Controls;
 
@@ -9,20 +10,20 @@ namespace SilkDialectLearning.Navigation
     /// </summary>
     public partial class LessonsPage : Page
     {
-        public ViewModel ViewModel { get; set; }
-        public MainWindow MainWindow { get; set; }
-        public LessonsPage(MainWindow MainWindow, ViewModel ViewModel)
+        public MainViewModel MainViewModel { get; set; }
+        public HomeFlyout HomeFlyout { get; set; }
+        public LessonsPage(HomeFlyout HomeFlyout, MainViewModel MainViewModel)
         {
-            this.ViewModel = ViewModel;
-            this.MainWindow = MainWindow;
+            this.MainViewModel = MainViewModel;
+            this.HomeFlyout = HomeFlyout;
             InitializeComponent();
-            this.DataContext = this.ViewModel;
+            this.DataContext = this.MainViewModel;
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             Lesson lesson = e.AddedItems[0] as Lesson;
-            ViewModel.SelectedLesson = lesson;
+            MainViewModel.ViewModel.SelectedLesson = lesson;
         }
     }
 }
