@@ -1,6 +1,51 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <Style TargetType="TabItem" x:Key="AzureNavTabItem">
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Margin" Value="0,2,20,0"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Stretch" />
+        <Setter Property="MinWidth" Value="5" />
+        <Setter Property="MinHeight" Value="5" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TabItem">
+                    <Label x:Name="root" FontSize="15" Margin="{TemplateBinding Margin}"
+                               FontWeight="SemiBold">
+                        <ContentPresenter ContentSource="Header" RecognizesAccessKey="True" />
+                    </Label>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsSelected" Value="true">
+                            <Setter TargetName="root" Property="Foreground">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="{DynamicResource AccentColor}" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="false">
+                            <Setter  TargetName="root" Property="Foreground">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="{DynamicResource Gray2}" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                        <Trigger SourceName="root" Property="IsMouseOver" Value="True">
+                            <Setter  TargetName="root" Property="Foreground">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="{DynamicResource AccentColor}" />
+                                </Setter.Value>
+                            </Setter>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+   
     <Style x:Key="AzureTabItem" TargetType="{x:Type TabItem}">
         <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
         <Setter Property="Template">
@@ -16,7 +61,7 @@
                                 <Style TargetType="Border">
                                     <Setter Property="Background">
                                         <Setter.Value>
-                                            <SolidColorBrush Color="{DynamicResource Gray10}"/>
+                                            <SolidColorBrush Color="{DynamicResource Gray5}"/>
                                         </Setter.Value>
                                     </Setter>
                                 </Style>
@@ -87,84 +132,4 @@
         </Setter>
     </Style>
 
-    <Style TargetType="TabItem" x:Key="AzureNavTabItem">
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="BorderThickness" Value="4,4,4,4" />
-        <Setter Property="Margin" Value="0,0,0,0"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="VerticalContentAlignment" Value="Stretch" />
-        <Setter Property="MinWidth" Value="10" />
-        <Setter Property="MinHeight" Value="10" />
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="TabItem">
-                    <Border x:Name="border" BorderBrush="{DynamicResource TransparentWhiteBrush}"
-                                        Padding="12,2,24,2" 
-                                        BorderThickness="0,0,2,0" 
-                                        Margin="0"
-                                        SnapsToDevicePixels="True">
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Setter Property="Background">
-                                    <Setter.Value>
-                                        <SolidColorBrush Color="White"/>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </Border.Style>
-                        <Label x:Name="root" FontSize="15" Margin="{TemplateBinding Margin}"
-                                Foreground="{DynamicResource BlackColorBrush}">
-
-                            <ContentPresenter ContentSource="Header" RecognizesAccessKey="True" />
-                        </Label>
-                    </Border>
-
-
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsSelected" Value="true">
-                            <Setter TargetName="root" Property="Foreground">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource WhiteColor}" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="border" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource AccentColor}"/>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                        <Trigger Property="IsSelected" Value="false">
-                            <Setter  TargetName="root" Property="Foreground">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource Gray1}" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="border" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource Gray10}"/>
-                                </Setter.Value>
-                            </Setter>
-                        </Trigger>
-                        <Trigger SourceName="root" Property="IsMouseOver" Value="True">
-                            <Setter TargetName="root" Property="Foreground">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource WhiteColor}" />
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource TransparentWhiteBrush}"></Setter>
-                            <Setter TargetName="border" Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="{DynamicResource AccentColor}"/>
-                                </Setter.Value>
-                            </Setter>
-
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-    
 </ResourceDictionary>

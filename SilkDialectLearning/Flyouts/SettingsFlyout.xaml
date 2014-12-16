@@ -15,7 +15,7 @@
 					Position="Right"
 					PinButtonVisibility="Collapsed"
 					IsPinned="False"
-					Theme="Accent"
+					Theme="Inverse"
                     Header="Settings"
                     FontFamily="{DynamicResource HeaderFontFamily}">
     
@@ -34,17 +34,18 @@
 					 Width="16"
 					 Height="16"
 					 Fill="{Binding ColorBrush, Mode=OneWay}" />
-				<Style x:Key="AppThemeMenuItemStyle"
+                <Style x:Key="AppThemeMenuItemStyle"
 				   TargetType="{x:Type MenuItem}"
 				   BasedOn="{StaticResource MetroMenuItem}">
-					<Setter Property="Command"
+                    <Setter Property="Command"
 						Value="{Binding ChangeAccentCommand}" />
-					<Setter Property="Icon"
+                    <Setter Property="Icon"
 						Value="{StaticResource AppThemeMenuIcon}" />
-					<Setter Property="Header"
+                    <Setter Property="Header"
 						Value="{Binding Name, Mode=OneWay}" />
-				</Style>
-				<Style x:Key="AccentColorMenuItemStyle"
+                </Style>
+
+                <Style x:Key="AccentColorMenuItemStyle"
 				   TargetType="{x:Type MenuItem}"
 				   BasedOn="{StaticResource MetroMenuItem}">
 					<Setter Property="Command"
@@ -56,11 +57,11 @@
 				</Style>
 			</ResourceDictionary>
 		</StackPanel.Resources>
-		<Menu Grid.Row="0"
+        <Menu Grid.Row="0"
 				  Margin="5"
 				  VerticalAlignment="Stretch"
 				  HorizontalAlignment="Left">
-			<MenuItem Header="Theme"
+            <MenuItem Header="Theme"
 						  ItemsSource="{Binding AppThemes, Mode=OneWay}"
 						  ItemContainerStyle="{StaticResource AppThemeMenuItemStyle}" />
 			<MenuItem Header="Accent"

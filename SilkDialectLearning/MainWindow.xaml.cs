@@ -19,16 +19,8 @@ namespace SilkDialectLearning
             MainWindowViewModel = new MainViewModel();
             this.DataContext = MainWindowViewModel;
             InitializeComponent();
-            this.Loaded += MainWindow_Loaded;
-        }
-
-        void MainWindow_Loaded(object sender, RoutedEventArgs e)
-        {
-            
         }
        
-        
-                
         private void ToggleFlyout(int index)
         {
             var flyout = this.Flyouts.Items[index] as Flyout;

@@ -49,7 +49,7 @@ namespace SilkDialectLearning
 
 	public class MainViewModel : INotifyPropertyChanged
 	{
-		public SilkDialectLearningBLL.ViewModel ViewModel { get; private set; }
+		public ViewModel ViewModel { get; private set; }
 
 		public MainViewModel()
 		{
@@ -68,7 +68,8 @@ namespace SilkDialectLearning
 			BrushResources = FindBrushResources();
 
 		}
-		private void InitializeDatabaseFile()
+		
+        private void InitializeDatabaseFile()
 		{
 			DirectoryInfo currentDir = new DirectoryInfo(".\\");
 			if (currentDir.GetFiles().All(f => f.Name != "SilkDialectLearning.db"))
@@ -81,10 +82,12 @@ namespace SilkDialectLearning
 		}
 
 		public List<AccentColorMenuData> AccentColors { get; set; }
-		public List<AppThemeMenuData> AppThemes { get; set; }
+		
+        public List<AppThemeMenuData> AppThemes { get; set; }
 
 		private bool useAccentForDialogs;
-		public bool UseAccentForDialogs
+		
+        public bool UseAccentForDialogs
 		{
 			get { return useAccentForDialogs; }
 			set { useAccentForDialogs = value; NotifyPropertyChanged(); }
@@ -272,8 +275,6 @@ namespace SilkDialectLearning
 					{
 						string description =
 							await metroWindow.ShowInputAsync("Add new Unit", "Enter the description of Unit.", mySettings);
-						if (description == null)
-							return;
 						mainViewModel.ViewModel.Units.Add(
 							new Unit
 							{

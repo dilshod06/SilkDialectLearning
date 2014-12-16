@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace SilkDialectLearningBLL
 {
@@ -19,14 +20,28 @@ namespace SilkDialectLearningBLL
             Db = db;
             languages = new ObservableCollection<Language>(db.GetEntities<Language>());
             Languages.CollectionChanged += Languages_CollectionChanged;
-            PropertyChanged += ViewModel_PropertyChanged;
+            Levels.CollectionChanged += Levels_CollectionChanged;
+            Units.CollectionChanged += Units_CollectionChanged;
+            Lessons.CollectionChanged += Lessons_CollectionChanged;
+
         }
 
         void ViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "Levels")
             {
+                Levels.CollectionChanged -= Levels_CollectionChanged;
                 Levels.CollectionChanged += Levels_CollectionChanged;
+            }
+            if (e.PropertyName == "Units")
+            {
+                Units.CollectionChanged -= Units_CollectionChanged;
+                Units.CollectionChanged += Units_CollectionChanged;
+            }
+            if (e.PropertyName == "Lessons")
+            {
+                Lessons.CollectionChanged -= Lessons_CollectionChanged;
+                Lessons.CollectionChanged += Lessons_CollectionChanged;
             }
         }
 
@@ -176,7 +191,6 @@ namespace SilkDialectLearningBLL
                     if (addedLevel != null)
                     {
                         this.SelectedLanguage.InsertLevel(addedLevel);
-                        NotifyPropertyChanged("Levels");
                     }
                 }
             }
@@ -186,7 +200,6 @@ namespace SilkDialectLearningBLL
                 {
                     Level deletedLevel = (oldItems.SyncRoot as object[])[0] as Level;
                     DeleteLevel(deletedLevel);
-                    NotifyPropertyChanged("Levels");
                 }
             }
         }
@@ -206,7 +219,9 @@ namespace SilkDialectLearningBLL
                 {
                     Unit addedUnit = (newItems.SyncRoot as object[])[0] as Unit;
                     if (addedUnit != null)
+                    {
                         this.SelectedLevel.InsertUnit(addedUnit);
+                    }
                 }
             }
             else if (oldItems != null)
@@ -233,7 +248,7 @@ namespace SilkDialectLearningBLL
                 if (newItems.Count > 0)
                 {
                     Lesson addedLesson = (newItems.SyncRoot as object[])[0] as Lesson;
-                    int result = addedLesson.Unit.InsertLesson(addedLesson);
+                    int result = this.SelectedUnit.InsertLesson(addedLesson);
                 }
             }
             else if (oldItems != null)
@@ -313,6 +328,7 @@ namespace SilkDialectLearningBLL
             }
         }
 
+        ObservableCollection<Level> levels = new ObservableCollection<Level>();
         /// <summary>
         /// Returns the list of levels under selected language
         /// </summary>
@@ -320,7 +336,6 @@ namespace SilkDialectLearningBLL
         {
             get
             {
-                ObservableCollection<Level> levels = new ObservableCollection<Level>();
                 if (SelectedLanguage != null)
                 {
                     levels = SelectedLanguage.Levels;
@@ -392,6 +407,7 @@ namespace SilkDialectLearningBLL
             }
         }
 
+        ObservableCollection<Lesson> lessons = new ObservableCollection<Lesson>();
         /// <summary>
         /// Returns the list of lessons under selected unit
         /// </summary>
@@ -399,7 +415,6 @@ namespace SilkDialectLearningBLL
         {
             get
             {
-                ObservableCollection<Lesson> lessons = new ObservableCollection<Lesson>();
                 if (SelectedUnit != null)
                 {
                     lessons = SelectedUnit.Lessons;

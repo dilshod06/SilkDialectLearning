@@ -111,7 +111,12 @@
         </TabControl>
         <StackPanel Orientation="Vertical" Name="uiPanel" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Collapsed">
             <ToggleButton Name="Activites" Width="45" Height="45"  Style="{DynamicResource MetroCircleToggleButtonStyle}" FontSize="10" FontFamily="Segoe UI Symbol" Content=""></ToggleButton>
-            <Popup Name="MyPopup" Width="150"  IsOpen="{Binding IsChecked, ElementName=Activites}" PopupAnimation="Fade" StaysOpen="True" Placement="Top">
+            <Popup Name="MyPopup" Width="150"  
+                   IsOpen="{Binding IsChecked, ElementName=Activites}" 
+                   PopupAnimation="Slide" 
+                   StaysOpen="False" 
+                   Placement="Top"
+                   PlacementTarget="{Binding ElementName=Activites}">
                 <Border BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1" HorizontalAlignment="Stretch">
                 <StackPanel Background="{DynamicResource WhiteBrush}" HorizontalAlignment="Stretch">
                         <StackPanel>

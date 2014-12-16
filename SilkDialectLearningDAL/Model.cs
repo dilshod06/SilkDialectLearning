@@ -29,7 +29,7 @@ namespace SilkDialectLearningDAL
 		Guid Id { get; }
 	}
 
-	public class Entities : SQLiteConnection
+	public class Entities : SQLiteAsyncConnection
 	{
 
 		public Entities(string dbPath, bool createDatabase = false)
@@ -37,28 +37,30 @@ namespace SilkDialectLearningDAL
 		{
 			if (createDatabase)
 			{
-				this.CreateTable<User>();
-				this.CreateTable<Language>();
-				this.CreateTable<LanguageToLevel>();
-				this.CreateTable<Level>();
-				this.CreateTable<LevelToUnit>();
-				this.CreateTable<Unit>();
-				this.CreateTable<UnitToLesson>();
-				this.CreateTable<Lesson>();
-				this.CreateTable<LessonToActivity>();
-				this.CreateTable<Scene>();
-				this.CreateTable<ScenePicture>();
-				this.CreateTable<SceneItem>();
-				this.CreateTable<Phrase>();
-				this.CreateTable<Vocabulary>();
-				this.CreateTable<VocabularyToWord>();
-				this.CreateTable<Word>();
-				this.CreateTable<WordToMeaning>();
-				this.CreateTable<Meaning>();
-				this.CreateTable<SentenceBuilding>();
-				this.CreateTable<SentenceBuildingItemPicture>();
-				this.CreateTable<SentenceBuildingItem>();
-				this.CreateTable<SentenceToWord>();
+                //this.CreateTableAsyncsAsync(typeof(User), typeof(Language), typeof(LanguageToLevel)
+                //typeof(Level);
+                this.CreateTableAsync<User>();
+                this.CreateTableAsync<Language>();
+                this.CreateTableAsync<LanguageToLevel>();
+                this.CreateTableAsync<Level>();
+                this.CreateTableAsync<LevelToUnit>();
+                this.CreateTableAsync<Unit>();
+                this.CreateTableAsync<UnitToLesson>();
+                this.CreateTableAsync<Lesson>();
+                this.CreateTableAsync<LessonToActivity>();
+                this.CreateTableAsync<Scene>();
+                this.CreateTableAsync<ScenePicture>();
+                this.CreateTableAsync<SceneItem>();
+                this.CreateTableAsync<Phrase>();
+                this.CreateTableAsync<Vocabulary>();
+                this.CreateTableAsync<VocabularyToWord>();
+                this.CreateTableAsync<Word>();
+                this.CreateTableAsync<WordToMeaning>();
+                this.CreateTableAsync<Meaning>();
+                this.CreateTableAsync<SentenceBuilding>();
+                this.CreateTableAsync<SentenceBuildingItemPicture>();
+                this.CreateTableAsync<SentenceBuildingItem>();
+                this.CreateTableAsync<SentenceToWord>();
 			}
 			ModelManager.Db = this;
 		}
@@ -107,7 +109,7 @@ namespace SilkDialectLearningDAL
 
 		public event PropertyChangedEventHandler PropertyChanged;
 		
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+		protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
 		{
 			if (PropertyChanged != null)
 			{
@@ -117,41 +119,40 @@ namespace SilkDialectLearningDAL
 
 		#endregion
 		
-        [PrimaryKey]
+		[PrimaryKey]
 		public Guid Id { get; set; }
 
 		private string name;
-        public string Name
+		public string Name
 		{
 			get { return name; }
 			set { name = value; NotifyPropertyChanged(); }
 		}
 
 		private string description;
-        public string Description
+		public string Description
 		{
 			get { return description; }
 			set { description = value; NotifyPropertyChanged(); }
 		}
 
-		public int InsertLevel(Level level)
+		public void InsertLevel(Level level)
 		{
-			int result = ModelManager.Db.Insert(level, typeof(Level));
-			ModelManager.Db.Insert(new LanguageToLevel() { LanguageId = this.Id, LevelId = level.Id }, typeof(LanguageToLevel));
+			ModelManager.Db.InsertAsync(level);
+            ModelManager.Db.InsertAsync(new LanguageToLevel() { LanguageId = this.Id, LevelId = level.Id });
 			IsLevelsDirty = true;
-			return result;
 		}
 
-        public int DeleteLevel(Level level)
-        {
-            return 0;
-        }
-        [Ignore]
+		public int DeleteLevel(Level level)
+		{
+			return 0;
+		}
+		[Ignore]
 		public bool IsLevelsDirty { get; set; }
 
 		private ObservableCollection<Level> _levels;
 		
-        [Ignore]
+		[Ignore]
 		public ObservableCollection<Level> Levels
 		{
 			get
@@ -160,8 +161,9 @@ namespace SilkDialectLearningDAL
 				{
 					try
 					{
-						var tempLevels = ModelManager.Db.Query<Level>
+						Task<List<Level>> templevels = ModelManager.Db.QueryAsync<Level>
 							("select lev.Id, lev.Name, lev.Description from languagetolevel as ll inner join level as lev on ll.levelid=lev.id where ll.languageid='" + this.Id.ToString() + "'");
+                        var tempLevels = templevels.Result;
 						tempLevels.ForEach((a) => { a.SetLanguage(this); });
 						_levels = new ObservableCollection<Level>(tempLevels);
 						IsLevelsDirty = false;
@@ -180,16 +182,16 @@ namespace SilkDialectLearningDAL
 			return Name;
 		}
 
-        ~Language()
-        {
-            Dispose();
-        }
+		~Language()
+		{
+			Dispose();
+		}
 
-        public void Dispose()
-        {
-            GC.SuppressFinalize(this);
-        }
-    }
+		public void Dispose()
+		{
+			GC.SuppressFinalize(this);
+		}
+	}
 
 	public class LanguageToLevel
 	{
@@ -211,7 +213,7 @@ namespace SilkDialectLearningDAL
 
 		#endregion
 		
-        [PrimaryKey]
+		[PrimaryKey]
 		public Guid Id { get; set; }
 
 		private string name;
@@ -230,16 +232,16 @@ namespace SilkDialectLearningDAL
 
 		public int InsertUnit(Unit unit)
 		{
-			int result = ModelManager.Db.Insert(unit, typeof(Unit));
-			ModelManager.Db.Insert(new LevelToUnit() { LevelId = this.Id, UnitId = unit.Id }, typeof(LevelToUnit));
+			ModelManager.Db.InsertAsync(unit);
+            ModelManager.Db.InsertAsync(new LevelToUnit() { LevelId = this.Id, UnitId = unit.Id });
 			IsUnitsDirty = true;
-			return result;
+			return 1;
 		}
 
-        public int DeleteUnit(Unit unit)
-        {
-            return 0;
-        }
+		public int DeleteUnit(Unit unit)
+		{
+			return 0;
+		}
 		[Ignore]
 		public bool IsUnitsDirty { get; set; }
 
@@ -251,8 +253,9 @@ namespace SilkDialectLearningDAL
 			{
 				if (IsUnitsDirty || _units == null)
 				{
-					var tempUnits = ModelManager.Db.Query<Unit>("select u.Id, u.Name, u.Description from LevelToUnit as lu inner join unit as u on lu.unitid=u.id where lu.Levelid='" + this.Id.ToString() + "'");
-					tempUnits.ForEach((u) =>
+					var tempunits = ModelManager.Db.QueryAsync<Unit>("select u.Id, u.Name, u.Description from LevelToUnit as lu inner join unit as u on lu.unitid=u.id where lu.Levelid='" + this.Id.ToString() + "'");
+                    var tempUnits = tempunits.Result;
+                    tempUnits.ForEach((u) =>
 					{
 						u.SetLevel(this);
 					});
@@ -296,18 +299,18 @@ namespace SilkDialectLearningDAL
 
 		public int InsertLesson(Lesson lesson)
 		{
-			int result = ModelManager.Db.Insert(lesson, typeof(Lesson));
-			ModelManager.Db.Insert(new UnitToLesson() { UnitId = this.Id, LessonId = lesson.Id }, typeof(UnitToLesson));
+			ModelManager.Db.InsertAsync(lesson);
+			ModelManager.Db.InsertAsync(new UnitToLesson() { UnitId = this.Id, LessonId = lesson.Id });
 			IsLessonsDirty = true;
-			return result;
+			return 1;
 		}
 
-        public int DeleteLesson(Lesson lesson)
-        {
-            return
-                0;
-        }
-        [Ignore]
+		public int DeleteLesson(Lesson lesson)
+		{
+			return
+				0;
+		}
+		[Ignore]
 		public bool IsLessonsDirty { get; set; }
 
 		ObservableCollection<Lesson> _lessons = null;
@@ -318,8 +321,9 @@ namespace SilkDialectLearningDAL
 			{
 				if (IsLessonsDirty || _lessons == null)
 				{
-					var tempLessons = ModelManager.Db.Query<Lesson>("select l.Id, l.Name, l.Description from unittolesson as ul inner join lesson as l on ul.LessonId = l.id where ul.UnitId = '" + this.Id + "'");
-					tempLessons.ForEach((l) =>
+					var tempLessons = ModelManager.Db.QueryAsync<Lesson>("select l.Id, l.Name, l.Description from unittolesson as ul inner join lesson as l on ul.LessonId = l.id where ul.UnitId = '" + this.Id + "'");
+					
+                    tempLessons.ForEach((l) =>
 					{
 						l.SetUnit(this);
 					});
@@ -355,18 +359,18 @@ namespace SilkDialectLearningDAL
 
 	public class Lesson : IEntity, INotifyPropertyChanged
 	{
-         #region Notify
-        
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-        
-        #endregion
+		 #region Notify
+		
+		public event PropertyChangedEventHandler PropertyChanged;
+		protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+		{
+			if (PropertyChanged != null)
+			{
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		
+		#endregion
 		[PrimaryKey]
 		public Guid Id { get; set; }
 		public string Name { get; set; }
@@ -378,7 +382,7 @@ namespace SilkDialectLearningDAL
 		}
 
 		private Unit _unit;
-        [Ignore]
+		[Ignore]
 		public Unit Unit
 		{
 			set { _unit = value; }

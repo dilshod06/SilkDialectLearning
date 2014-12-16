@@ -155,7 +155,7 @@
                           Focusable="False"
                           FocusVisualStyle="{x:Null}"
                           x:Name="PART_OverlayBox"
-                          Background="{DynamicResource AccentColorBrush}"
+                          Background="{DynamicResource BlackBrush}"
                           Opacity="0"
                           Visibility="Hidden" />
 

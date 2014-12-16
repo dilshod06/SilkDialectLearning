@@ -182,8 +182,9 @@
                                               ContentSource="Header"
                                               RecognizesAccessKey="True" />
                             <Rectangle x:Name="Underline" 
-                                       Margin="0, 1, 0, -12" 
-                                       Height="5"
+                                       Margin="0, 1, 0, -15"
+                                       Panel.ZIndex="400"
+                                       Height="10"
                                        HorizontalAlignment="Stretch" 
                                        Visibility="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type TabControl}}, 
                                            Path=(Controls:TabControlHelper.IsUnderlined), Converter={StaticResource BooleanToVisibilityConverter}}" />
@@ -228,7 +229,7 @@
                             </MultiTrigger.Conditions>
                             <Setter Property="TextElement.Foreground"
                                     TargetName="ContentSite"
-                                    Value="{DynamicResource HighlightBrush}" />
+                                    Value="{DynamicResource BlackBrush}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

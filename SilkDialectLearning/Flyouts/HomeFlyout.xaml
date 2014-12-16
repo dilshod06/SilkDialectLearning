@@ -11,7 +11,7 @@
 	  Header="Home" Position="Left"
 	  CloseButtonVisibility="Collapsed"
 	  MenuCloseButtonVisibility="Visible"
-	  Theme="Dark" TitleVisibility="Collapsed"
+	  Theme="Inverse" TitleVisibility="Collapsed"
 	  AnimateOpacity="True"
 	  FlyoutMargin="0 0 0 25"
 	  HeaderMargin="10,-10,5,25"
@@ -93,7 +93,7 @@
 							   Margin="3 0 3 0"/>
 			</Grid>
 		</Border>
-		<Border Grid.Row="2" Margin="15 0 0 0" VerticalAlignment="Top" BorderBrush="{DynamicResource HighlightBrush}" BorderThickness="0 1 0 0">
+		<Border Grid.Row="2" Margin="15" VerticalAlignment="Top" BorderBrush="{DynamicResource HighlightBrush}" BorderThickness="0 1 0 0">
 			<StackPanel Orientation="Horizontal" Margin="0 5">
 				<Button x:Name="PART_AddButton"
 								Margin="0 0 10 0"

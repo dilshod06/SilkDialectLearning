@@ -12,6 +12,7 @@ namespace SilkDialectLearningBLL
 {
     public abstract class BaseActivity : INotifyPropertyChanged
     {
+
         #region Events
 
         public event ActivityChangedEventHandler ActivityChanged;

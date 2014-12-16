@@ -18,43 +18,10 @@
 
     <controls:MetroWindow.Resources>
         <ResourceDictionary>
-            <Style TargetType="Border" x:Key="TabItemHeader">
-                <Setter Property="Background" Value="Transparent"/>
-                <Setter Property="BorderBrush" Value="{DynamicResource  GrayBrush8}"/>
-                <Style.Triggers>
-                    <Trigger Property="IsMouseOver" Value="True">
-                        <Setter Property="BorderBrush" Value="{DynamicResource AccentColorBrush}"/>
-                        <Setter Property="Background" Value="#11000000"/>
-                    </Trigger>
-                </Style.Triggers>
-            </Style>
-            <Style TargetType="{x:Type TabItem}" x:Key="TabItemStyle">
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type TabItem}">
-                            <Grid>
-                                <Border Style="{StaticResource TabItemHeader}" Margin="0 0 -2 5" BorderThickness="0 0 6 0">
-                                    <Grid>
-                                        <TextBlock Name="TextBlockArrow" Visibility="Hidden" Text="u" FontSize="24" FontFamily="Wingdings 3" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="-3 0 -1 0" Foreground="#FFDDDDDD"/>
-                                        <ContentPresenter x:Name="ContentSite" ContentSource="Header" Margin="8 6 0 28" Height="20">
-                                            <ContentPresenter.LayoutTransform>
-                                                <RotateTransform Angle="90" />
-                                            </ContentPresenter.LayoutTransform>
-                                        </ContentPresenter>
-                                    </Grid>
-                                </Border>
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsSelected" Value="True">
-                                    <Setter Property="Panel.ZIndex" Value="500" />
-                                    <Setter TargetName="TextBlockArrow" Property="Visibility" Value="Visible"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles/RightTabControl.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+          
         </ResourceDictionary>
     </controls:MetroWindow.Resources>
     <controls:MetroWindow.TitleTemplate>
@@ -98,11 +65,6 @@
     </controls:MetroWindow.RightWindowCommands>
     <controls:MetroWindow.Flyouts>
         <controls:FlyoutsControl x:Name="flyoutsControl">
-            <controls:FlyoutsControl.ItemContainerStyle>
-                <Style TargetType="{x:Type controls:Flyout}">
-                    <!--<Setter Property="Background" Value="#FF252525"/>-->
-                </Style>
-            </controls:FlyoutsControl.ItemContainerStyle>
             <flyouts:HomeFlyout/>
             <flyouts:SceneMenuFlyout/>
             <flyouts:SettingsFlyout/>
@@ -113,13 +75,13 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <TabControl Name="MainTabControl" Grid.Row="0" Margin="0 40 0 0">
-            <TabItem Header="Scene" >
+        <TabControl Name="MainTabControl" Grid.Row="0" Margin="0 40 0 0" TabStripPlacement="Right">
+            <TabItem Header="Scene" Style="{DynamicResource TabItemStyle}" Padding="0 40 0 0">
                 <views:SceneView />
             </TabItem>
-            <TabItem Header="Vocab"></TabItem>
+            <TabItem Header="Vocab" Style="{DynamicResource TabItemStyle}" Padding="0"/>
         </TabControl>
-        <StatusBar Grid.Row="2" Name="StatusBar" Height="25" Background="{DynamicResource AccentColorBrush}" >
+        <StatusBar Grid.Row="1" Name="StatusBar" Height="25" Background="{DynamicResource AccentColorBrush}" >
             <StatusBarItem>There will be page navigation status...</StatusBarItem>
             <Separator Style="{StaticResource MetroStatusBarSeparator}" />
             <StatusBarItem>
