@@ -1,5 +1,6 @@
 ﻿using SilkDialectLearningDAL;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -323,6 +324,16 @@ namespace SilkDialectLearningBLL
         public void DeleteVocabualary()
         {
             //TODO: Delete Vocabualary
+        }
+
+        public Task<int> Update(object entity) 
+        {
+            return Db.SqLiteAsyncConnection.UpdateAsync(entity);
+        }
+
+        public Task<int> UpdateAll(IEnumerable items)
+        {
+            return Db.SqLiteAsyncConnection.UpdateAllAsync(items);
         }
 
         #endregion

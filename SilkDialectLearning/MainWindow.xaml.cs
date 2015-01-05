@@ -123,9 +123,20 @@ namespace SilkDialectLearning
                 LoadCompleted(this, e);
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
+            
+            var sceneEditPage = (sender as Frame).Content as EditScenePage;
+            if (sceneEditPage != null)
+            {//This will be raised after pressing back button and updated Changed Scene Items
+                if (sceneEditPage.ChangedItems.Count > 0)
+                {
+                    MainWindowViewModel.OnLoading(true, "Saving...");
+                    MainWindowViewModel.ViewModel.UpdateAll(sceneEditPage.ChangedItems);
+                    MainWindowViewModel.OnLoading(false, "");
+                }
+            }
             if (Navigating != null)
                 Navigating(this, e);
         }
@@ -150,7 +161,7 @@ namespace SilkDialectLearning
             this.Closing -= MainWindow_Closing;
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_Navigated(object sender, NavigationEventArgs e)
         {
             PART_Title.Content = ((Page)PART_Frame.Content).Title;

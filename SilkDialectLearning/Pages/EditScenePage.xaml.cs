@@ -1,5 +1,7 @@
-﻿using System;
+﻿using SilkDialectLearningDAL;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,12 +22,14 @@ namespace SilkDialectLearning.Pages
     /// </summary>
     public partial class EditScenePage : Page
     {
+        public ObservableCollection<SceneItem> ChangedItems { get; set; }
         MainViewModel MainViewModel { get; set; }
         public EditScenePage(MainViewModel mainViewModel)
         {
             InitializeComponent();
             this.Loaded += EditScenePage_Loaded;
             MainViewModel = mainViewModel;
+            ChangedItems = new ObservableCollection<SceneItem>();
         }
 
         void EditScenePage_Loaded(object sender, RoutedEventArgs e)
@@ -76,6 +80,12 @@ namespace SilkDialectLearning.Pages
                 double top = mousePos.Y - (border.ActualHeight / 2);
                 border.Margin = new Thickness(left, top, 0, 0);
 
+                var imageWidth = sceneImage.ActualWidth;
+                var imageHeight = sceneImage.ActualHeight;
+                SceneItem selectedItem = border.DataContext as SceneItem;
+                selectedItem.XPos = ((border.Margin.Left + (border.Width / 2)) * 100) / imageWidth;
+                selectedItem.YPos = ((border.Margin.Top + (border.Height / 2)) * 100) / imageHeight;
+                ChangedItems.Add(selectedItem);
             }
         }
     }
