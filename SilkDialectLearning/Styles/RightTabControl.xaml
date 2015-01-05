@@ -11,8 +11,6 @@
             </Trigger>
         </Style.Triggers>
     </Style>
-    
-    
     <Style TargetType="{x:Type TabItem}" x:Key="TabItemStyle">
         <Setter Property="Foreground" Value="{DynamicResource GrayNormalBrush}"/>
         <Setter Property="FontSize" Value="{DynamicResource NormalFontSize}"/>
@@ -34,7 +32,8 @@
                                            HorizontalAlignment="Left" 
                                            Margin="-3 0 -1 0" 
                                            Foreground="{DynamicResource AccentColorBrush}"/>
-                                <ContentPresenter x:Name="ContentSite" ContentSource="Header" Margin="8 6 0 28" Height="20">
+                                <ContentPresenter x:Name="ContentSite" ContentSource="Header" Margin="8 6 0 28" Height="20"
+                                    TextElement.Foreground="{TemplateBinding Foreground}">
                                     <ContentPresenter.LayoutTransform>
                                         <RotateTransform Angle="90" />
                                     </ContentPresenter.LayoutTransform>
@@ -46,15 +45,13 @@
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="Panel.ZIndex" Value="500" />
                             <Setter TargetName="TextBlockArrow" Property="Visibility" Value="Visible"/>
+                            <Setter Property="TextElement.Foreground"
+                                    TargetName="ContentSite"
+                                    Value="{DynamicResource BlackBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Foreground" Value="{DynamicResource BlackBrush}"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 </ResourceDictionary>

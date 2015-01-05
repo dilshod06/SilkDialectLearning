@@ -1,0 +1,97 @@
+﻿<Page x:Class="SilkDialectLearning.Pages.EditScenePage"
+	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+	  xmlns:converters="clr-namespace:SilkDialectLearning.Converters"
+	  mc:Ignorable="d" 
+	  d:DesignHeight="300" d:DesignWidth="300"
+	  Title="Edit Scene">
+	<Page.Resources>
+		<converters:ByteToImageConveter x:Key="ByteToImageConverter"/>
+		<converters:PositionToMarginConverter x:Key="PostionToMarginConverter"/>
+		<converters:SizeToWidthConverter x:Key="SizeToWidthConverter"/>
+		<converters:SizeToHeightConverter x:Key="SizeToHeightConverter"/>
+		<converters:BooleanToRadiusConverter x:Key="BooleanToRadiusConverter"/>
+		<converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
+	</Page.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<Grid Name="mainGrid" AllowDrop="True" Grid.Row="0" >
+			<Image Name="sceneImage" Source="{Binding Path=ScenePicture.Picture, Converter={StaticResource ByteToImageConverter}}"/>
+			<Grid Name="bordersGrid" Width="{Binding ActualWidth, ElementName=sceneImage, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=sceneImage, Mode=OneWay}">
+				<ItemsControl ItemsSource="{Binding Path=SceneItems, IsAsync=True}" Name="bordersList">
+					<ItemsControl.ItemsPanel>
+						<ItemsPanelTemplate>
+							<Canvas/>
+						</ItemsPanelTemplate>
+					</ItemsControl.ItemsPanel>
+					<ItemsControl.ItemTemplate>
+						<DataTemplate>
+							<Border BorderThickness="2" BorderBrush="{DynamicResource GrayBrush1}"
+														Opacity=".7"
+														Cursor="Hand"
+														Canvas.Left="0" Canvas.Top="0"
+														Background="{DynamicResource AccentColorBrush}"
+														MouseLeftButtonDown="sceneDot_MouseLeftButtonDown"
+														MouseLeftButtonUp="sceneDot_MouseLeftButtonUp"
+														MouseMove="sceneDot_MouseMove"
+														HorizontalAlignment="Left"
+														VerticalAlignment="Top"
+														Name="sceneDot">
+
+								<Border.CornerRadius>
+									<Binding Path="IsRound" Converter="{StaticResource BooleanToRadiusConverter}"/>
+								</Border.CornerRadius>
+								<Border.Height>
+									<MultiBinding Converter="{StaticResource SizeToHeightConverter}">
+										<Binding Path="Size"/>
+										<Binding ElementName="sceneImage" Path="ActualHeight"/>
+									</MultiBinding>
+								</Border.Height>
+								<Border.Width>
+									<MultiBinding Converter="{StaticResource SizeToWidthConverter}">
+										<Binding Path="Size"/>
+										<Binding ElementName="sceneImage" Path="ActualHeight"/>
+									</MultiBinding>
+								</Border.Width>
+								<Border.Margin>
+									<MultiBinding Converter="{StaticResource PostionToMarginConverter}">
+										<Binding Path="XPos"/>
+										<Binding Path="YPos"/>
+										<Binding Path="Width" ElementName="sceneDot"/>
+										<Binding Path="Height" ElementName="sceneDot"/>
+										<Binding ElementName="sceneImage" Path="ActualWidth"/>
+										<Binding ElementName="sceneImage" Path="ActualHeight"/>
+									</MultiBinding>
+								</Border.Margin>
+								<TextBlock Text="{Binding Path=Order}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{DynamicResource ContentFontFamily}" FontSize="{DynamicResource NormalFontSize}"/>
+							</Border>
+						</DataTemplate>
+					</ItemsControl.ItemTemplate>
+				</ItemsControl>
+			</Grid>
+		</Grid>
+		<StackPanel Name="stcBorders" Orientation="Horizontal"  Margin="10,10,0,10" Grid.Row="1" VerticalAlignment="Center" Height="60">
+			<Border Height="50" Width="50" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="40" Width="40" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="35" Width="35" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="30" Width="30" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="25" Width="25" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="20" Width="20" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="15" Width="15" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+
+			<Border Height="50" CornerRadius="90" Width="50" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="40" CornerRadius="90" Width="40" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="35" CornerRadius="90" Width="35" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="30" CornerRadius="90" Width="30" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="25" CornerRadius="90" Width="25" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="20" CornerRadius="90" Width="20" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="15" CornerRadius="90" Width="15" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+		</StackPanel>
+
+	</Grid>
+</Page>

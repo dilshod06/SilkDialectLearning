@@ -4,19 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SilkDialectLearning.Views
 {
@@ -116,15 +108,8 @@ namespace SilkDialectLearning.Views
                 this.ViewModel = (this.DataContext as MainViewModel).ViewModel;
                 ViewModel.SceneViewModel.HighlightItem += SceneViewModel_HighlightItem;
                 ViewModel.SceneViewModel.StopHighlighting += SceneViewModel_StopHighlighting;
-                ViewModel.LessonSelected += ViewModel_LessonSelected;
                 loaded = true;
             }
-        }
-
-        void ViewModel_LessonSelected(object sender, EventArgs e)
-        {
-            if (uiPanel.Visibility != System.Windows.Visibility.Visible)
-                uiPanel.Visibility = System.Windows.Visibility.Visible;
         }
         private void ScenesTabControl_Loaded(object sender, RoutedEventArgs e)
         {

@@ -35,13 +35,6 @@
                                         <Path Data=" M 8 15 L 8 3 L 2 9 Z"
                                               Fill="{DynamicResource BlackBrush}" />
                                     </Border>
-                                    <!--<Rectangle Margin="0" StrokeThickness="0" Width="17" Height="17" x:Name="MyEllipse"
-                                    Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type RepeatButton }}}">
-                                        <Rectangle.OpacityMask>
-                                            <VisualBrush Stretch="Fill" 
-                                     Visual="{DynamicResource appbar_add}" />
-                                        </Rectangle.OpacityMask>
-                                    </Rectangle>-->
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
@@ -227,7 +220,7 @@
                                     CanVerticallyScroll="False" />
         </Grid>
     </ControlTemplate>
-
+    
     <Style TargetType="{x:Type TabControl}">
         <Setter Property="Controls:TabControlHelper.Transition"
                 Value="Left" />
@@ -376,4 +369,5 @@
             </Setter.Value>
         </Setter>
     </Style>
+    
 </ResourceDictionary>

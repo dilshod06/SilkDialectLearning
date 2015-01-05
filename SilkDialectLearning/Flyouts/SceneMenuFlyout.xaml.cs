@@ -1,20 +1,7 @@
 ﻿using MahApps.Metro.Controls;
-using SilkDialectLearningBLL;
-using SilkDialectLearningDAL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SilkDialectLearning.Pages;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SilkDialectLearning.Flyouts
 {
@@ -26,11 +13,33 @@ namespace SilkDialectLearning.Flyouts
         public SceneMenuFlyout()
         {
             InitializeComponent();
+            this.Loaded += SceneMenuFlyout_Loaded;
+        }
+        SceneMenuFlyout sceneMenu;
+        MetroWindow metroWindow;
+        void SceneMenuFlyout_Loaded(object sender, RoutedEventArgs e)
+        {
+            sceneMenu = sender as SceneMenuFlyout;
+            metroWindow = VisualTreeHelpers.FindAncestor<MetroWindow>(sceneMenu);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            
+            var frame = VisualTreeHelpers.FindChild<Frame>(metroWindow);
+            var mainViewModel = this.DataContext as MainViewModel;
+            frame.Navigate(new EditScenePage(mainViewModel));
+        }
+
+        private void Activites_Click(object sender, RoutedEventArgs e)
+        {
+            if (MyPopup.IsOpen)
+            {
+                MyPopup.IsOpen = false;
+            }
+            else
+            {
+                MyPopup.IsOpen = true;
+            }
         }
     }
 }

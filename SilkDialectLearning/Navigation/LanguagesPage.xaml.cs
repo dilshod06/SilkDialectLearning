@@ -1,13 +1,13 @@
-﻿using SilkDialectLearning.Flyouts;
+﻿using MahApps.Metro;
+using SilkDialectLearning.Flyouts;
 using SilkDialectLearningBLL;
 using SilkDialectLearningDAL;
+using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SilkDialectLearning.Navigation
 {
-    /// <summary>
-    /// Interaction logic for Lessons.xaml
-    /// </summary>
     public partial class LanguagesPage : Page
     {
         public MainViewModel MainViewModel { get; set; }
@@ -18,6 +18,51 @@ namespace SilkDialectLearning.Navigation
             this.HomeFlyout = HomeFlyout;
             InitializeComponent();
             this.DataContext = this.MainViewModel;
+            ThemeManager.IsThemeChanged += ThemeManager_IsThemeChanged;
+            AddResourceDictionary();
+        }
+
+        private void ThemeManager_IsThemeChanged(object sender, OnThemeChangedEventArgs e)
+        {
+            if (e.AppTheme.Name == "Dark")
+            {
+                this.Resources.MergedDictionaries.Clear();
+                var rd = new ResourceDictionary
+                {
+                    Source = new Uri(@"/MahApps.Metro;component/Styles/Accents/BaseLight.xaml", UriKind.RelativeOrAbsolute)
+                };
+                this.Resources.MergedDictionaries.Add(rd);
+            }
+            else
+            {
+                this.Resources.MergedDictionaries.Clear();
+                var rd = new ResourceDictionary
+                {
+                    Source = new Uri(@"/MahApps.Metro;component/Styles/Accents/BaseDark.xaml", UriKind.RelativeOrAbsolute)
+                };
+                this.Resources.MergedDictionaries.Add(rd);
+            }
+        }
+        private void AddResourceDictionary()
+        {
+            if (ThemeManager.DetectAppStyle(Application.Current).Item1.Name == "Dark")
+            {
+                this.Resources.MergedDictionaries.Clear();
+                var rd = new ResourceDictionary
+                {
+                    Source = new Uri(@"/MahApps.Metro;component/Styles/Accents/BaseLight.xaml", UriKind.RelativeOrAbsolute)
+                };
+                this.Resources.MergedDictionaries.Add(rd);
+            }
+            else
+            {
+                this.Resources.MergedDictionaries.Clear();
+                var rd = new ResourceDictionary
+                {
+                    Source = new Uri(@"/MahApps.Metro;component/Styles/Accents/BaseDark.xaml", UriKind.RelativeOrAbsolute)
+                };
+                this.Resources.MergedDictionaries.Add(rd);
+            }
         }
 
         private void Languages_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -28,12 +73,6 @@ namespace SilkDialectLearning.Navigation
                 MainViewModel.ViewModel.SelectedLanguage = language;
                 this.HomeFlyout.Navigate(new LevelsPage(this.HomeFlyout, this.MainViewModel));
             }
-        }
-
-        private void Button_Click(object sender, System.Windows.RoutedEventArgs e)
-        {
-            var doc = (((sender as Button).Parent as StackPanel).Parent as DockPanel);
-            var a = VisualTreeHelpers.FindAncestor<ListBoxItem>(doc);
         }
     }
 }

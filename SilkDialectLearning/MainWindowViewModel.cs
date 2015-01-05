@@ -16,387 +16,524 @@ using SilkDialectLearningDAL;
 
 namespace SilkDialectLearning
 {
-	public class AccentColorMenuData
-	{
-		public string Name { get; set; }
-		public Brush BorderColorBrush { get; set; }
-		public Brush ColorBrush { get; set; }
+    public class MainViewModel : INotifyPropertyChanged
+    {
+        public MainViewModel(MetroWindow metroWindow)
+        {
+            // create accent color menu items for the demo
+            this.AccentColors = ThemeManager.Accents
+                                            .Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
+                                            .ToList();
 
-		private ICommand changeAccentCommand;
+            // create metro theme color menu items for the demo
+            this.AppThemes = ThemeManager.AppThemes
+                                           .Select(a => new AppThemeMenuData() { Name = a.Name, BorderColorBrush = a.Resources["BlackColorBrush"] as Brush, ColorBrush = a.Resources["WhiteColorBrush"] as Brush })
+                                           .ToList();
+            //Select selected default theme
+            this.selectedTheme = this.AppThemes
+                                      .Where(a => a.Name == ThemeManager.DetectAppStyle(Application.Current).Item1.Name)
+                                      .FirstOrDefault();
 
-		public ICommand ChangeAccentCommand
-		{
-			get { return this.changeAccentCommand ?? (changeAccentCommand = new SimpleCommand { CanExecuteDelegate = x => true, ExecuteDelegate = x => this.DoChangeTheme(x) }); }
-		}
+            //Select selected default accent color
+            this.selectedAccent = this.AccentColors
+                                      .Where(a => a.Name == ThemeManager.DetectAppStyle(Application.Current).Item2.Name)
+                                      .FirstOrDefault();
 
-		protected virtual void DoChangeTheme(object sender)
-		{
-			var theme = ThemeManager.DetectAppStyle(Application.Current);
-			var accent = ThemeManager.GetAccent(this.Name);
-			ThemeManager.ChangeAppStyle(Application.Current, accent, theme.Item1);
-		}
-	}
+            InitializeDatabaseFile();
+            MetroWinow = metroWindow;
+            BrushResources = FindBrushResources();
+        }
 
-	public class AppThemeMenuData : AccentColorMenuData
-	{
-		protected override void DoChangeTheme(object sender)
-		{
-			var theme = ThemeManager.DetectAppStyle(Application.Current);
-			var appTheme = ThemeManager.GetAppTheme(this.Name);
-			ThemeManager.ChangeAppStyle(Application.Current, theme.Item2, appTheme);
-		}
-	}
+        #region Methods
 
-	public class MainViewModel : INotifyPropertyChanged
-	{
-		public ViewModel ViewModel { get; private set; }
-
-		public MainViewModel()
-		{
-			// create accent color menu items for the demo
-			this.AccentColors = ThemeManager.Accents
-											.Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
-											.ToList();
-
-			// create metro theme color menu items for the demo
-			this.AppThemes = ThemeManager.AppThemes
-										   .Select(a => new AppThemeMenuData() { Name = a.Name, BorderColorBrush = a.Resources["BlackColorBrush"] as Brush, ColorBrush = a.Resources["WhiteColorBrush"] as Brush })
-										   .ToList();
-
-			InitializeDatabaseFile();
-
-			BrushResources = FindBrushResources();
-
-		}
-		
         private void InitializeDatabaseFile()
-		{
-			DirectoryInfo currentDir = new DirectoryInfo(".\\");
-			if (currentDir.GetFiles().All(f => f.Name != "SilkDialectLearning.db"))
-			{
-				MessageBox.Show("Database file not found! We will create one for you");
-				Global.CreateDatabase = true;
-			}
-			Global.DatabasePath = currentDir.FullName + "SilkDialectLearning.db";
-			ViewModel = Global.GlobalViewModel;
-		}
+        {
+            DirectoryInfo currentDir = new DirectoryInfo(".\\");
+            if (currentDir.GetFiles().All(f => f.Name != "SilkDialectLearning.db"))
+            {
+                MessageBox.Show("Database file not found! We will create one for you");
+                Global.CreateDatabase = true;
+            }
+            Global.DatabasePath = currentDir.FullName + "SilkDialectLearning.db";
+            ViewModel = Global.GlobalViewModel;
+        }
 
-		public List<AccentColorMenuData> AccentColors { get; set; }
-		
+        protected void DoChangeTheme(AppThemeMenuData selectedTheme)
+        {
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            var appTheme = ThemeManager.GetAppTheme(selectedTheme.Name);
+            ThemeManager.ChangeAppStyle(Application.Current, theme.Item2, appTheme);
+        }
+
+        protected void DoChangeAccentColor(AccentColorMenuData selectedAccent)
+        {
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            var accent = ThemeManager.GetAccent(selectedAccent.Name);
+            ThemeManager.ChangeAppStyle(Application.Current, accent, theme.Item1);
+        }
+
+        private IEnumerable<string> FindBrushResources()
+        {
+            var rd = new ResourceDictionary
+            {
+                Source = new Uri(@"/MahApps.Metro;component/Styles/Colors.xaml", UriKind.RelativeOrAbsolute)
+            };
+
+            var resources = rd.Keys.Cast<object>()
+                    .Where(key => rd[key] is Brush)
+                    .Select(key => key.ToString())
+                    .OrderBy(s => s)
+                    .ToList();
+
+            return resources;
+        }
+
+        public virtual void OnLoading(bool loading, string message)
+        {
+            var handler = Loading;
+            if (handler != null)
+            {
+                handler(this, new LoadingEventArgs(loading, message));
+            }
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        /// Will be raised when Deleting some Entity
+        /// </summary>
+        public event LoadingEventHandler Loading;
+
+        public delegate void LoadingEventHandler(object sender, LoadingEventArgs e);
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// This property gets and sets name of Entities
+        /// </summary>
+        private string name;
+        public string Name
+        {
+            get { return name; }
+            set { name = value; NotifyPropertyChanged(); }
+        }
+
+        /// <summary>
+        /// This property gets and sets Description Of Entity
+        /// </summary>
+        private string description;
+        public string Description
+        {
+            get { return description; }
+            set { description = value; NotifyPropertyChanged(); }
+        }
+
+        /// <summary>
+        /// Gets and sets instance of ViewModel
+        /// </summary>
+        public ViewModel ViewModel { get; private set; }
+
+        /// <summary>
+        /// gets and sets instance of MainWindow
+        /// </summary>
+        public MetroWindow MetroWinow { get; private set; }
+
+        /// <summary>
+        /// Gets and sets Selected Theme
+        /// </summary>
+        private AppThemeMenuData selectedTheme;
+        public AppThemeMenuData SelectedTheme
+        {
+            get { return selectedTheme; }
+            set
+            {
+                selectedTheme = value;
+                DoChangeTheme(selectedTheme);
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets and sets selected accent color
+        /// </summary>
+        private AccentColorMenuData selectedAccent;
+        public AccentColorMenuData SelectedAccent
+        {
+            get { return selectedAccent; }
+            set
+            {
+                selectedAccent = value;
+                DoChangeAccentColor(selectedAccent);
+                NotifyPropertyChanged();
+            }
+        }
+
+        /// <summary>
+        /// Gets and sets list of Accent colors
+        /// </summary>
+        public List<AccentColorMenuData> AccentColors { get; set; }
         public List<AppThemeMenuData> AppThemes { get; set; }
 
-		private bool useAccentForDialogs;
-		
+        /// <summary>
+        /// Gets and sets UseAccentForDialogs checkbox 
+        /// </summary>
+        private bool useAccentForDialogs;
         public bool UseAccentForDialogs
-		{
-			get { return useAccentForDialogs; }
-			set { useAccentForDialogs = value; NotifyPropertyChanged(); }
-		}
+        {
+            get { return useAccentForDialogs; }
+            set { useAccentForDialogs = value; NotifyPropertyChanged(); }
+        }
 
-		/// <summary>
-		/// This property deletes items from HomePage's ListBox
-		/// </summary>
-		public ICommand DeleteCommand { get { return new DeleteCmd(); } }
+        /// <summary>
+        /// Gets and sets Brush Resources
+        /// </summary>
+        public IEnumerable<string> BrushResources { get; private set; }
 
-		/// <summary>
-		/// This class to used for Deleting Entities
-		/// </summary>
-		public class DeleteCmd : ICommand
-		{
-			public void Execute(object parameter)
-			{
-				var metroWindow = (Application.Current.MainWindow as MetroWindow);
-				ListBoxItem listBoxItem = parameter as ListBoxItem;
-				if (listBoxItem == null)
-					return;
-				ListBox listBox = VisualTreeHelpers.FindAncestor<ListBox>(listBoxItem);
-				if (listBox == null)
-					return;
-				DeleteEntity(metroWindow, listBoxItem, listBox);
+        #endregion
 
-			}
-			public async void DeleteEntity(MetroWindow metroWindow, ListBoxItem listBoxItem, ListBox listBox)
-			{
-				// Gets ViewModel from MainViewModel
-				MainViewModel mainViewModel = listBox.DataContext as MainViewModel;
-				if (mainViewModel == null)
-					return;
+        #region Commands
 
-				IEntity selectedEntity = listBoxItem.DataContext as IEntity;
-				ViewModel viewModel = mainViewModel.ViewModel;
+        /// <summary>
+        /// This property deletes items from HomePage's ListBox
+        /// </summary>
+        public ICommand DeleteCommand
+        {
+            get
+            {
+                return new DeleteCmd(this.MetroWinow, this);
+            }
+        }
 
-				var mySettings = new MetroDialogSettings()
-				{
-					AffirmativeButtonText = "Yes",
-					NegativeButtonText = "No",
-					AnimateHide = false,
-					ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
-				};
+        /// <summary>
+        /// This class to used for Deleting Entities
+        /// </summary>
+        public class DeleteCmd : ICommand
+        {
+            private MetroWindow metroWindow { get; set; }
+            private MainViewModel mainViewModel { get; set; }
 
-				if (selectedEntity is Language)
-				{
-					MessageDialogResult result =
-						await metroWindow.ShowMessageAsync
-						(
-							string.Format("Do you want to delete this Languge \"{0}\"?", selectedEntity.Name),
-							"It will be permanently deleted.",
-							MessageDialogStyle.AffirmativeAndNegative,
-							mySettings
-						);
-					if (result != MessageDialogResult.Negative)
-						viewModel.Languages.Remove(selectedEntity as Language);
-				}
-				else if (selectedEntity is Level)
-				{
-					MessageDialogResult result =
-						await metroWindow.ShowMessageAsync
-						(
-							string.Format("Do you want to delete this Level \"{0}\" ?", selectedEntity.Name),
-							"It will be permanently deleted.",
-							MessageDialogStyle.AffirmativeAndNegative,
-							mySettings
-						);
-					if (result != MessageDialogResult.Negative)
-						viewModel.Levels.Remove(selectedEntity as Level);
-				}
+            public DeleteCmd(MetroWindow metroWindow, MainViewModel mainViewModel)
+            {
+                this.metroWindow = metroWindow;
+                this.mainViewModel = mainViewModel;
+                CanExecuteChanged += DeleteCmd_CanExecuteChanged;
+            }
 
-				else if (selectedEntity is Unit)
-				{
-					MessageDialogResult result =
-						await metroWindow.ShowMessageAsync
-						(
-							string.Format("Do you want to delete this Unit \"{0}\" ?", selectedEntity.Name),
-							"It will be permanently deleted.",
-							MessageDialogStyle.AffirmativeAndNegative,
-							mySettings
-						);
-					if (result != MessageDialogResult.Negative)
-						viewModel.Units.Remove(selectedEntity as Unit);
-				}
-				else if (selectedEntity is Lesson)
-				{
-					MessageDialogResult result =
-						await metroWindow.ShowMessageAsync
-						(
-							string.Format("Do you want to delete this Lesson \"{0}\" ?", selectedEntity.Name),
-							"It will be permanently deleted.",
-							MessageDialogStyle.AffirmativeAndNegative,
-							mySettings
-					   );
-					if (result != MessageDialogResult.Negative)
-						viewModel.Lessons.Remove(selectedEntity as Lesson);
-				}
-			}
-			public bool CanExecute(object parameter)
-			{
-				return true;
-			}
+            private void DeleteCmd_CanExecuteChanged(object sender, EventArgs e)
+            {
+                // TODO: Some logic for CanExecute
+            }
 
-			public event EventHandler CanExecuteChanged;
-		}
+            public void Execute(object parameter)
+            {
+                ListBoxItem listBoxItem = parameter as ListBoxItem;
+                if (listBoxItem == null)
+                    return;
+                ListBox listBox = VisualTreeHelpers.FindAncestor<ListBox>(listBoxItem);
+                if (listBox == null)
+                    return;
+                DeleteEntity(listBoxItem, listBox);
+            }
 
-		/// <summary>
-		/// This command property sets new Entity
-		/// </summary>
-		public ICommand AddCommand { get { return new AddCmd(); } }
+            public async void DeleteEntity(ListBoxItem listBoxItem, ListBox listBox)
+            {
+                IEntity selectedEntity = listBoxItem.DataContext as IEntity;
+                ViewModel viewModel = mainViewModel.ViewModel;
 
-		/// <summary>
-		/// This class to used for adding new Entities 
-		/// </summary>
-		public class AddCmd : ICommand
-		{
-			public bool CanExecute(object parameter)
-			{
-				return true;
-			}
+                var mySettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Yes",
+                    NegativeButtonText = "No",
+                    AnimateHide = false,
+                    ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
+                };
 
-			public event EventHandler CanExecuteChanged;
+                if (selectedEntity is Language)
+                {
+                    MessageDialogResult result = await metroWindow.ShowMessageAsync
+                        (
+                            string.Format("Do you want to delete this Languge \"{0}\"?", selectedEntity.Name),
+                            "It will be permanently deleted.",
+                            MessageDialogStyle.AffirmativeAndNegative,
+                            mySettings
+                        );
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        mainViewModel.OnLoading(true, "Please wait language is deleting...");
+                        await viewModel.DeleteLanguage(selectedEntity as Language);
+                        viewModel.NotifyPropertyChanged("Languages");
+                        mainViewModel.OnLoading(false, "");
+                    }
+                }
+                else if (selectedEntity is Level)
+                {
+                    MessageDialogResult result = await metroWindow.ShowMessageAsync
+                        (
+                            string.Format("Do you want to delete this Level \"{0}\" ?", selectedEntity.Name),
+                            "It will be permanently deleted.",
+                            MessageDialogStyle.AffirmativeAndNegative,
+                            mySettings
+                        );
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        mainViewModel.OnLoading(true, "Please wait level is deleting...");
+                        await viewModel.DeleteLevel(selectedEntity as Level);
+                        viewModel.NotifyPropertyChanged("Levels");
+                        mainViewModel.OnLoading(false, "");
+                    }
+                }
 
-			public void Execute(object parameter)
-			{
-				var metroWindow = (Application.Current.MainWindow as MetroWindow);
-				string title = parameter as string;
-				if (metroWindow == null) return;
-				AddEntity(metroWindow, title);
-			}
+                else if (selectedEntity is Unit)
+                {
+                    MessageDialogResult result = await metroWindow.ShowMessageAsync
+                        (
+                            string.Format("Do you want to delete this Unit \"{0}\" ?", selectedEntity.Name),
+                            "It will be permanently deleted.",
+                            MessageDialogStyle.AffirmativeAndNegative,
+                            mySettings
+                        );
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        mainViewModel.OnLoading(true, "Please wait unit is deleting...");
+                        await viewModel.DeleteUnit(selectedEntity as Unit);
+                        viewModel.NotifyPropertyChanged("Units");
+                        mainViewModel.OnLoading(false, "");
+                    }
+                }
+                else if (selectedEntity is Lesson)
+                {
+                    MessageDialogResult result =
+                        await metroWindow.ShowMessageAsync
+                        (
+                            string.Format("Do you want to delete this Lesson \"{0}\" ?", selectedEntity.Name),
+                            "It will be permanently deleted.",
+                            MessageDialogStyle.AffirmativeAndNegative,
+                            mySettings
+                       );
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        mainViewModel.OnLoading(true, "Please wait lesson is deleting...");
+                        await viewModel.DeleteLesson(selectedEntity as Lesson);
+                        viewModel.NotifyPropertyChanged("Lessons");
+                        mainViewModel.OnLoading(false, "");
+                    }
+                }
+            }
 
-			public async void AddEntity(MetroWindow metroWindow, string title)
-			{
-				MainViewModel mainViewModel = metroWindow.DataContext as MainViewModel;
-				if (mainViewModel == null)
-					return;
+            public bool CanExecute(object parameter)
+            {
+                return true;
+            }
 
-				var mySettings = new MetroDialogSettings()
-				{
-					AnimateHide = false,
-					ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
-				};
-				if (title.Equals("Languages"))
-				{
-					string name = await metroWindow.ShowInputAsync("Add new Language", "Enter the name of Language.", mySettings);
-					if (!string.IsNullOrEmpty(name))
-					{
-						string description =
-							await metroWindow.ShowInputAsync("Add new Language", "Enter the description of Language.", mySettings);
-						if (description == null)
-							return;
-						mainViewModel.ViewModel.Languages.Add(
-							new Language
-							{
-								Id = Guid.NewGuid(),
-								Name = name,
-								Description = description
-							});
-					}
-				}
-				else if (title.Equals("Levels"))
-				{
-					string name = await metroWindow.ShowInputAsync("Add new Level", "Enter the name of Level.", mySettings);
-					if (!string.IsNullOrEmpty(name))
-					{
-						string description =
-							await metroWindow.ShowInputAsync("Add new Level", "Enter the description of Level.", mySettings);
-						if (description == null)
-							return;
-						mainViewModel.ViewModel.Levels.Add(
-							new Level
-							{
-								Id = Guid.NewGuid(),
-								Name = name,
-								Description = description,
-								Language = mainViewModel.ViewModel.SelectedLanguage
-							});
-					}
-				}
-				else if (title.Equals("Units"))
-				{
-					string name = await metroWindow.ShowInputAsync("Add new Unit", "Enter the name of Unit.", mySettings);
-					if (!string.IsNullOrEmpty(name))
-					{
-						string description =
-							await metroWindow.ShowInputAsync("Add new Unit", "Enter the description of Unit.", mySettings);
-						mainViewModel.ViewModel.Units.Add(
-							new Unit
-							{
-								Id = Guid.NewGuid(),
-								Name = name,
-								Description = description,
-								Level = mainViewModel.ViewModel.SelectedLevel
-							});
-					}
-				}
-				else if (title.Equals("Lessons"))
-				{
-					string name = await metroWindow.ShowInputAsync("Add new Lesson", "Enter the name of Lesson.");
-					if (!string.IsNullOrEmpty(name))
-					{
-						string description = await metroWindow.ShowInputAsync("Add new Lesson", "Enter the description of Lesson.");
-						if (description == null)
-							return;
-						mainViewModel.ViewModel.Lessons.Add(
-							new Lesson
-							{
-								Id = Guid.NewGuid(),
-								Name = name,
-								Description = description,
-								Unit = mainViewModel.ViewModel.SelectedUnit
-							});
-					}
-				}
-			}
-		}
+            public event EventHandler CanExecuteChanged;
+        }
 
-		public ICommand EditCommand { get { return new EditCmd(); } }
-		public class EditCmd : ICommand
-		{
-			public bool CanExecute(object parameter)
-			{
-				return true;
-			}
+        /// <summary>
+        /// This command property sets new Entity
+        /// </summary>
+        public ICommand AddCommand
+        {
+            get
+            {
+                return new AddCmd(this.MetroWinow, this);
+            }
+        }
 
-			public event EventHandler CanExecuteChanged;
+        /// <summary>
+        /// This class to used for adding new Entities 
+        /// </summary>
+        public class AddCmd : ICommand
+        {
+            /// <summary>
+            /// Gets and Sets MetroWindow instance
+            /// </summary>
+            private MetroWindow metroWindow { get; set; }
 
-			public void Execute(object parameter)
-			{
-				var metroWindow = (Application.Current.MainWindow as MetroWindow);
-				ListBoxItem listBoxItem = parameter as ListBoxItem;
-				if (listBoxItem == null)
-					return;
-				ListBox listBox = VisualTreeHelpers.FindAncestor<ListBox>(listBoxItem);
-				if (listBox == null)
-					return;
-				EditEntity(metroWindow, listBoxItem, listBox);
-			}
+            /// <summary>
+            /// Gets and Sets instance of MainViewModel
+            /// </summary>
+            private MainViewModel mainViewModel { get; set; }
 
-			public async void EditEntity(MetroWindow metroWindow, ListBoxItem listBoxItem, ListBox listBox)
-			{
-				// Gets ViewModel from MainViewModel
-				MainViewModel mainViewModel = listBox.DataContext as MainViewModel;
-				
-				if (mainViewModel == null)
-					return;
+            public AddCmd(MetroWindow metroWindow, MainViewModel mainViewModel)
+            {
+                this.metroWindow = metroWindow;
+                this.mainViewModel = mainViewModel;
+            }
 
-				IEntity selectedEntity = listBoxItem.DataContext as IEntity;
-				ViewModel viewModel = mainViewModel.ViewModel;
+            public bool CanExecute(object parameter)
+            {
+                return true;
+            }
 
-				var mySettings = new MetroDialogSettings()
-				{
-					AffirmativeButtonText = "Yes",
-					NegativeButtonText = "No",
-					AnimateHide = false,
-					ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
-				};
-				if (selectedEntity is Language)
-				{
-					string name = await metroWindow.ShowInputAsync("Edit Language", "Enter the name of Language.", mySettings);
-					if (string.IsNullOrEmpty(name)) return;
-					string description = await metroWindow.ShowInputAsync("Edit Language", "Enter the description of Language.", mySettings);
-					if (description == null) return;
-					selectedEntity.Name = name;
-					selectedEntity.Description = description;
-					ModelManager.Db.Update(selectedEntity, typeof(Language));
-				}
-				else if (selectedEntity is Level)
-				{
-					string name = await metroWindow.ShowInputAsync("Edit Level", "Enter the name of Level.", mySettings);
-					if (string.IsNullOrEmpty(name)) return;
-					string description = await metroWindow.ShowInputAsync("Edit Level", "Enter the description of Level.", mySettings);
-					if (description == null) return;
-					selectedEntity.Name = name;
-					selectedEntity.Description = description;
-					ModelManager.Db.Update(selectedEntity, typeof(Level));
-				}
-			}
-		}
-		
-		public IEnumerable<string> BrushResources { get; private set; }
+            public event EventHandler CanExecuteChanged;
 
-		private IEnumerable<string> FindBrushResources()
-		{
-			var rd = new ResourceDictionary
-			{
-				Source = new Uri(@"/MahApps.Metro;component/Styles/Colors.xaml", UriKind.RelativeOrAbsolute)
-			};
+            public void Execute(object parameter)
+            {
+                AddEntity(parameter as string);
+            }
 
-			var resources = rd.Keys.Cast<object>()
-					.Where(key => rd[key] is Brush)
-					.Select(key => key.ToString())
-					.OrderBy(s => s)
-					.ToList();
+            public async void AddEntity(string title)
+            {
+                ViewModel viewModel = mainViewModel.ViewModel;
+                var mySettings = new MetroDialogSettings
+                {
+                    AnimateHide = false,
+                    ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
+                };
+                if (title.Equals("Languages"))
+                {
+                    if (string.IsNullOrEmpty(mainViewModel.Name))
+                        return;
+                    mainViewModel.OnLoading(true, "");
+                    await viewModel.InsertEntity(new Language
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = mainViewModel.Name,
+                        Description = mainViewModel.Description
+                    });
+                    mainViewModel.OnLoading(false, "");
+                    viewModel.NotifyPropertyChanged("Languages");
+                    mainViewModel.Name = null;
+                    mainViewModel.Description = null;
+                }
+                else if (title.Equals("Levels"))
+                {
+                    if (string.IsNullOrEmpty(mainViewModel.Name))
+                        return;
 
-			return resources;
-		}
+                    await viewModel.InsertEntity(new Level
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = mainViewModel.Name,
+                        Description = mainViewModel.Description,
+                        Language = mainViewModel.ViewModel.SelectedLanguage
+                    });
+                    viewModel.NotifyPropertyChanged("Levels");
+                    mainViewModel.Name = null;
+                    mainViewModel.Description = null;
+                }
+                else if (title.Equals("Units"))
+                {
+                    if (string.IsNullOrEmpty(mainViewModel.Name))
+                        return;
 
-		#region Notify
+                    await viewModel.InsertEntity(new Unit
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = mainViewModel.Name,
+                        Description = mainViewModel.Description,
+                        Level = mainViewModel.ViewModel.SelectedLevel
+                    });
+                    viewModel.NotifyPropertyChanged("Units");
+                    mainViewModel.Name = null;
+                    mainViewModel.Description = null;
+                }
+                else if (title.Equals("Lessons"))
+                {
+                    if (string.IsNullOrEmpty(mainViewModel.Name))
+                        return;
+                    await viewModel.InsertEntity(new Lesson
+                    {
+                        Id = Guid.NewGuid(),
+                        Name = mainViewModel.Name,
+                        Description = mainViewModel.Description,
+                        Unit = mainViewModel.ViewModel.SelectedUnit
+                    });
+                    viewModel.NotifyPropertyChanged("Lessons");
+                    mainViewModel.Name = null;
+                    mainViewModel.Description = null;
+                }
+            }
+        }
 
-		public event PropertyChangedEventHandler PropertyChanged;
-		protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
-		{
-			if (PropertyChanged != null)
-			{
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		#endregion
-	}
+        public ICommand EditCommand { get { return new EditCmd(); } }
+
+        public class EditCmd : ICommand
+        {
+            public bool CanExecute(object parameter)
+            {
+                return true;
+            }
+
+            public event EventHandler CanExecuteChanged;
+
+            public void Execute(object parameter)
+            {
+                var metroWindow = (Application.Current.MainWindow as MetroWindow);
+                ListBoxItem listBoxItem = parameter as ListBoxItem;
+                if (listBoxItem == null)
+                    return;
+                ListBox listBox = VisualTreeHelpers.FindAncestor<ListBox>(listBoxItem);
+                if (listBox == null)
+                    return;
+                EditEntity(metroWindow, listBoxItem, listBox);
+            }
+
+            public async void EditEntity(MetroWindow metroWindow, ListBoxItem listBoxItem, ListBox listBox)
+            {
+                // Gets ViewModel from MainViewModel
+                MainViewModel mainViewModel = listBox.DataContext as MainViewModel;
+
+                if (mainViewModel == null)
+                    return;
+
+                IEntity selectedEntity = listBoxItem.DataContext as IEntity;
+                ViewModel viewModel = mainViewModel.ViewModel;
+
+                var mySettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Yes",
+                    NegativeButtonText = "No",
+                    AnimateHide = false,
+                    ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
+                };
+                if (selectedEntity is Language)
+                {
+                    string name = await metroWindow.ShowInputAsync("Edit Language", "Enter the name of Language.", mySettings);
+                    if (string.IsNullOrEmpty(name)) return;
+                    string description = await metroWindow.ShowInputAsync("Edit Language", "Enter the description of Language.", mySettings);
+                    if (description == null) return;
+                    selectedEntity.Name = name;
+                    selectedEntity.Description = description;
+                    ModelManager.Db.Update(selectedEntity, typeof(Language));
+                }
+                else if (selectedEntity is Level)
+                {
+                    string name = await metroWindow.ShowInputAsync("Edit Level", "Enter the name of Level.", mySettings);
+                    if (string.IsNullOrEmpty(name)) return;
+                    string description = await metroWindow.ShowInputAsync("Edit Level", "Enter the description of Level.", mySettings);
+                    if (description == null) return;
+                    selectedEntity.Name = name;
+                    selectedEntity.Description = description;
+                    ModelManager.Db.Update(selectedEntity, typeof(Level));
+                }
+            }
+        }
+
+        #endregion
+
+        #region Notify
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        #endregion
+    }
+
+    public class AccentColorMenuData
+    {
+        public string Name { get; set; }
+        public Brush BorderColorBrush { get; set; }
+        public Brush ColorBrush { get; set; }
+    }
+    public class AppThemeMenuData : AccentColorMenuData { }
 }

@@ -901,7 +901,7 @@
         <Setter Property="HorizontalContentAlignment"
                 Value="Center" />
         <Setter Property="Foreground"
-                Value="{DynamicResource BlackBrush}" />
+                Value="{DynamicResource GrayBrush5}" />
         <Setter Property="VerticalContentAlignment"
                 Value="Center" />
         <Setter Property="Padding"
@@ -918,9 +918,15 @@
                                  Opacity="0"
                                  Margin="4"
                                  StrokeThickness="0" />
+                        <Ellipse x:Name="bgellipse"
+                                 Fill="{DynamicResource WhiteBrush}"
+                                 Opacity="0"
+                                 Margin="4"
+                                 StrokeThickness="0" />
                         <Ellipse x:Name="ellipse"
                                  Margin="4"
-                                 Stroke="#ADADAD"
+                                 Stroke="{DynamicResource GrayBrush5}"
+                                 Opacity="1"
                                  StrokeThickness="{Binding RelativeSource={x:Static RelativeSource.TemplatedParent}, Path=BorderThickness.Left}" />
                         <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           Margin="{TemplateBinding Padding}"
@@ -961,20 +967,23 @@
                         </Trigger>
                         <Trigger Property="IsMouseOver"
                                  Value="True">
-                            <Setter TargetName="ellipse"
+                            <Setter TargetName="ellipsebg"
                                     Property="Opacity"
-                                    Value="1" />
+                                    Value=".6" />
                         </Trigger>
                         <Trigger Property="IsMouseOver"
                                  Value="False">
-                            <Setter TargetName="ellipse"
+                            <Setter TargetName="ellipsebg"
                                     Property="Opacity"
-                                    Value=".5" />
+                                    Value="0" />
                         </Trigger>
                         <Trigger Property="IsEnabled"
-                                 Value="False">
+                                 Value="false">
                             <Setter Property="Foreground"
                                     Value="{DynamicResource GrayBrush7}" />
+                            <Setter TargetName="ellipse"
+                                    Property="Opacity"
+                                    Value="0.3" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1010,7 +1019,7 @@
                                      Visual="{DynamicResource appbar_pin}" />
                             </Rectangle.OpacityMask>
                             <Rectangle.LayoutTransform>
-                                <RotateTransform Angle="45"/>
+                                <RotateTransform Angle="0"/>
                             </Rectangle.LayoutTransform>
                         </Rectangle>
                         <Rectangle x:Name="ellipsebg"

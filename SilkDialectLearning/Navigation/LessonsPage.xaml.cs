@@ -1,6 +1,9 @@
-﻿using SilkDialectLearning.Flyouts;
+﻿using MahApps.Metro;
+using SilkDialectLearning.Flyouts;
 using SilkDialectLearningBLL;
 using SilkDialectLearningDAL;
+using System;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace SilkDialectLearning.Navigation
@@ -18,6 +21,53 @@ namespace SilkDialectLearning.Navigation
             this.HomeFlyout = HomeFlyout;
             InitializeComponent();
             this.DataContext = this.MainViewModel;
+            ThemeManager.IsThemeChanged += ThemeManager_IsThemeChanged;
+            AddResourceDictionary();
+        }
+
+        private void ThemeManager_IsThemeChanged(object sender, OnThemeChangedEventArgs e)
+        {
+            if (e.AppTheme.Name == "Dark")
+            {
+                this.Resources.MergedDictionaries.Clear();
+                var rd = new ResourceDictionary
+                {
+                    Source = new Uri(@"/MahApps.Metro;component/Styles/Accents/BaseLight.xaml", UriKind.RelativeOrAbsolute)
+                };
+                this.Resources.MergedDictionaries.Add(rd);
+            }
+            else
+            {
+                this.Resources.MergedDictionaries.Clear();
+                var rd = new ResourceDictionary
+                {
+                    Source = new Uri(@"/MahApps.Metro;component/Styles/Accents/BaseDark.xaml", UriKind.RelativeOrAbsolute)
+                };
+                this.Resources.MergedDictionaries.Add(rd);
+            }
+            var a = this.Resources;
+        }
+
+        private void AddResourceDictionary()
+        {
+            if (ThemeManager.DetectAppStyle(Application.Current).Item1.Name == "Dark")
+            {
+                this.Resources.MergedDictionaries.Clear();
+                var rd = new ResourceDictionary
+                {
+                    Source = new Uri(@"/MahApps.Metro;component/Styles/Accents/BaseLight.xaml", UriKind.RelativeOrAbsolute)
+                };
+                this.Resources.MergedDictionaries.Add(rd);
+            }
+            else
+            {
+                this.Resources.MergedDictionaries.Clear();
+                var rd = new ResourceDictionary
+                {
+                    Source = new Uri(@"/MahApps.Metro;component/Styles/Accents/BaseDark.xaml", UriKind.RelativeOrAbsolute)
+                };
+                this.Resources.MergedDictionaries.Add(rd);
+            }
         }
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)

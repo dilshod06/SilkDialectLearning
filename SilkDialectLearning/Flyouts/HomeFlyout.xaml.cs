@@ -1,22 +1,16 @@
 ﻿using MahApps.Metro.Controls;
-using SilkDialectLearningBLL;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SilkDialectLearning.Flyouts
 {
@@ -24,8 +18,9 @@ namespace SilkDialectLearning.Flyouts
     /// Interaction logic for HomeFlyout.xaml
     /// </summary>
     [ContentProperty("OverlayContent")]
-    public partial class HomeFlyout : Flyout, IUriContext
+    public partial class HomeFlyout : Flyout, IUriContext, INotifyPropertyChanged
     {
+        MainViewModel mainWindowViewModel;
         public HomeFlyout()
         {
             InitializeComponent();
@@ -36,10 +31,11 @@ namespace SilkDialectLearning.Flyouts
         {
             if (!loaded && !DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
-                var mainWindowViewModel = (sender as Flyout).DataContext as MainViewModel;
-                if(mainWindowViewModel != null)
-                 this.Navigate(new Navigation.LanguagesPage(this, mainWindowViewModel));
-
+                PageStatus = new ObservableCollection<object>();
+                mainWindowViewModel = (sender as Flyout).DataContext as MainViewModel;
+                if (mainWindowViewModel != null)
+                    this.Navigate(new Navigation.LanguagesPage(this, mainWindowViewModel));
+                uiPageStatus.DataContext = this;
                 PART_Frame.Navigated += PART_Frame_Navigated;
                 PART_Frame.Navigating += PART_Frame_Navigating;
                 PART_Frame.NavigationFailed += PART_Frame_NavigationFailed;
@@ -48,80 +44,77 @@ namespace SilkDialectLearning.Flyouts
                 PART_Frame.LoadCompleted += PART_Frame_LoadCompleted;
                 PART_Frame.FragmentNavigation += PART_Frame_FragmentNavigation;
                 PART_BackButton.Click += PART_BackButton_Click;
-                PART_ForwardButton.Click += PART_ForwardButton_Click;
                 loaded = true;
             }
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_ForwardButton_Click(object sender, RoutedEventArgs e)
         {
             if (CanGoForward)
                 GoForward();
         }
 
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_FragmentNavigation(object sender, FragmentNavigationEventArgs e)
         {
             if (FragmentNavigation != null)
                 FragmentNavigation(this, e);
         }
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_LoadCompleted(object sender, NavigationEventArgs e)
         {
             if (LoadCompleted != null)
                 LoadCompleted(this, e);
         }
-        [System.Diagnostics.DebuggerNonUserCode]
+        
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_NavigationStopped(object sender, NavigationEventArgs e)
         {
             if (NavigationStopped != null)
                 NavigationStopped(this, e);
         }
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_NavigationProgress(object sender, NavigationProgressEventArgs e)
         {
             if (NavigationProgress != null)
                 NavigationProgress(this, e);
         }
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_NavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             if (NavigationFailed != null)
                 NavigationFailed(this, e);
         }
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
             if (Navigating != null)
                 Navigating(this, e);
         }
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         void PART_BackButton_Click(object sender, RoutedEventArgs e)
         {
             if (CanGoBack)
                 GoBack();
         }
 
-
         //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_Navigated(object sender, NavigationEventArgs e)
         {
             PART_Title.Content = ((Page)PART_Frame.Content).Title;
+            mainWindowViewModel.Name = null;
+            mainWindowViewModel.Description = null;
             (this as IUriContext).BaseUri = e.Uri;
 
             PageContent = PART_Frame.Content;
-
             PART_BackButton.IsEnabled = CanGoBack ? true : false;
-
-            //PART_ForwardButton.Visibility = CanGoForward ? Visibility.Visible : Visibility.Collapsed;
 
             if (Navigated != null)
                 Navigated(this, e);
-
         }
 
-        public static readonly DependencyProperty OverlayContentProperty = DependencyProperty.Register("OverlayContent", typeof(object), typeof(MainWindow));
+        public static readonly DependencyProperty OverlayContentProperty = DependencyProperty.Register("OverlayContent", typeof(object), typeof(HomeFlyout));
 
         public object OverlayContent
         {
@@ -129,7 +122,7 @@ namespace SilkDialectLearning.Flyouts
             set { SetValue(OverlayContentProperty, value); }
         }
 
-        public static readonly DependencyProperty PageContentProperty = DependencyProperty.Register("PageContent", typeof(object), typeof(MainWindow));
+        public static readonly DependencyProperty PageContentProperty = DependencyProperty.Register("PageContent", typeof(object), typeof(HomeFlyout));
 
         public object PageContent
         {
@@ -180,7 +173,7 @@ namespace SilkDialectLearning.Flyouts
         /// </summary>
         /// <param name="state">A CustomContentState object that represents application-defined state that is associated with a specific piece of content.</param>
         /// <see cref="System.Windows.Navigation.NavigationWindow.AddBackEntry"/>
-        [System.Diagnostics.DebuggerNonUserCode]
+        //[System.Diagnostics.DebuggerNonUserCode]
         public void AddBackEntry(CustomContentState state)
         {
             PART_Frame.AddBackEntry(state);
@@ -216,6 +209,9 @@ namespace SilkDialectLearning.Flyouts
             PART_Frame.GoForward();
         }
 
+        //public Dictionary<Page, object> PageStatus = new Dictionary<Page, object>();
+
+        public ObservableCollection<object> PageStatus { get; set; }
         /// <summary>
         /// Navigates asynchronously to content that is contained by an object.
         /// </summary>
@@ -229,6 +225,7 @@ namespace SilkDialectLearning.Flyouts
             {
                 var page = PART_Frame.NavigationService.Content as Page;
                 ListBox listBox = page.FindChildren<ListBox>().FirstOrDefault();
+                PageStatus.Add(listBox.SelectedItem);
                 listBox.SelectedValue = null;
             }
             return PART_Frame.Navigate(content);
@@ -313,6 +310,67 @@ namespace SilkDialectLearning.Flyouts
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.LoadCompleted"/>
         public event LoadCompletedEventHandler LoadCompleted;
+
+
+        private void PART_AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            MyPopup.IsOpen = true;
+        }
+
+        private void uiPanel_Loaded(object sender, RoutedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                this.Focus();
+                PART_Name.Focus();
+            }));
+
+            RoutedEventHandler affirmativeHandler = null;
+            KeyEventHandler affirmativeKeyHandler = null;
+            affirmativeKeyHandler = (s, e1) =>
+            {
+                if (e1.Key == Key.Enter)
+                {
+                    Dispatcher.BeginInvoke(new Action(() =>
+                    {
+                        PART_SaveButton.Focus();
+                    }));
+                }
+            };
+
+            affirmativeHandler = (s, e1) =>
+            {
+                MyPopup.IsOpen = false;
+                e1.Handled = true;
+            };
+
+            PART_SaveButton.KeyDown += affirmativeKeyHandler;
+            PART_Name.KeyDown += affirmativeKeyHandler;
+            PART_Description.KeyDown += affirmativeKeyHandler;
+
+            (sender as Grid).KeyDown += HomeFlyout_KeyDown;
+        }
+
+        void HomeFlyout_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                MyPopup.IsOpen = false;
+            }
+        }
+
+        #region Notify
+        
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+        
+        #endregion
     }
 
     public class TitleToToolTipConveter : IValueConverter

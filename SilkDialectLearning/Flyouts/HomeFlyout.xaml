@@ -1,22 +1,22 @@
 ﻿<controls:Flyout x:Class="SilkDialectLearning.Flyouts.HomeFlyout"
-	  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-	  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
-	  xmlns:flyout="clr-namespace:SilkDialectLearning.Flyouts"
-	  xmlns:local="clr-namespace:SilkDialectLearning"
-	  mc:Ignorable="d" 
-	  d:DesignHeight="350" d:DesignWidth="350"
-	  Header="Home" Position="Left"
-	  CloseButtonVisibility="Collapsed"
-	  MenuCloseButtonVisibility="Visible"
-	  Theme="Inverse" TitleVisibility="Collapsed"
-	  AnimateOpacity="True"
-	  FlyoutMargin="0 0 0 25"
-	  HeaderMargin="10,-10,5,25"
-	  IsPinned="True"
-				 d:DataContext="{d:DesignInstance local:MainWindow}">
+				  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+				  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+				  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+				  xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+				  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+				  xmlns:flyout="clr-namespace:SilkDialectLearning.Flyouts"
+				  xmlns:local="clr-namespace:SilkDialectLearning"
+				  mc:Ignorable="d" 
+				  d:DesignHeight="350" d:DesignWidth="350"
+				  Header="Home" Position="Left"
+				  CloseButtonVisibility="Collapsed"
+				  MenuCloseButtonVisibility="Visible"
+				  Theme="Inverse" TitleVisibility="Collapsed"
+				  AnimateOpacity="True"
+				  FlyoutMargin="0 0 0 25"
+				  HeaderMargin="10,-10,5,25"
+				  IsPinned="True"
+				  d:DataContext="{d:DesignInstance local:MainViewModel}">
 
 	<controls:Flyout.Resources>
 		<ResourceDictionary>
@@ -28,6 +28,7 @@
 			<RowDefinition Height="50" />
 			<RowDefinition Height="*" />
 			<RowDefinition Height="80" />
+			<!--<RowDefinition Height="*" />-->  
 		</Grid.RowDefinitions>
 		<DockPanel Grid.Row="0" Margin="10 0 0 0">
 			<Button x:Name="PART_BackButton" DockPanel.Dock="Left"
@@ -92,6 +93,7 @@
 							   NavigationUIVisibility="Hidden"
 							   Margin="3 0 3 0"/>
 			</Grid>
+			
 		</Border>
 		<Border Grid.Row="2" Margin="15" VerticalAlignment="Top" BorderBrush="{DynamicResource HighlightBrush}" BorderThickness="0 1 0 0">
 			<StackPanel Orientation="Horizontal" Margin="0 5">
@@ -104,8 +106,7 @@
 								FontSize="16"
 								VerticalAlignment="Center" 
 								HorizontalAlignment="Right"
-								Command="{Binding Path=AddCommand}"
-								CommandParameter="{Binding Path=Content, ElementName=PART_Title}"
+								Click="PART_AddButton_Click"
 								ToolTip="{Binding Path=Content, ElementName=PART_Title, Converter={StaticResource TitleToToolTipConveter}}">
 
 					<Rectangle Width="16" Height="16"
@@ -120,8 +121,51 @@
 					VerticalAlignment="Center" HorizontalAlignment="Left" 
 					Text="{Binding Path=Content, ElementName=PART_Title, Converter={StaticResource TitleToToolTipConveter}}" 
 					FontSize="16" 
-					FontFamily="{DynamicResource HeaderFontFamily}"/>
+					FontFamily="{DynamicResource HeaderFontFamily}" />
+				<Popup Name="MyPopup" StaysOpen="False" Placement="Top" Width="290" 
+					   PlacementRectangle="10 30 0 0"
+					   AllowsTransparency="True"
+					   PopupAnimation="Fade">
+					<Border BorderThickness="2" BorderBrush="{DynamicResource AccentColorBrush}">
+						<Border.Resources>
+							<ResourceDictionary>
+								<ResourceDictionary.MergedDictionaries>
+									<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Accents/BaseLight.xaml" />
+								</ResourceDictionary.MergedDictionaries>
+							</ResourceDictionary>
+						</Border.Resources>
+						<Grid Background="{DynamicResource WhiteBrush}" Name="uiPanel" Loaded="uiPanel_Loaded">
+							<Grid.RowDefinitions>
+								<RowDefinition/>
+								<RowDefinition/>
+								<RowDefinition/>
+							</Grid.RowDefinitions>
+							<StackPanel Orientation="Vertical" Grid.Row="0" Margin="10 25 10 10" HorizontalAlignment="Stretch">
+								<TextBox controls:TextboxHelper.Watermark="Enter Name" Text="{Binding Path=Name}" Name="PART_Name"/>
+							</StackPanel>
+							<StackPanel Orientation="Vertical" Grid.Row="1" Margin="10 0" HorizontalAlignment="Stretch">
+								<TextBox controls:TextboxHelper.Watermark="Enter Description" Text="{Binding Path=Description}" Name="PART_Description"/>
+							</StackPanel>
+							<StackPanel Orientation="Horizontal" Margin="10" HorizontalAlignment="Right" Grid.Row="2">
+								<StackPanel.Resources>
+									<ResourceDictionary>
+										<ResourceDictionary.MergedDictionaries>
+											<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/FlatButton.xaml" />
+										</ResourceDictionary.MergedDictionaries>
+									</ResourceDictionary>
+								</StackPanel.Resources>
+								<Button Content="Save" Width="100" Height="28"
+										Command="{Binding Path=AddCommand}"
+										CommandParameter="{Binding Path=Content, ElementName=PART_Title}" Style="{DynamicResource AccentedMetroFlatButton}" Name="PART_SaveButton"/>
+							</StackPanel>
+						</Grid>
+					</Border>
+				</Popup>
 			</StackPanel>
 		</Border>
+		<StackPanel Grid.Row="3" Name="uiPageStatus" Visibility="Collapsed">
+            <ListView ItemsSource="{Binding Path=PageStatus}">
+			</ListView>
+		</StackPanel>
 	</Grid>
 </controls:Flyout>

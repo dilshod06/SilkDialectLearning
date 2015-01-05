@@ -1,5 +1,4 @@
-﻿using MahApps.Metro.Controls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,21 +13,23 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SilkDialectLearning.Flyouts
+namespace SilkDialectLearning.Pages
 {
     /// <summary>
-    /// Interaction logic for SettingsFlyout.xaml
+    /// Interaction logic for HomePage.xaml
     /// </summary>
-    public partial class SettingsFlyout : Flyout
+    public partial class HomePage : Page
     {
-        public SettingsFlyout()
+        public MainViewModel MainViewModel { get; set; }
+        public HomePage(MainViewModel mainViewModel)
         {
             InitializeComponent();
+            MainViewModel = mainViewModel;
         }
 
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-
+            this.DataContext = MainViewModel;
         }
     }
 }

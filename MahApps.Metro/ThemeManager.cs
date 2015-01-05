@@ -52,13 +52,13 @@ namespace MahApps.Metro
                 if (_appThemes != null)
                     return _appThemes;
 
-                var themes = new[] { "BaseLight", "BaseDark" };
+                var themes = new[] { "Light", "Dark" };
 
                 _appThemes = new List<AppTheme>(themes.Length);
 
                 foreach (var color in themes)
                 {
-                    var appTheme = new AppTheme(color, new Uri(string.Format("pack://application:,,,/MahApps.Metro;component/Styles/Accents/{0}.xaml", color)));
+                    var appTheme = new AppTheme(color, new Uri(string.Format("pack://application:,,,/MahApps.Metro;component/Styles/Accents/Base{0}.xaml", color)));
 
                     _appThemes.Add(appTheme);
                 }

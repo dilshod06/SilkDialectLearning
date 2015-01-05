@@ -255,7 +255,7 @@ namespace MahApps.Metro.Controls
             {
                 case FlyoutTheme.Accent:
                     ThemeManager.ChangeAppStyle(this.Resources, windowAccent, windowTheme);
-                    this.SetResourceReference(BackgroundProperty, "AccentColorBrush");
+                    this.SetResourceReference(BackgroundProperty, "HighlightBrush");
                     this.SetResourceReference(ForegroundProperty, "IdealForegroundColorBrush");
                 break;
 

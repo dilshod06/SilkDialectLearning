@@ -590,11 +590,20 @@ namespace MahApps.Metro.Controls
             //overlayBox.Opacity = 0.7;
             overlayBox.SetCurrentValue(Grid.OpacityProperty, 0.7);
         }
+        public void ShowOverlay(UIElement panel)
+        {
+            overlayBox.Visibility = Visibility.Visible;
+            //overlayBox.Opacity = 0.7;
+            overlayBox.SetCurrentValue(Grid.OpacityProperty, 0.7);
+            overlayBox.Children.Add(panel);
+        }
         public void HideOverlay()
         {
             //overlayBox.Opacity = 0.0;
             overlayBox.SetCurrentValue(Grid.OpacityProperty, 0.0);
             overlayBox.Visibility = System.Windows.Visibility.Hidden;
+            if (overlayBox.Children.Count > 0)
+                overlayBox.Children.Clear();
         }
 
         /// <summary>

@@ -122,7 +122,7 @@ namespace SQLite
 			return Task.Factory.StartNew (() => {
 				var conn = GetConnection ();
 				using (conn.Lock ()) {
-					return conn.Insert (item);
+					return conn.Insert(item);
 				}
 			});
 		}

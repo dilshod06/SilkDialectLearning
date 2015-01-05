@@ -101,7 +101,7 @@ namespace MahApps.Metro.Controls.Dialogs
 
             PART_TextBox.KeyDown += affirmativeKeyHandler;
 
-            this.KeyDown += escapeKeyHandler;
+            KeyDown += escapeKeyHandler;
 
             PART_NegativeButton.Click += negativeHandler;
             PART_AffirmativeButton.Click += affirmativeHandler;

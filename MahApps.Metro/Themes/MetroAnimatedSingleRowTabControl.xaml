@@ -5,12 +5,12 @@
 
     <ResourceDictionary.MergedDictionaries>
         <!-- MetroScrollViewer -->
-        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Scrollbars.xaml" />
+        <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Scrollbars.xaml" />-->
     </ResourceDictionary.MergedDictionaries>
 
     <Style TargetType="{x:Type Controls:MetroAnimatedSingleRowTabControl}">
         <Setter Property="Controls:TabControlHelper.Transition"
-                Value="Left" />
+                Value="RightReplace" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Controls:MetroAnimatedSingleRowTabControl}">

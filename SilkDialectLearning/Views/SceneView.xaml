@@ -7,9 +7,11 @@
              xmlns:local="clr-namespace:SilkDialectLearning"
              xmlns:converters="clr-namespace:SilkDialectLearning.Converters"
              xmlns:bll="clr-namespace:SilkDialectLearningBLL;assembly=SilkDialectLEarningBLL"
+             xmlns:view="clr-namespace:SilkDialectLearning.Views"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
-             Loaded="UserControl_Loaded">
+             Loaded="UserControl_Loaded" 
+             d:DataContext="{d:DesignInstance local:MainViewModel}">
 
     <UserControl.Resources>
         <converters:ByteToImageConveter x:Key="ByteToImageConverter"/>
@@ -17,28 +19,17 @@
         <converters:SizeToWidthConverter x:Key="SizeToWidthConverter"/>
         <converters:SizeToHeightConverter x:Key="SizeToHeightConverter"/>
         <converters:BooleanToRadiusConverter x:Key="BooleanToRadiusConverter"/>
-        <converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
+        <converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
     </UserControl.Resources>
-    <Grid>
-        <Grid.Resources>
+    <DockPanel>
+        <DockPanel.Resources>
             <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
-        </Grid.Resources>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+        </DockPanel.Resources>
         <TabControl Name="ScenesTabControl"
                             ItemsSource="{Binding Path=ViewModel.SceneViewModel.Scenes, IsAsync=True}" 
                             SelectionChanged="TabControl_SelectionChanged"
                             SelectedItem="{Binding Path=ViewModel.SceneViewModel.SelectedScene}"
                             Loaded="ScenesTabControl_Loaded">
-            
-            <TabControl.Resources>
-                <ResourceDictionary>
-                    <ResourceDictionary.MergedDictionaries>
-                        <!--<ResourceDictionary Source="pack://application:,,,/SilkDialectLearning;component/Styles/MetroTabControl.xaml"/>-->
-                    </ResourceDictionary.MergedDictionaries>
-                </ResourceDictionary>
-            </TabControl.Resources>
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -59,16 +50,25 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border Background="{DynamicResource HighlightBrush}" BorderThickness="2" 
+                                        <Border BorderThickness="2" 
                                                         BorderBrush="{DynamicResource GrayBrush1}"
                                                         MouseLeftButtonDown="dot_MouseLeftButtonDown" 
                                                         Opacity=".5"
                                                         HorizontalAlignment="Left"
                                                         VerticalAlignment="Top"
-                                                        Loaded="Border_Loaded" Name="sceneDot">
+                                                        Loaded="Border_Loaded" 
+                                                        Name="sceneDot">
                                             <Border.Style>
                                                 <Style>
                                                     <Style.Triggers>
+                                                        <Trigger Property="Border.IsEnabled" Value="True">
+                                                            <Setter Property="Border.Background" Value="{DynamicResource HighlightBrush}"/>
+                                                        </Trigger>
+                                                        <Trigger Property="Border.IsEnabled" Value="False">
+                                                            <Setter Property="Border.Background" Value="{DynamicResource GrayBrush1}"/>
+                                                            <Setter Property="Border.BorderThickness" Value="0"/>
+                                                            <Setter Property="Border.Opacity" Value="100"/>
+                                                        </Trigger>
                                                         <Trigger Property="Border.IsMouseOver" Value="True">
                                                             <Setter Property="Border.Cursor" Value="Hand"/>
                                                         </Trigger>
@@ -109,23 +109,5 @@
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
-        <StackPanel Orientation="Vertical" Name="uiPanel" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Collapsed">
-            <ToggleButton Name="Activites" Width="45" Height="45"  Style="{DynamicResource MetroCircleToggleButtonStyle}" FontSize="10" FontFamily="Segoe UI Symbol" Content=""></ToggleButton>
-            <Popup Name="MyPopup" Width="150"  
-                   IsOpen="{Binding IsChecked, ElementName=Activites}" 
-                   PopupAnimation="Slide" 
-                   StaysOpen="False" 
-                   Placement="Top"
-                   PlacementTarget="{Binding ElementName=Activites}">
-                <Border BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1" HorizontalAlignment="Stretch">
-                <StackPanel Background="{DynamicResource WhiteBrush}" HorizontalAlignment="Stretch">
-                        <StackPanel>
-                            <RadioButton Content="Learn" Margin="5" IsChecked="{Binding Path=ViewModel.SceneViewModel.SceneActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Learn}}"/>
-                            <RadioButton Content="Practice" Margin="5"/>
-                        </StackPanel>
-                </StackPanel>
-                </Border>
-            </Popup>
-        </StackPanel>
-    </Grid>
+    </DockPanel>
 </UserControl>
