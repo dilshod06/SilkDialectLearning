@@ -72,12 +72,8 @@ namespace SilkDialectLearningDAL
 
     public class ModelManager
     {
-<<<<<<< HEAD
         private static Entities db;
-=======
-        static Entities db;
 
->>>>>>> origin/master
         public static Entities Db
         {
             get
@@ -311,7 +307,6 @@ namespace SilkDialectLearningDAL
         [PrimaryKey]
         public Guid Id { get; set; }
 
-<<<<<<< HEAD
         private string name;
         public string Name
         {
@@ -326,11 +321,6 @@ namespace SilkDialectLearningDAL
             set { description = value; NotifyPropertyChanged(); }
         }
         //public string LevelId { get; set; }
-=======
-        public string Name { get; set; }
-
-        public string Description { get; set; }
->>>>>>> origin/master
 
         public Task<int> InsertLesson(Lesson lesson)
         {
@@ -387,7 +377,7 @@ namespace SilkDialectLearningDAL
         }
 
         #region Notify
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
         {
@@ -396,7 +386,7 @@ namespace SilkDialectLearningDAL
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-        
+
         #endregion
     }
 
@@ -407,7 +397,7 @@ namespace SilkDialectLearningDAL
     }
 
     public class Lesson : IEntity, INotifyPropertyChanged
-    {   
+    {
         [PrimaryKey]
         public Guid Id { get; set; }
 
@@ -551,17 +541,18 @@ namespace SilkDialectLearningDAL
         public Guid PictureId { get; set; }
 
         private int sceneOrder;
-        public int SceneOrder 
-        { 
-            get 
+        
+        public int SceneOrder
+        {
+            get
             {
-                return sceneOrder; 
-            } 
-            set 
-            { 
+                return sceneOrder;
+            }
+            set
+            {
                 sceneOrder = value;
                 NotifyPropertyChanged();
-            } 
+            }
         }
 
         ScenePicture _scenePicture;
@@ -623,7 +614,7 @@ namespace SilkDialectLearningDAL
         }
 
         #region Notify
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
         {
@@ -632,7 +623,7 @@ namespace SilkDialectLearningDAL
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-        
+
         #endregion
     }
 
@@ -643,7 +634,7 @@ namespace SilkDialectLearningDAL
         public byte[] Picture { get; set; }
     }
 
-    public class SceneItem : IPlayable, IHighlightable, INotifyPropertyChanged
+    public class SceneItem : IPlayable, IHighlightable, INotifyPropertyChanged, IEntity
     {
         [PrimaryKey]
         public Guid Id { get; set; }
@@ -707,14 +698,13 @@ namespace SilkDialectLearningDAL
         [Ignore]
         public Scene Scene { get { return _scene; } }
 
-
         public override string ToString()
         {
             return Convert.ToInt32(XPos) + " - " + Convert.ToInt32(YPos);
         }
 
-       #region Notify
-        
+        #region Notify
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
         {
@@ -723,8 +713,12 @@ namespace SilkDialectLearningDAL
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-        
+
         #endregion
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
     }
 
     /// <summary>
@@ -743,10 +737,11 @@ namespace SilkDialectLearningDAL
         public AudioStatus State { get; protected set; }
     }
 
-    public partial class Phrase : INotifyPropertyChanged
+    public partial class Phrase : INotifyPropertyChanged, IEntity
     {
         [PrimaryKey]
         public Guid Id { get; set; }
+
         public string Text { get; set; }
 
         byte[] _sound;
@@ -825,7 +820,7 @@ namespace SilkDialectLearningDAL
         private WaveOut audioOutput;
 
         private Mp3FileReader mp3Reader;
-        
+
         private void PrepareAudio()
         {
             try
@@ -843,6 +838,9 @@ namespace SilkDialectLearningDAL
         }
         #endregion
 
+        public string Name { get; set; }
+
+        public string Description { get; set; }
     }
 
     public class Vocabulary
@@ -882,7 +880,7 @@ namespace SilkDialectLearningDAL
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-       
+
         //public byte[] Sound { get; set; }
         //public int SoundVol { get; set; }
 

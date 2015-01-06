@@ -233,14 +233,8 @@ namespace SilkDialectLearning
             {
                 this.metroWindow = metroWindow;
                 this.mainViewModel = mainViewModel;
-                CanExecuteChanged += DeleteCmd_CanExecuteChanged;
             }
-
-            private void DeleteCmd_CanExecuteChanged(object sender, EventArgs e)
-            {
-                // TODO: Some logic for CanExecute
-            }
-
+            
             public void Execute(object parameter)
             {
                 ListBoxItem listBoxItem = parameter as ListBoxItem;
@@ -277,7 +271,7 @@ namespace SilkDialectLearning
                     if (result != MessageDialogResult.Negative)
                     {
                         mainViewModel.OnLoading(true, "Please wait language is deleting...");
-                        await viewModel.DeleteLanguage(selectedEntity as Language);
+                        await viewModel.Delete(selectedEntity as Language);
                         viewModel.NotifyPropertyChanged("Languages");
                         mainViewModel.OnLoading(false, "");
                     }
@@ -294,7 +288,7 @@ namespace SilkDialectLearning
                     if (result != MessageDialogResult.Negative)
                     {
                         mainViewModel.OnLoading(true, "Please wait level is deleting...");
-                        await viewModel.DeleteLevel(selectedEntity as Level);
+                        await viewModel.Delete(selectedEntity as Level);
                         viewModel.NotifyPropertyChanged("Levels");
                         mainViewModel.OnLoading(false, "");
                     }
@@ -312,7 +306,7 @@ namespace SilkDialectLearning
                     if (result != MessageDialogResult.Negative)
                     {
                         mainViewModel.OnLoading(true, "Please wait unit is deleting...");
-                        await viewModel.DeleteUnit(selectedEntity as Unit);
+                        await viewModel.Delete(selectedEntity as Unit);
                         viewModel.NotifyPropertyChanged("Units");
                         mainViewModel.OnLoading(false, "");
                     }
@@ -330,7 +324,7 @@ namespace SilkDialectLearning
                     if (result != MessageDialogResult.Negative)
                     {
                         mainViewModel.OnLoading(true, "Please wait lesson is deleting...");
-                        await viewModel.DeleteLesson(selectedEntity as Lesson);
+                        await viewModel.Delete(selectedEntity as Lesson);
                         viewModel.NotifyPropertyChanged("Lessons");
                         mainViewModel.OnLoading(false, "");
                     }
