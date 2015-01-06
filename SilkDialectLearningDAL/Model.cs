@@ -14,13 +14,16 @@ namespace SilkDialectLearningDAL
     public interface IEntity
     {
         Guid Id { get; set; }
+
         string Name { get; set; }
+
         string Description { get; set; }
     }
 
     public interface IPlayable
     {
         Guid Id { get; }
+
         Phrase Phrase { get; }
     }
 
@@ -32,6 +35,7 @@ namespace SilkDialectLearningDAL
     public class Entities : SQLiteConnection
     {
         public SQLiteAsyncConnection SqLiteAsyncConnection { get; set; }
+
         public Entities(string dbPath, bool createDatabase = false)
             : base(dbPath)
         {
@@ -68,7 +72,12 @@ namespace SilkDialectLearningDAL
 
     public class ModelManager
     {
+<<<<<<< HEAD
         private static Entities db;
+=======
+        static Entities db;
+
+>>>>>>> origin/master
         public static Entities Db
         {
             get
@@ -241,7 +250,7 @@ namespace SilkDialectLearningDAL
 
             if (result.Result == 0)
                 return result;
-           
+
             result = ModelManager.Db.SqLiteAsyncConnection.InsertAsync(new LevelToUnit() { LevelId = this.Id, UnitId = unit.Id });
             IsUnitsDirty = true;
             return result;
@@ -302,6 +311,7 @@ namespace SilkDialectLearningDAL
         [PrimaryKey]
         public Guid Id { get; set; }
 
+<<<<<<< HEAD
         private string name;
         public string Name
         {
@@ -316,13 +326,18 @@ namespace SilkDialectLearningDAL
             set { description = value; NotifyPropertyChanged(); }
         }
         //public string LevelId { get; set; }
+=======
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+>>>>>>> origin/master
 
         public Task<int> InsertLesson(Lesson lesson)
         {
             Task<int> result = ModelManager.Db.SqLiteAsyncConnection.InsertAsync(lesson);
             if (result.Result == 0)
                 return result;
-            
+
             result = ModelManager.Db.SqLiteAsyncConnection.InsertAsync(new UnitToLesson() { UnitId = this.Id, LessonId = lesson.Id });
             IsLessonsDirty = true;
             return result;
@@ -332,10 +347,12 @@ namespace SilkDialectLearningDAL
         {
             return 0;
         }
+
         [Ignore]
         public bool IsLessonsDirty { get; set; }
 
         ObservableCollection<Lesson> lessons;
+
         [Ignore]
         public ObservableCollection<Lesson> Lessons
         {
@@ -350,6 +367,7 @@ namespace SilkDialectLearningDAL
                 return lessons;
             }
         }
+
         public void SetLevel(Level level)
         {
             this.level = level;

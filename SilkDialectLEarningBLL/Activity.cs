@@ -3,17 +3,20 @@ using System;
 
 namespace SilkDialectLearningBLL
 {
+    /// <summary>
+    /// Activity types
+    /// </summary>
     public enum Activity
     {
-        Learn    =  1,
-        Practice =  2,
-        PlayAll  =  3
+        Learn = 1,
+        Practice = 2,
+        PlayAll = 3
     }
 
     public enum ViewModelActivity
     {
-        SceneViewModel    = 1,
-        VocabViewModel    = 2,
+        SceneViewModel = 1,
+        VocabViewModel = 2,
         SentenceViewModel = 3
     }
 

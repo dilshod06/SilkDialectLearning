@@ -203,14 +203,15 @@ namespace SilkDialectLearningBLL
 
         #region Methods
 
+        //TODO: Look all of your delete methods are almost identical. Create one method and it should call itself to delete its children. 
         /// <summary>
-        /// this Method deletes selectedLanguage cascade Language.Levels.Units.Lessons.Scenes.SceneItems
+        /// This method deletes selectedLanguage cascade Language.Levels.Units.Lessons.Scenes.SceneItems
         /// </summary>
         /// <param name="selectedLanguage">Language</param>
         public async Task<int> DeleteLanguage(Language selectedLanguage)
         {
             ObservableCollection<Level> levels = selectedLanguage.Levels;
-            if (levels.Count > 0)
+            if (levels.Count > 0)//TODO: Since you are doing foreach no need to check for levels.Count!=0
             {
                 foreach (Level level in levels)
                 {
@@ -299,6 +300,7 @@ namespace SilkDialectLearningBLL
             return await Db.SqLiteAsyncConnection.DeleteAsync(phrase);
         }
 
+<<<<<<< HEAD
         public Task<int> Update(object item) 
         {
             return Db.SqLiteAsyncConnection.UpdateAsync(item);
@@ -309,6 +311,9 @@ namespace SilkDialectLearningBLL
             return Db.SqLiteAsyncConnection.UpdateAllAsync(items);
         }
 
+=======
+        //TODO: This method looks good, but I would say it should be in DAL. What do you think?
+>>>>>>> origin/master
         public Task<int> InsertEntity(IEntity entity)
         {
             if (entity is Language)

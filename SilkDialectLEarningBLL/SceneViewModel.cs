@@ -42,7 +42,10 @@ namespace SilkDialectLearningBLL
         /// Indicates whether an item is highlighting
         /// </summary>
         protected bool isHighlighting;
-
+        
+        /// <summary>
+        /// Returns the instance of global ViewModel.
+        /// </summary>
         public ViewModel ViewModel { get { return Global.GlobalViewModel; } }
 
         Activity sceneActivity;
@@ -64,11 +67,18 @@ namespace SilkDialectLearningBLL
                 }
             }
         }
-        protected async Task PlayThisItem(IPlayable sceneItem)
+        
+        /// <summary>
+        /// Stops the if there is anything that's playing and starts playing current item.
+        /// </summary>
+        /// <param name="sceneItem">Item to play</param>
+        /// <returns></returns>
+        protected async Task PlayThisItemAsync(IPlayable sceneItem)
         {
-            await StopPlaying();
+            await StopPlayingAsync();
             if (sceneItem != null)
             {
+                //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
                 lastPlayed = sceneItem;
                 if (sceneItem.Phrase != null)
                     await sceneItem.Phrase.Play();
@@ -81,7 +91,11 @@ namespace SilkDialectLearningBLL
             }
         }
 
-        protected async Task StopPlaying()
+        /// <summary>
+        /// Stops the the current playing item
+        /// </summary>
+        /// <returns></returns>
+        protected async Task StopPlayingAsync()
         {
             if (lastPlayed != null)
             {
@@ -90,17 +104,24 @@ namespace SilkDialectLearningBLL
             }
         }
 
+        /// <summary>
+        /// Stops the any highlighting item and starts highlighting current item
+        /// </summary>
+        /// <param name="sceneItem">Item to highlight</param>
+        /// <param name="interval">Higligh for X milliseconds</param>
         protected void HiglightThisItem(IHighlightable sceneItem, double interval)
         {
             if (sceneItem != null)
             {
                 StopHighlight();
                 var highlightItem = HighlightItem;
+                //Setting the isHiglighting to true to help Stop highlighting
                 isHighlighting = true;
                 if (highlightItem != null)
                 {
                     lastHighlighted = sceneItem;
                     highlightItem(this, new HighlightItemEventArgs(sceneItem));
+                    //Timer will automatically stop the highlighting item after specific time and disposes itself.
                     Timer timer = new Timer(interval);
                     timer.Elapsed += (s, e) =>
                     {
@@ -119,13 +140,18 @@ namespace SilkDialectLearningBLL
             }
         }
 
+        /// <summary>
+        /// Stops the current highlighting item
+        /// </summary>
         protected void StopHighlight()
         {
             if (isHighlighting)
             {
                 if (lastHighlighted != null)
                 {
+                    //highlightingTimer is created by HighlightThisItem() method. So we are just disabling the timer and disposing.
                     highlightTimer.Enabled = false;
+                    highlightTimer.Dispose();
                     var stopHighlighting = StopHighlighting;
                     isHighlighting = false;
                     if (stopHighlighting != null)
@@ -171,16 +197,25 @@ namespace SilkDialectLearningBLL
                 
             }
         }
-
+        /// <summary>
+        /// When scene selected it will stop any playing item and highlighting
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         async void SceneViewModel_SceneSelected(object sender, EventArgs e)
         {
-            await StopPlaying();
+            await StopPlayingAsync();
             StopHighlight();
         }
 
+        /// <summary>
+        /// When activity changes it will stop any playing item and highlighting
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         async void SceneViewModel_ActivityChanged(object sender, ActivityChangedEventArgs e)
         {
-            await StopPlaying();
+            await StopPlayingAsync();
             StopHighlight();
         }
 
@@ -279,23 +314,29 @@ namespace SilkDialectLearningBLL
 
         }
 
+        /// <summary>
+        /// Plays the selected item
+        /// </summary>
         private void Learn()
         {
             if (SelectedSceneItem == null)
             {
                 throw new Exception("SelectedSceneItem is null.");
             }
-            PlayThisItem(SelectedSceneItem);
+            PlayThisItemAsync(SelectedSceneItem);
             HiglightThisItem(SelectedSceneItem, SelectedSceneItem.Phrase.SoundLength.TotalMilliseconds);
         }
 
-        private List<SceneItem> items = new List<SceneItem>();
+        private List<SceneItem> itemsForPractice = new List<SceneItem>();
 
+        /// <summary>
+        /// Prepares the items for practice.
+        /// </summary>
         public void Practice()
         {
-            if (items.Count == 0)
+            if (itemsForPractice.Count == 0)
             {
-                items = Helper.MixItems<SceneItem>(SelectedScene.SceneItems.ToList());
+                itemsForPractice = Helper.MixItems<SceneItem>(SelectedScene.SceneItems.ToList());
             }
         }
 
