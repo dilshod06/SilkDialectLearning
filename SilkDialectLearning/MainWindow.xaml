@@ -15,7 +15,7 @@
                       SaveWindowPosition="True"
                       WindowStartupLocation="CenterScreen"
                       GlowBrush="{DynamicResource AccentColorBrush}" 
-                      MouseRightButtonDown="MetroWindow_MouseRightButtonDown">
+                      >
 
     <controls:MetroWindow.Resources>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>

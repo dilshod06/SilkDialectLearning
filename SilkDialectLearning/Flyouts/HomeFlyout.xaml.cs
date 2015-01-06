@@ -67,7 +67,7 @@ namespace SilkDialectLearning.Flyouts
             if (LoadCompleted != null)
                 LoadCompleted(this, e);
         }
-        
+
         //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_NavigationStopped(object sender, NavigationEventArgs e)
         {
@@ -280,31 +280,37 @@ namespace SilkDialectLearning.Flyouts
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.FragmentNavigation"/>
         public event FragmentNavigationEventHandler FragmentNavigation;
+        
         /// <summary>
         /// Occurs when a new navigation is requested.
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.Navigating"/>
         public event NavigatingCancelEventHandler Navigating;
+       
         /// <summary>
         /// Occurs when an error is raised while navigating to the requested content.
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.NavigationFailed"/>
         public event NavigationFailedEventHandler NavigationFailed;
+        
         /// <summary>
         /// Occurs periodically during a download to provide navigation progress information.
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.NavigationProgress"/>
         public event NavigationProgressEventHandler NavigationProgress;
+        
         /// <summary>
         /// Occurs when the StopLoading method is called, or when a new navigation is requested while a current navigation is in progre
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.NavigationStopped"/>
         public event NavigationStoppedEventHandler NavigationStopped;
+       
         /// <summary>
         /// Occurs when the content that is being navigated to has been found, and is available from the PageContent property, although it may not have completed loading
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.Navigated"/>
         public event NavigatedEventHandler Navigated;
+        
         /// <summary>
         /// Occurs when content that was navigated to has been loaded, parsed, and has begun rendering.
         /// </summary>
@@ -319,17 +325,20 @@ namespace SilkDialectLearning.Flyouts
 
         private void uiPanel_Loaded(object sender, RoutedEventArgs e)
         {
+            var grid = (sender as Grid);
+            RoutedEventHandler affirmativeHandler = null;
+            KeyEventHandler affirmativeKeyHandler = null;
+
             Dispatcher.BeginInvoke(new Action(() =>
             {
                 this.Focus();
                 PART_Name.Focus();
             }));
 
-            RoutedEventHandler affirmativeHandler = null;
-            KeyEventHandler affirmativeKeyHandler = null;
-            affirmativeKeyHandler = (s, e1) =>
+
+            affirmativeKeyHandler = (s, ea) =>
             {
-                if (e1.Key == Key.Enter)
+                if (ea.Key == Key.Enter)
                 {
                     Dispatcher.BeginInvoke(new Action(() =>
                     {
@@ -338,29 +347,34 @@ namespace SilkDialectLearning.Flyouts
                 }
             };
 
-            affirmativeHandler = (s, e1) =>
+            affirmativeHandler = (s, ea) =>
             {
                 MyPopup.IsOpen = false;
-                e1.Handled = true;
+                ea.Handled = true;
             };
 
             PART_SaveButton.KeyDown += affirmativeKeyHandler;
             PART_Name.KeyDown += affirmativeKeyHandler;
             PART_Description.KeyDown += affirmativeKeyHandler;
 
-            (sender as Grid).KeyDown += HomeFlyout_KeyDown;
+            grid.KeyDown += HomeFlyout_KeyDown;
         }
 
-        void HomeFlyout_KeyDown(object sender, KeyEventArgs e)
+        private void HomeFlyout_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Escape)
             {
                 MyPopup.IsOpen = false;
             }
         }
+        
+        private void PART_SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            MyPopup.IsOpen = false;
+        }
 
         #region Notify
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
         {
@@ -369,7 +383,7 @@ namespace SilkDialectLearning.Flyouts
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-        
+
         #endregion
     }
 
@@ -378,13 +392,13 @@ namespace SilkDialectLearning.Flyouts
 
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            if (value != null)
-            {
-                string titles = (value as string);
-                string title = titles.Substring(0, titles.Length - 1);
-                return string.Format("Add {0}", title);
-            }
-            return null;
+            if (value == null)
+                return null;
+
+            string titles = (value as string);
+            string title = titles.Substring(0, titles.Length - 1);
+            return string.Format("Add {0}", title);
+
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

@@ -97,6 +97,15 @@ namespace SilkDialectLearning
             }
         }
 
+        public virtual void OnClick(object sender, MouseButtonEventArgs e)
+        {
+            var handler = Click;
+            if (handler != null)
+            {
+                handler(sender, e);
+            }
+        }
+
         #endregion
 
         #region Events
@@ -107,6 +116,10 @@ namespace SilkDialectLearning
         public event LoadingEventHandler Loading;
 
         public delegate void LoadingEventHandler(object sender, LoadingEventArgs e);
+
+        public event ClickEventHandler Click;
+
+        public delegate void ClickEventHandler(object sender, MouseButtonEventArgs e);
 
         #endregion
 
@@ -388,23 +401,21 @@ namespace SilkDialectLearning
                 {
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
-                    mainViewModel.OnLoading(true, "");
+                    mainViewModel.OnLoading(true, "Saving...");
                     await viewModel.InsertEntity(new Language
                     {
                         Id = Guid.NewGuid(),
                         Name = mainViewModel.Name,
                         Description = mainViewModel.Description
                     });
-                    mainViewModel.OnLoading(false, "");
                     viewModel.NotifyPropertyChanged("Languages");
-                    mainViewModel.Name = null;
-                    mainViewModel.Description = null;
+                    ResetNameAndDescription();
                 }
                 else if (title.Equals("Levels"))
                 {
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
-
+                    mainViewModel.OnLoading(true, "Saving...");
                     await viewModel.InsertEntity(new Level
                     {
                         Id = Guid.NewGuid(),
@@ -413,14 +424,14 @@ namespace SilkDialectLearning
                         Language = mainViewModel.ViewModel.SelectedLanguage
                     });
                     viewModel.NotifyPropertyChanged("Levels");
-                    mainViewModel.Name = null;
-                    mainViewModel.Description = null;
+                    ResetNameAndDescription();
                 }
                 else if (title.Equals("Units"))
                 {
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
 
+                    mainViewModel.OnLoading(true, "Saving...");
                     await viewModel.InsertEntity(new Unit
                     {
                         Id = Guid.NewGuid(),
@@ -429,13 +440,14 @@ namespace SilkDialectLearning
                         Level = mainViewModel.ViewModel.SelectedLevel
                     });
                     viewModel.NotifyPropertyChanged("Units");
-                    mainViewModel.Name = null;
-                    mainViewModel.Description = null;
+                    ResetNameAndDescription();
                 }
                 else if (title.Equals("Lessons"))
                 {
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
+
+                    mainViewModel.OnLoading(true, "Saving...");
                     await viewModel.InsertEntity(new Lesson
                     {
                         Id = Guid.NewGuid(),
@@ -444,16 +456,47 @@ namespace SilkDialectLearning
                         Unit = mainViewModel.ViewModel.SelectedUnit
                     });
                     viewModel.NotifyPropertyChanged("Lessons");
-                    mainViewModel.Name = null;
-                    mainViewModel.Description = null;
+                    ResetNameAndDescription();
                 }
+                mainViewModel.OnLoading(false, "");
+            }
+
+            /// <summary>
+            /// This method will set null for Name and Description after inserting new Entity
+            /// </summary>
+            private void ResetNameAndDescription()
+            {
+                mainViewModel.Name = null;
+                mainViewModel.Description = null;
             }
         }
 
-        public ICommand EditCommand { get { return new EditCmd(); } }
+        public ICommand EditCommand 
+        {
+            get 
+            { 
+                return new EditCmd(this.MetroWinow, this); 
+            } 
+        }
 
         public class EditCmd : ICommand
         {
+            /// <summary>
+            /// Gets and Sets MetroWindow instance
+            /// </summary>
+            private MetroWindow metroWindow { get; set; }
+
+            /// <summary>
+            /// Gets and Sets instance of MainViewModel
+            /// </summary>
+            private MainViewModel mainViewModel { get; set; }
+
+            public EditCmd(MetroWindow metroWindow, MainViewModel mainViewModel)
+            {
+                this.metroWindow = metroWindow;
+                this.mainViewModel = mainViewModel;
+            }
+
             public bool CanExecute(object parameter)
             {
                 return true;
@@ -463,53 +506,70 @@ namespace SilkDialectLearning
 
             public void Execute(object parameter)
             {
-                var metroWindow = (Application.Current.MainWindow as MetroWindow);
                 ListBoxItem listBoxItem = parameter as ListBoxItem;
                 if (listBoxItem == null)
                     return;
                 ListBox listBox = VisualTreeHelpers.FindAncestor<ListBox>(listBoxItem);
                 if (listBox == null)
                     return;
-                EditEntity(metroWindow, listBoxItem, listBox);
+                EditEntity(listBoxItem, listBox);
             }
 
-            public async void EditEntity(MetroWindow metroWindow, ListBoxItem listBoxItem, ListBox listBox)
+            public async void EditEntity(ListBoxItem listBoxItem, ListBox listBox)
             {
-                // Gets ViewModel from MainViewModel
-                MainViewModel mainViewModel = listBox.DataContext as MainViewModel;
-
-                if (mainViewModel == null)
-                    return;
-
                 IEntity selectedEntity = listBoxItem.DataContext as IEntity;
-                ViewModel viewModel = mainViewModel.ViewModel;
 
                 var mySettings = new MetroDialogSettings()
                 {
                     AffirmativeButtonText = "Yes",
                     NegativeButtonText = "No",
+                    AnimateShow = false,
                     AnimateHide = false,
                     ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
                 };
                 if (selectedEntity is Language)
                 {
                     string name = await metroWindow.ShowInputAsync("Edit Language", "Enter the name of Language.", mySettings);
-                    if (string.IsNullOrEmpty(name)) return;
+                    if (string.IsNullOrEmpty(name))
+                        return;
+
                     string description = await metroWindow.ShowInputAsync("Edit Language", "Enter the description of Language.", mySettings);
-                    if (description == null) return;
                     selectedEntity.Name = name;
                     selectedEntity.Description = description;
-                    ModelManager.Db.Update(selectedEntity, typeof(Language));
+                    await mainViewModel.ViewModel.Update(selectedEntity);
                 }
                 else if (selectedEntity is Level)
                 {
                     string name = await metroWindow.ShowInputAsync("Edit Level", "Enter the name of Level.", mySettings);
-                    if (string.IsNullOrEmpty(name)) return;
-                    string description = await metroWindow.ShowInputAsync("Edit Level", "Enter the description of Level.", mySettings);
-                    if (description == null) return;
+                    if (string.IsNullOrEmpty(name))
+                        return;
+                    
+                    string description = await metroWindow.ShowInputAsync("Edit Level", "Enter the description of Level.", mySettings);;
                     selectedEntity.Name = name;
                     selectedEntity.Description = description;
-                    ModelManager.Db.Update(selectedEntity, typeof(Level));
+                    await mainViewModel.ViewModel.Update(selectedEntity);
+                }
+                else if (selectedEntity is Unit)
+                {
+                    string name = await metroWindow.ShowInputAsync("Edit Unit", "Enter the name of Unit.", mySettings);
+                    if (string.IsNullOrEmpty(name))
+                        return;
+
+                    string description = await metroWindow.ShowInputAsync("Edit Unit", "Enter the description of Unit.", mySettings); ;
+                    selectedEntity.Name = name;
+                    selectedEntity.Description = description;
+                    await mainViewModel.ViewModel.Update(selectedEntity);
+                }
+                else if (selectedEntity is Lesson)
+                {
+                    string name = await metroWindow.ShowInputAsync("Edit Lesson", "Enter the name of Lesson.", mySettings);
+                    if (string.IsNullOrEmpty(name))
+                        return;
+
+                    string description = await metroWindow.ShowInputAsync("Edit Lesson", "Enter the description of Lesson.", mySettings); ;
+                    selectedEntity.Name = name;
+                    selectedEntity.Description = description;
+                    await mainViewModel.ViewModel.Update(selectedEntity);
                 }
             }
         }
@@ -535,5 +595,19 @@ namespace SilkDialectLearning
         public Brush BorderColorBrush { get; set; }
         public Brush ColorBrush { get; set; }
     }
+
     public class AppThemeMenuData : AccentColorMenuData { }
+
+    public class LoadingEventArgs : EventArgs
+    {
+        public bool Loading { get; set; }
+        public string Message { get; set; }
+
+        public LoadingEventArgs(bool loading, string message)
+        {
+            Loading = loading;
+            Message = message;
+        }
+    }
+
 }

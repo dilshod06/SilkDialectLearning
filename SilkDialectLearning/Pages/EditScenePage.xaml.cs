@@ -23,7 +23,11 @@ namespace SilkDialectLearning.Pages
     public partial class EditScenePage : Page
     {
         public ObservableCollection<SceneItem> ChangedItems { get; set; }
-        MainViewModel MainViewModel { get; set; }
+
+        public MainViewModel MainViewModel { get; set; }
+        
+        private bool isRectDragInProg = false;
+
         public EditScenePage(MainViewModel mainViewModel)
         {
             InitializeComponent();
@@ -37,7 +41,6 @@ namespace SilkDialectLearning.Pages
             mainGrid.DataContext = MainViewModel.ViewModel.SceneViewModel.SelectedScene;
         }
 
-        private bool _isRectDragInProg = false;
 
         private void Dots_Click(object sender, MouseButtonEventArgs e)
         {
@@ -50,7 +53,7 @@ namespace SilkDialectLearning.Pages
             if (border != null)
             {
                 border.BorderBrush = (Brush)FindResource("ValidationBrush5");
-                _isRectDragInProg = true;
+                isRectDragInProg = true;
                 border.CaptureMouse();
             }
         }
@@ -61,14 +64,14 @@ namespace SilkDialectLearning.Pages
             if (border != null)
             {
                 border.BorderBrush = (Brush)FindResource("GrayBrush1");
-                _isRectDragInProg = false;
+                isRectDragInProg = false;
                 border.ReleaseMouseCapture();
             }
         }
 
         private void sceneDot_MouseMove(object sender, MouseEventArgs e)
         {
-            if (!_isRectDragInProg) return;
+            if (!isRectDragInProg) return;
 
             Border border = sender as Border;
             if (border != null)

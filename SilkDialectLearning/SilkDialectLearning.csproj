@@ -246,6 +246,7 @@
   <PropertyGroup>
     <PostBuildEvent>COPY /Y "$(SolutionDir)3rdPartyLibraries\*.dll" "$(TargetDir)\"</PostBuildEvent>
   </PropertyGroup>
+  <Import Project="$(XamlSpyInstallPath)MSBuild\FirstFloor.XamlSpy.WPF.targets" Condition="'$(XamlSpyInstallPath)' != '' and '$(Configuration)' == 'Debug'" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

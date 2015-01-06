@@ -156,7 +156,7 @@
 								</StackPanel.Resources>
 								<Button Content="Save" Width="100" Height="28"
 										Command="{Binding Path=AddCommand}"
-										CommandParameter="{Binding Path=Content, ElementName=PART_Title}" Style="{DynamicResource AccentedMetroFlatButton}" Name="PART_SaveButton"/>
+										CommandParameter="{Binding Path=Content, ElementName=PART_Title}" Style="{DynamicResource AccentedMetroFlatButton}" Name="PART_SaveButton" Click="PART_SaveButton_Click"/>
 							</StackPanel>
 						</Grid>
 					</Border>
@@ -164,7 +164,7 @@
 			</StackPanel>
 		</Border>
 		<StackPanel Grid.Row="3" Name="uiPageStatus" Visibility="Collapsed">
-            <ListView ItemsSource="{Binding Path=PageStatus}">
+			<ListView ItemsSource="{Binding Path=PageStatus}">
 			</ListView>
 		</StackPanel>
 	</Grid>

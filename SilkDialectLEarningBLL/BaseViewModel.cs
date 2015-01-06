@@ -299,6 +299,16 @@ namespace SilkDialectLearningBLL
             return await Db.SqLiteAsyncConnection.DeleteAsync(phrase);
         }
 
+        public Task<int> Update(object item) 
+        {
+            return Db.SqLiteAsyncConnection.UpdateAsync(item);
+        }
+
+        public Task<int> UpdateAll(IEnumerable items)
+        {
+            return Db.SqLiteAsyncConnection.UpdateAllAsync(items);
+        }
+
         public Task<int> InsertEntity(IEntity entity)
         {
             if (entity is Language)
@@ -308,7 +318,7 @@ namespace SilkDialectLearningBLL
             else if (entity is Level)
             {
                 return SelectedLanguage.InsertLevel(entity as Level);
-                
+
             }
             else if (entity is Unit)
             {
@@ -321,20 +331,6 @@ namespace SilkDialectLearningBLL
             return new Task<int>(() => 0);
         }
 
-        public void DeleteVocabualary()
-        {
-            //TODO: Delete Vocabualary
-        }
-
-        public Task<int> Update(object entity) 
-        {
-            return Db.SqLiteAsyncConnection.UpdateAsync(entity);
-        }
-
-        public Task<int> UpdateAll(IEnumerable items)
-        {
-            return Db.SqLiteAsyncConnection.UpdateAllAsync(items);
-        }
 
         #endregion
 
@@ -375,15 +371,4 @@ namespace SilkDialectLearningBLL
         #endregion
     }
 
-    public class LoadingEventArgs : EventArgs
-    {
-        public bool Loading { get; set; }
-        public string Message { get; set; }
-
-        public LoadingEventArgs(bool loading, string message)
-        {
-            Loading = loading;
-            Message = message;
-        }
-    }
 }

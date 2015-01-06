@@ -68,11 +68,16 @@ namespace SilkDialectLearning.Views
             }));
         }
 
+        private int lastSelectedIndex = 0;
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        {   
             var tabControl = sender as TabControl;
+            lastSelectedIndex = tabControl.SelectedIndex;
             if (tabControl.SelectedIndex == -1)
-                tabControl.SelectedIndex = 0;
+            {
+                lastSelectedIndex = 0;
+                tabControl.SelectedIndex = 0;                
+            }
 
             items = new Dictionary<Border, SceneItem>();
         }
@@ -113,7 +118,7 @@ namespace SilkDialectLearning.Views
         }
         private void ScenesTabControl_Loaded(object sender, RoutedEventArgs e)
         {
-            (sender as TabControl).SelectedIndex = 0;
+            (sender as TabControl).SelectedIndex = lastSelectedIndex;
         }
 
     }
