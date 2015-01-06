@@ -271,7 +271,7 @@ namespace SilkDialectLearning
                     if (result != MessageDialogResult.Negative)
                     {
                         mainViewModel.OnLoading(true, "Please wait language is deleting...");
-                        await viewModel.Delete(selectedEntity as Language);
+                        await viewModel.DeleteLanguage(selectedEntity as Language);
                         viewModel.NotifyPropertyChanged("Languages");
                         mainViewModel.OnLoading(false, "");
                     }

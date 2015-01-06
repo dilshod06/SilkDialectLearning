@@ -226,18 +226,22 @@ namespace SilkDialectLearningBLL
             else if (level != null)
             {
                 childEntities = level.Units;
+                SelectedLanguage.IsLevelsDirty = true;
             }
             else if (unit != null)
             {
                 childEntities = unit.Lessons;
+                SelectedLevel.IsUnitsDirty = true;
             }
             else if (lesson != null)
             {
                 childEntities = lesson.Scenes;
+                SelectedUnit.IsLessonsDirty = true;
             }
             else if (scene != null)
             {
                 childEntities = scene.SceneItems;
+                SelectedLesson.IsScenesDirty = true;
             }
             else if (sceneItem != null)
             {
@@ -253,6 +257,103 @@ namespace SilkDialectLearningBLL
             }
             return await Db.SqLiteAsyncConnection.DeleteAsync(entity);
         }
+
+        /// <summary>
+        /// this Method deletes selectedLanguage cascade Language.Levels.Units.Lessons.Scenes.SceneItems
+        /// </summary>
+        /// <param name="selectedLanguage">Language</param>
+        public async Task<int> DeleteLanguage(Language selectedLanguage)
+        {
+            ObservableCollection<Level> levels = selectedLanguage.Levels;
+            if (levels.Count > 0)
+            {
+                foreach (Level level in levels)
+                {
+                    await DeleteLevel(level);
+                }
+            }
+            return await Db.SqLiteAsyncConnection.DeleteAsync(selectedLanguage);
+        }
+
+        public async Task<int> DeleteLevel(Level level)
+        {
+            ObservableCollection<Unit> units = level.Units;
+            if (units.Count > 0)
+            {
+                foreach (Unit unit in units)
+                {
+                    await DeleteUnit(unit);
+                }
+            }
+            SelectedLanguage.IsLevelsDirty = true;
+            return await Db.SqLiteAsyncConnection.DeleteAsync(level);
+        }
+
+        public async Task<int> DeleteUnit(Unit unit)
+        {
+            ObservableCollection<Lesson> lessons = unit.Lessons;
+            if (lessons.Count > 0)
+            {
+                foreach (Lesson lesson in lessons)
+                {
+                    await DeleteLesson(lesson);
+                }
+            }
+            SelectedLevel.IsUnitsDirty = true;
+            return await Db.SqLiteAsyncConnection.DeleteAsync(unit);
+        }
+
+        public async Task<int> DeleteLesson(Lesson lesson)
+        {
+            IList<Scene> scenes = lesson.Scenes;
+            if (scenes.Count > 0)
+            {
+                foreach (Scene scene in scenes)
+                {
+                    await DeleteScene(scene);
+                }
+            }
+            if (lesson.Vocabularies.Count > 0)
+            {
+
+            }
+            if (lesson.SentenceBuildings.Count > 0)
+            {
+
+            }
+            SelectedUnit.IsLessonsDirty = true;
+            return await Db.SqLiteAsyncConnection.DeleteAsync(lesson);
+        }
+
+        public async Task<int> DeleteScene(Scene scene)
+        {
+            ObservableCollection<SceneItem> sceneItems = scene.SceneItems;
+            if (sceneItems.Count > 0)
+            {
+                foreach (SceneItem sceneItem in sceneItems)
+                {
+                    await DeleteSceneItem(sceneItem);
+                }
+            }
+            
+            if (scene.ScenePicture != null)
+                await Db.SqLiteAsyncConnection.DeleteAsync(scene.ScenePicture);
+            return await Db.SqLiteAsyncConnection.DeleteAsync(scene);
+        }
+
+        public async Task<int> DeleteSceneItem(SceneItem sceneItem)
+        {
+            if (sceneItem.Phrase != null)
+                await DeletePhrase(sceneItem.Phrase);
+
+            return await Db.SqLiteAsyncConnection.DeleteAsync(sceneItem);
+        }
+
+        private async Task<int> DeletePhrase(Phrase phrase)
+        {
+            return await Db.SqLiteAsyncConnection.DeleteAsync(phrase);
+        }
+
 
         public Task<int> Update(object item)
         {
