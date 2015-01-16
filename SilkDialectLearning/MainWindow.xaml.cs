@@ -3,6 +3,7 @@ using SilkDialectLearning.Pages;
 using SilkDialectLearningBLL;
 using System;
 using System.Collections;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -56,7 +57,7 @@ namespace SilkDialectLearning
                 if (MainViewModel.ViewModel.SelectedLesson != null)
                     ToggleFlyout(1);
             }
-            
+
         }
 
         private void ViewModel_Loading(object sender, LoadingEventArgs e)
@@ -82,8 +83,8 @@ namespace SilkDialectLearning
                 ProgressRing progressRing = new ProgressRing()
                 {
                     IsActive = true,
-                    Width = 50,
-                    Height = 50
+                    Width = 40,
+                    Height = 40
                 };
                 TextBlock message = new TextBlock()
                 {
@@ -113,7 +114,6 @@ namespace SilkDialectLearning
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
-            this.ToggleFlyout(0);
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -123,8 +123,7 @@ namespace SilkDialectLearning
 
         private void MenuTextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (MainViewModel.ViewModel.SelectedLesson != null)
-                ToggleFlyout(1);
+            if (MainViewModel.ViewModel.SelectedLesson != null) { }
         }
 
         void PART_Frame_LoadCompleted(object sender, NavigationEventArgs e)
@@ -135,7 +134,7 @@ namespace SilkDialectLearning
 
         void PART_Frame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-            
+
             var sceneEditPage = (sender as Frame).Content as EditScenePage;
             if (sceneEditPage != null)
             {//This will be raised after pressing back button and updated Changed SceneItems
@@ -156,7 +155,7 @@ namespace SilkDialectLearning
                 GoBack();
         }
 
-        void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        void MainWindow_Closing(object sender, CancelEventArgs e)
         {
             PART_Frame.Navigating -= PART_Frame_Navigating;
             PART_Frame.LoadCompleted -= PART_Frame_LoadCompleted;
@@ -179,6 +178,16 @@ namespace SilkDialectLearning
 
             PART_NavigatePanel.Visibility = CanGoBack ? Visibility.Visible : Visibility.Collapsed;
 
+            if (PageContent is EditScenePage)
+            {
+                MenuTextBlock.Visibility = System.Windows.Visibility.Collapsed;
+                ToggleFlyout(1);
+            }
+            else
+            {
+                if (MainViewModel.ViewModel.SceneViewModel.SelectedScene != null)
+                    MenuTextBlock.Visibility = System.Windows.Visibility.Visible;
+            }
             if (Navigated != null)
                 Navigated(this, e);
         }
@@ -196,7 +205,7 @@ namespace SilkDialectLearning
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.ForwardStack"/>
         public IEnumerable ForwardStack { get { return PART_Frame.ForwardStack; } }
-       
+
         /// <summary>
         /// Gets an IEnumerable that you use to enumerate the entries in back navigation history for a NavigationWindow.
         /// </summary>
@@ -208,19 +217,19 @@ namespace SilkDialectLearning
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.NavigationService"/>
         public NavigationService NavigationService { get { return PART_Frame.NavigationService; } }
-        
+
         /// <summary>
         /// Gets a value that indicates whether there is at least one entry in back navigation history.
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.CanGoBack"/>
         public bool CanGoBack { get { return PART_Frame.CanGoBack; } }
-        
+
         /// <summary>
         /// Gets a value that indicates whether there is at least one entry in forward navigation history.
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.CanGoForward"/>
         public bool CanGoForward { get { return PART_Frame.CanGoForward; } }
-        
+
         /// <summary>
         /// Gets or sets the base uniform resource identifier (URI) of the current context.
         /// </summary>
@@ -284,12 +293,36 @@ namespace SilkDialectLearning
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.Navigated"/>
         public event NavigatedEventHandler Navigated;
-        
+
         /// <summary>
         /// Occurs when content that was navigated to has been loaded, parsed, and has begun rendering.
         /// </summary>
         /// <see cref="System.Windows.Navigation.NavigationWindow.LoadCompleted"/>
         public event LoadCompletedEventHandler LoadCompleted;
 
+
+        private void Activites_Click(object sender, RoutedEventArgs e)
+        {
+            if (MyPopup.IsOpen)
+                MyPopup.IsOpen = false;
+            else
+                MyPopup.IsOpen = true;
+        }
+
+        private void EditButton_Click(object sender, RoutedEventArgs e)
+        {
+            PART_Frame.Navigate(new EditScenePage(MainViewModel));
+        }
+
+        private void MenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.ToggleFlyout(0);
+            ToggleFlyout(1);            
+        }
+
+        private void MetroWindow_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            ToggleFlyout(1);            
+        }
     }
 }

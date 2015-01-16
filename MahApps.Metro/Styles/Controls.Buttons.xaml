@@ -515,7 +515,7 @@
             <Trigger Property="IsMouseOver"
                      Value="True">
                 <Setter Property="Background"
-                        Value="{DynamicResource SemiTransparentWhiteBrush}" />
+                        Value="{DynamicResource GrayBrush6}" />
             </Trigger>
             <Trigger Property="IsPressed"
                      Value="True">

@@ -14,7 +14,6 @@ namespace SilkDialectLearning.Converters
             byte[] array = (byte[])value;
             BitmapImage image = new BitmapImage();
             MemoryStream ms = new MemoryStream(array);
-            System.Drawing.Bitmap img = new Bitmap(ms);
             image.BeginInit();
             image.StreamSource = ms;
             image.EndInit();

@@ -20,26 +20,9 @@ namespace SilkDialectLearning.Flyouts
         void SceneMenuFlyout_Loaded(object sender, RoutedEventArgs e)
         {
             sceneMenu = sender as SceneMenuFlyout;
-            metroWindow = VisualTreeHelpers.FindAncestor<MetroWindow>(sceneMenu);
+            metroWindow = VisualTreeHelpers.FindAncestor<MetroWindow>(sceneMenu); //Find instance of MainWindow 
         }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var frame = VisualTreeHelpers.FindChild<Frame>(metroWindow);
-            var mainViewModel = this.DataContext as MainViewModel;
-            frame.Navigate(new EditScenePage(mainViewModel));
-        }
-
-        private void Activites_Click(object sender, RoutedEventArgs e)
-        {
-            if (MyPopup.IsOpen)
-            {
-                MyPopup.IsOpen = false;
-            }
-            else
-            {
-                MyPopup.IsOpen = true;
-            }
-        }
+        
     }
 }

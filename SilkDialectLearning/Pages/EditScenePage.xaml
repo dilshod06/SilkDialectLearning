@@ -68,6 +68,12 @@
 										<Binding ElementName="sceneImage" Path="ActualHeight"/>
 									</MultiBinding>
 								</Border.Margin>
+								<Border.ContextMenu>
+									<ContextMenu>
+										<MenuItem Header="Change Sound"/>
+										<MenuItem Header="Delete"/>
+									</ContextMenu>
+								</Border.ContextMenu>
 								<TextBlock Text="{Binding Path=Order}" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="{DynamicResource ContentFontFamily}" FontSize="{DynamicResource NormalFontSize}"/>
 							</Border>
 						</DataTemplate>

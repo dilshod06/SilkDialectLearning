@@ -41,7 +41,7 @@ namespace MahApps.Metro.Controls
         public static void HandleWindowCommandsForFlyouts(this MetroWindow window, IEnumerable<Flyout> flyouts, Brush resetBrush = null)
         {
             var allOpenFlyouts = flyouts.Where(x => x.IsOpen);
-            
+
             var anyFlyoutOpen = allOpenFlyouts.Any(x => x.Position != Position.Bottom);
             if (!anyFlyoutOpen)
             {
@@ -71,6 +71,10 @@ namespace MahApps.Metro.Controls
                 if (leftFlyout != null)
                 {
                     window.UpdateWindowCommandsForFlyout(leftFlyout);
+                }
+                if (topFlyout == null && leftFlyout != null)
+                {
+                    window.ResetAllWindowCommandsBrush();
                 }
                 var rightFlyout = allOpenFlyouts
                     .Where(x => x.Position == Position.Right)

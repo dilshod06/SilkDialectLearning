@@ -641,8 +641,7 @@ namespace SQLite
 		/// </returns>
 		public int Execute(string query, params object[] args)
 		{
-			string ownquery = "PRAGMA cache_size = 16000; PRAGMA synchronous = OFF; PRAGMA journal_mode = MEMORY;";
-
+			//string ownquery = "PRAGMA cache_size = 16000; PRAGMA synchronous = OFF; PRAGMA journal_mode = MEMORY;";
 
 			var cmd = CreateCommand(query, args);
 

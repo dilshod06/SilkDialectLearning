@@ -13,7 +13,7 @@
 				  MenuCloseButtonVisibility="Visible"
 				  Theme="Inverse" TitleVisibility="Collapsed"
 				  AnimateOpacity="True"
-				  FlyoutMargin="0 0 0 25"
+				  FlyoutMargin="0"
 				  HeaderMargin="10,-10,5,25"
 				  IsPinned="True"
 				  d:DataContext="{d:DesignInstance local:MainViewModel}">

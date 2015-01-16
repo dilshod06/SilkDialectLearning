@@ -239,7 +239,7 @@
 
     <Style TargetType="{x:Type Controls:MetroWindow}">
         <Setter Property="WindowTitleBrush"
-                Value="{DynamicResource WindowTitleColorBrush}" />
+                Value="Transparent" />
         <Setter Property="TextElement.FontSize"
                 Value="{DynamicResource ContentFontSize}" />
         <Setter Property="Background"
@@ -262,7 +262,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="TitleForeground"
-                Value="{DynamicResource IdealForegroundColorBrush}" />
+                Value="{DynamicResource BlackBrush}" />
         <Setter Property="Template"
                 Value="{StaticResource WindowTemplateKey}" />
         <Setter Property="TitleTemplate">
@@ -388,7 +388,7 @@
                                     <DataTrigger Binding="{Binding ShowTitleBar, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
                                                  Value="True">
                                         <Setter Property="Foreground"
-                                                Value="{DynamicResource IdealForegroundColorBrush}" />
+                                                Value="{DynamicResource BlackBrush}" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -452,7 +452,7 @@
                                                 <DataTrigger Binding="{Binding ShowTitleBar, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
                                                              Value="True">
                                                     <Setter Property="Foreground"
-                                                            Value="{DynamicResource IdealForegroundColorBrush}" />
+                                                            Value="{DynamicResource BlackBrush}" />
                                                 </DataTrigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
@@ -479,7 +479,7 @@
             <DataTrigger Binding="{Binding ShowTitleBar, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
                          Value="True">
                 <Setter Property="Foreground"
-                        Value="{DynamicResource IdealForegroundColorBrush}" />
+                        Value="{DynamicResource BlackBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding ShowTitleBar, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
                          Value="False">
@@ -574,7 +574,7 @@
             <DataTrigger Binding="{Binding ShowTitleBar, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
                          Value="True">
                 <Setter Property="Foreground"
-                        Value="{DynamicResource IdealForegroundColorBrush}" />
+                        Value="{DynamicResource BlackBrush}" />
             </DataTrigger>
             <DataTrigger Binding="{Binding ShowTitleBar, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Controls:MetroWindow}}}"
                          Value="False">

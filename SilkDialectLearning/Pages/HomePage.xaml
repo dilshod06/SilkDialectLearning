@@ -11,7 +11,7 @@
 	<Page.Resources>
 		<ResourceDictionary>
 			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="../Styles/RightTabControl.xaml"/>
+				<!--<ResourceDictionary Source="../Styles/RightTabControl.xaml"/>-->
 			</ResourceDictionary.MergedDictionaries>
 			<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
 		</ResourceDictionary>
@@ -43,15 +43,6 @@
 					Text="Silk Road Professionals™ 2014" Foreground="{DynamicResource BlackBrush}"/>
 			</StackPanel>
 		</Grid>
-		<TabControl Name="MainTabControl" 
-					Grid.Row="0" 
-					Margin="0 0 0 0" 
-					TabStripPlacement="Right"
-					Visibility="{Binding Path=ViewModel.SelectedLesson, Converter={StaticResource NullToVisibilityConverter}}" MouseRightButtonDown="MainTabControl_MouseRightButtonDown">
-			<TabItem Header="Scene" Style="{DynamicResource TabItemStyle}" Padding="0 40 0 0">
-				<views:SceneView />
-			</TabItem>
-			<TabItem Header="Vocab" Style="{DynamicResource TabItemStyle}" Padding="0"/>
-		</TabControl>
+        <views:SceneView Grid.Row="0"/>
 	</Grid>
 </Page>

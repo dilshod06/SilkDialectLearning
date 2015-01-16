@@ -127,6 +127,7 @@
     <Compile Include="Behaviours\BindableResourceBehavior.cs" />
     <Compile Include="Behaviours\BorderlessWindowBehavior.cs" />
     <Compile Include="Behaviours\GlowWindowBehavior.cs" />
+    <Compile Include="Behaviours\HorizantalScrollViewerMouseWheelBehavior.cs" />
     <Compile Include="Behaviours\StylizedBehaviorCollection.cs" />
     <Compile Include="Behaviours\TabControlSelectFirstVisibleTabBehavior.cs" />
     <Compile Include="Behaviours\WindowsSettingBehaviour.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Controls\SplitButton.cs" />
     <Compile Include="Controls\TabControlHelper.cs" />
     <Compile Include="Controls\ToggleButtonHelper.cs" />
+    <Compile Include="Controls\VisualTreeHelpers.cs" />
     <Compile Include="Controls\WindowButtonCommands.cs" />
     <Compile Include="Controls\WindowCommandsOverlayBehavior.cs" />
     <Compile Include="Converters\BackgroundToForegroundConverter.cs" />
@@ -375,6 +377,11 @@
     <Page Include="Styles\Controls.AnimatedTabControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+      <DependentUpon>Controls.xaml</DependentUpon>
+    </Page>
+    <Page Include="Styles\Controls.Buttons.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
       <DependentUpon>Controls.xaml</DependentUpon>
     </Page>
     <Page Include="Styles\Controls.ComboBox.xaml">
@@ -646,11 +653,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\Controls.Scrollbars.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <DependentUpon>Controls.xaml</DependentUpon>
-    </Page>
-    <Page Include="Styles\Controls.Buttons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <DependentUpon>Controls.xaml</DependentUpon>

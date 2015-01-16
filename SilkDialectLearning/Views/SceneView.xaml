@@ -23,13 +23,32 @@
     </UserControl.Resources>
     <DockPanel>
         <DockPanel.Resources>
-            <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />
+            <Style TargetType="Border" x:Key="SceneBorderStyle">
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="True">
+                        <Setter Property="Background" Value="{DynamicResource HighlightBrush}"/>
+                        <Setter Property="Opacity" Value=".5"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush1}"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="False">
+                        <Setter Property="Background" Value="{DynamicResource GrayBrush2}"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Opacity" Value=".8"/>
+                    </Trigger>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Cursor" Value="Hand"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+            <!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />-->
         </DockPanel.Resources>
         <TabControl Name="ScenesTabControl"
                             ItemsSource="{Binding Path=ViewModel.SceneViewModel.Scenes, IsAsync=True}" 
                             SelectionChanged="TabControl_SelectionChanged"
                             SelectedItem="{Binding Path=ViewModel.SceneViewModel.SelectedScene}"
                             Loaded="ScenesTabControl_Loaded">
+            
             <TabControl.ItemTemplate>
                 <DataTemplate>
                     <StackPanel Orientation="Horizontal">
@@ -37,12 +56,32 @@
                     </StackPanel>
                 </DataTemplate>
             </TabControl.ItemTemplate>
+            
             <TabControl.ContentTemplate>
                 <DataTemplate>
                     <Grid Name="mainGrid">
-                        <Image Name="sceneImage" Source="{Binding Path=ScenePicture.Picture, Converter={StaticResource ByteToImageConverter}}"/>
+                        <Image Name="sceneImage" Source="{Binding Path=ScenePicture.Picture, Converter={StaticResource ByteToImageConverter}}">
+                            <Image.Style>
+                                <Style TargetType="Image">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=items, Path=ItemsSource}" Value="{x:Null}">
+                                            <Setter  Property="Visibility" Value="Hidden"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Image.Style>
+                        </Image>
                         <Grid Name="bordersGrid" Width="{Binding ActualWidth, ElementName=sceneImage, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=sceneImage, Mode=OneWay}">
-                            <ItemsControl ItemsSource="{Binding Path=SceneItems, IsAsync=True}">
+                            <ItemsControl ItemsSource="{Binding Path=SceneItems, IsAsync=True}" Name="items">
+                                <ItemsControl.Style>
+                                    <Style TargetType="{x:Type ItemsControl}">
+                                        <Style.Triggers>
+                                            <Trigger Property="ItemsSource" Value="{x:Null}">
+                                                <Setter Property="Template" Value="{StaticResource WaitControlTemplate}" />
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </ItemsControl.Style>
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <Grid/>
@@ -50,31 +89,12 @@
                                 </ItemsControl.ItemsPanel>
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
-                                        <Border BorderThickness="2" 
-                                                        BorderBrush="{DynamicResource GrayBrush1}"
-                                                        MouseLeftButtonDown="dot_MouseLeftButtonDown" 
-                                                        Opacity=".5"
+                                        <Border MouseLeftButtonDown="dot_MouseLeftButtonDown" 
                                                         HorizontalAlignment="Left"
                                                         VerticalAlignment="Top"
                                                         Loaded="Border_Loaded" 
-                                                        Name="sceneDot">
-                                            <Border.Style>
-                                                <Style>
-                                                    <Style.Triggers>
-                                                        <Trigger Property="Border.IsEnabled" Value="True">
-                                                            <Setter Property="Border.Background" Value="{DynamicResource HighlightBrush}"/>
-                                                        </Trigger>
-                                                        <Trigger Property="Border.IsEnabled" Value="False">
-                                                            <Setter Property="Border.Background" Value="{DynamicResource GrayBrush1}"/>
-                                                            <Setter Property="Border.BorderThickness" Value="0"/>
-                                                            <Setter Property="Border.Opacity" Value="100"/>
-                                                        </Trigger>
-                                                        <Trigger Property="Border.IsMouseOver" Value="True">
-                                                            <Setter Property="Border.Cursor" Value="Hand"/>
-                                                        </Trigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </Border.Style>
+                                                        Name="sceneDot"
+                                                        IsEnabled="{Binding Path=IsPhraseNull}" Style="{StaticResource SceneBorderStyle}">
                                             <Border.CornerRadius>
                                                 <Binding Path="IsRound" Converter="{StaticResource BooleanToRadiusConverter}"/>
                                             </Border.CornerRadius>

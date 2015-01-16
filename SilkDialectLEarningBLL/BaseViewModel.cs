@@ -226,22 +226,18 @@ namespace SilkDialectLearningBLL
             else if (level != null)
             {
                 childEntities = level.Units;
-                SelectedLanguage.IsLevelsDirty = true;
             }
             else if (unit != null)
             {
                 childEntities = unit.Lessons;
-                SelectedLevel.IsUnitsDirty = true;
             }
             else if (lesson != null)
             {
                 childEntities = lesson.Scenes;
-                SelectedUnit.IsLessonsDirty = true;
             }
             else if (scene != null)
             {
                 childEntities = scene.SceneItems;
-                SelectedLesson.IsScenesDirty = true;
             }
             else if (sceneItem != null)
             {

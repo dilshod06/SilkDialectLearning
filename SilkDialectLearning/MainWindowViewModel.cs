@@ -13,6 +13,7 @@ using MahApps.Metro.Controls.Dialogs;
 using SilkDialectLearning.Models;
 using SilkDialectLearningBLL;
 using SilkDialectLearningDAL;
+using System.Threading.Tasks;
 
 namespace SilkDialectLearning
 {
@@ -55,6 +56,7 @@ namespace SilkDialectLearning
                 Global.CreateDatabase = true;
             }
             Global.DatabasePath = currentDir.FullName + "SilkDialectLearning.db";
+
             ViewModel = Global.GlobalViewModel;
         }
 
@@ -226,31 +228,105 @@ namespace SilkDialectLearning
         /// </summary>
         public class DeleteCmd : ICommand
         {
-            private MetroWindow metroWindow { get; set; }
-            private MainViewModel mainViewModel { get; set; }
+            private MetroWindow metroWindow;
+            private MainViewModel mainViewModel;
 
             public DeleteCmd(MetroWindow metroWindow, MainViewModel mainViewModel)
             {
                 this.metroWindow = metroWindow;
                 this.mainViewModel = mainViewModel;
             }
-            
+
             public void Execute(object parameter)
             {
                 ListBoxItem listBoxItem = parameter as ListBoxItem;
-                if (listBoxItem == null)
-                    return;
-                ListBox listBox = VisualTreeHelpers.FindAncestor<ListBox>(listBoxItem);
-                if (listBox == null)
-                    return;
-                DeleteEntity(listBoxItem, listBox);
+                if (listBoxItem != null)
+                {
+                    DeleteEntity(listBoxItem);
+                }
+                else
+                {
+                    DeleteEntity(null, parameter as IEntity);
+                }
             }
 
-            public async void DeleteEntity(ListBoxItem listBoxItem, ListBox listBox)
+            private async void DeleteEntity(ListBoxItem listBoxItem, IEntity selectedEntity = null)
             {
-                IEntity selectedEntity = listBoxItem.DataContext as IEntity;
+                IEntity entity = null;
                 ViewModel viewModel = mainViewModel.ViewModel;
 
+                if (listBoxItem != null)
+                {
+                    entity = listBoxItem.DataContext as IEntity;
+                }
+                else
+                {
+                    if (selectedEntity != null)
+                        entity = selectedEntity;
+                    else
+                        return;
+                }
+
+                if (entity is Language)
+                {
+                    MessageDialogResult result = await ShowDeleteMessage(entity);
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        //mainViewModel.OnLoading(true, "Please wait language is deleting...");
+                        var controller = await metroWindow.ShowProgressAsync("Please wait...", "Language is deleting!");                     
+                        await viewModel.Delete(entity as Language);
+                        viewModel.NotifyPropertyChanged("Languages");
+                        await controller.CloseAsync();
+                    }
+                }
+                else if (entity is Level)
+                {
+                    MessageDialogResult result = await ShowDeleteMessage(entity);
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        mainViewModel.OnLoading(true, "Please wait level is deleting...");
+                        await viewModel.Delete(entity as Level);
+                        viewModel.NotifyPropertyChanged("Levels");
+                    }
+                }
+
+                else if (entity is Unit)
+                {
+                    MessageDialogResult result = await ShowDeleteMessage(entity);
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        mainViewModel.OnLoading(true, "Please wait unit is deleting...");
+                        await viewModel.Delete(entity as Unit);
+                        viewModel.NotifyPropertyChanged("Units");
+                    }
+                }
+                else if (entity is Lesson)
+                {
+                    MessageDialogResult result = await ShowDeleteMessage(entity);
+
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        mainViewModel.OnLoading(true, "Please wait lesson is deleting...");
+                        await viewModel.Delete(entity as Lesson);
+                        viewModel.NotifyPropertyChanged("Lessons");
+                    }
+                }
+                else if (entity is Scene)
+                {
+                    MessageDialogResult result = await ShowDeleteMessage(entity);
+
+                    if (result != MessageDialogResult.Negative)
+                    {
+                        mainViewModel.OnLoading(true, "Please wait lesson is deleting...");
+                        await viewModel.Delete(entity as Scene);
+                        viewModel.SceneViewModel.NotifyPropertyChanged("Scenes");
+                    }
+                }
+                mainViewModel.OnLoading(false, "");
+            }
+
+            private Task<MessageDialogResult> ShowDeleteMessage(IEntity entity)
+            {
                 var mySettings = new MetroDialogSettings()
                 {
                     AffirmativeButtonText = "Yes",
@@ -258,77 +334,13 @@ namespace SilkDialectLearning
                     AnimateHide = false,
                     ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
                 };
-
-                if (selectedEntity is Language)
-                {
-                    MessageDialogResult result = await metroWindow.ShowMessageAsync
+                return metroWindow.ShowMessageAsync
                         (
-                            string.Format("Do you want to delete this Languge \"{0}\"?", selectedEntity.Name),
-                            "It will be permanently deleted.",
-                            MessageDialogStyle.AffirmativeAndNegative,
-                            mySettings
-                        );
-                    if (result != MessageDialogResult.Negative)
-                    {
-                        mainViewModel.OnLoading(true, "Please wait language is deleting...");
-                        await viewModel.DeleteLanguage(selectedEntity as Language);
-                        viewModel.NotifyPropertyChanged("Languages");
-                        mainViewModel.OnLoading(false, "");
-                    }
-                }
-                else if (selectedEntity is Level)
-                {
-                    MessageDialogResult result = await metroWindow.ShowMessageAsync
-                        (
-                            string.Format("Do you want to delete this Level \"{0}\" ?", selectedEntity.Name),
-                            "It will be permanently deleted.",
-                            MessageDialogStyle.AffirmativeAndNegative,
-                            mySettings
-                        );
-                    if (result != MessageDialogResult.Negative)
-                    {
-                        mainViewModel.OnLoading(true, "Please wait level is deleting...");
-                        await viewModel.Delete(selectedEntity as Level);
-                        viewModel.NotifyPropertyChanged("Levels");
-                        mainViewModel.OnLoading(false, "");
-                    }
-                }
-
-                else if (selectedEntity is Unit)
-                {
-                    MessageDialogResult result = await metroWindow.ShowMessageAsync
-                        (
-                            string.Format("Do you want to delete this Unit \"{0}\" ?", selectedEntity.Name),
-                            "It will be permanently deleted.",
-                            MessageDialogStyle.AffirmativeAndNegative,
-                            mySettings
-                        );
-                    if (result != MessageDialogResult.Negative)
-                    {
-                        mainViewModel.OnLoading(true, "Please wait unit is deleting...");
-                        await viewModel.Delete(selectedEntity as Unit);
-                        viewModel.NotifyPropertyChanged("Units");
-                        mainViewModel.OnLoading(false, "");
-                    }
-                }
-                else if (selectedEntity is Lesson)
-                {
-                    MessageDialogResult result =
-                        await metroWindow.ShowMessageAsync
-                        (
-                            string.Format("Do you want to delete this Lesson \"{0}\" ?", selectedEntity.Name),
+                            string.Format("Do you want to delete this {0} \"{1}\" ?", entity.GetType().Name, entity.Name),
                             "It will be permanently deleted.",
                             MessageDialogStyle.AffirmativeAndNegative,
                             mySettings
                        );
-                    if (result != MessageDialogResult.Negative)
-                    {
-                        mainViewModel.OnLoading(true, "Please wait lesson is deleting...");
-                        await viewModel.Delete(selectedEntity as Lesson);
-                        viewModel.NotifyPropertyChanged("Lessons");
-                        mainViewModel.OnLoading(false, "");
-                    }
-                }
             }
 
             public bool CanExecute(object parameter)
@@ -403,7 +415,6 @@ namespace SilkDialectLearning
                         Description = mainViewModel.Description
                     });
                     viewModel.NotifyPropertyChanged("Languages");
-                    ResetNameAndDescription();
                 }
                 else if (title.Equals("Levels"))
                 {
@@ -418,7 +429,6 @@ namespace SilkDialectLearning
                         Language = mainViewModel.ViewModel.SelectedLanguage
                     });
                     viewModel.NotifyPropertyChanged("Levels");
-                    ResetNameAndDescription();
                 }
                 else if (title.Equals("Units"))
                 {
@@ -434,7 +444,6 @@ namespace SilkDialectLearning
                         Level = mainViewModel.ViewModel.SelectedLevel
                     });
                     viewModel.NotifyPropertyChanged("Units");
-                    ResetNameAndDescription();
                 }
                 else if (title.Equals("Lessons"))
                 {
@@ -450,8 +459,8 @@ namespace SilkDialectLearning
                         Unit = mainViewModel.ViewModel.SelectedUnit
                     });
                     viewModel.NotifyPropertyChanged("Lessons");
-                    ResetNameAndDescription();
                 }
+                ResetNameAndDescription();
                 mainViewModel.OnLoading(false, "");
             }
 
@@ -465,12 +474,12 @@ namespace SilkDialectLearning
             }
         }
 
-        public ICommand EditCommand 
+        public ICommand EditCommand
         {
-            get 
-            { 
-                return new EditCmd(this.MetroWinow, this); 
-            } 
+            get
+            {
+                return new EditCmd(this.MetroWinow, this);
+            }
         }
 
         public class EditCmd : ICommand
@@ -517,50 +526,49 @@ namespace SilkDialectLearning
                 {
                     AffirmativeButtonText = "Yes",
                     NegativeButtonText = "No",
-                    AnimateShow = false,
                     AnimateHide = false,
                     ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
                 };
                 if (selectedEntity is Language)
                 {
-                    string name = await metroWindow.ShowInputAsync("Edit Language", "Enter the name of Language.", mySettings);
+                    string name = await metroWindow.ShowInputAsync("Edit Language", "Enter the name of Language: " + selectedEntity.Name, mySettings);
                     if (string.IsNullOrEmpty(name))
                         return;
 
-                    string description = await metroWindow.ShowInputAsync("Edit Language", "Enter the description of Language.", mySettings);
+                    string description = await metroWindow.ShowInputAsync("Edit Language", "Enter the description of  Language: " + selectedEntity.Name, mySettings);
                     selectedEntity.Name = name;
                     selectedEntity.Description = description;
                     await mainViewModel.ViewModel.Update(selectedEntity);
                 }
                 else if (selectedEntity is Level)
                 {
-                    string name = await metroWindow.ShowInputAsync("Edit Level", "Enter the name of Level.", mySettings);
+                    string name = await metroWindow.ShowInputAsync("Edit Level", "Enter the name of Level: " + selectedEntity.Name, mySettings);
                     if (string.IsNullOrEmpty(name))
                         return;
-                    
-                    string description = await metroWindow.ShowInputAsync("Edit Level", "Enter the description of Level.", mySettings);;
+
+                    string description = await metroWindow.ShowInputAsync("Edit Level", "Enter the description of Level: " + selectedEntity.Name, mySettings); ;
                     selectedEntity.Name = name;
                     selectedEntity.Description = description;
                     await mainViewModel.ViewModel.Update(selectedEntity);
                 }
                 else if (selectedEntity is Unit)
                 {
-                    string name = await metroWindow.ShowInputAsync("Edit Unit", "Enter the name of Unit.", mySettings);
+                    string name = await metroWindow.ShowInputAsync("Edit Unit", "Enter the name of Unit: " + selectedEntity.Name, mySettings);
                     if (string.IsNullOrEmpty(name))
                         return;
 
-                    string description = await metroWindow.ShowInputAsync("Edit Unit", "Enter the description of Unit.", mySettings); ;
+                    string description = await metroWindow.ShowInputAsync("Edit Unit", "Enter the description of Unit: " + selectedEntity.Name, mySettings); ;
                     selectedEntity.Name = name;
                     selectedEntity.Description = description;
                     await mainViewModel.ViewModel.Update(selectedEntity);
                 }
                 else if (selectedEntity is Lesson)
                 {
-                    string name = await metroWindow.ShowInputAsync("Edit Lesson", "Enter the name of Lesson.", mySettings);
+                    string name = await metroWindow.ShowInputAsync("Edit Lesson", "Enter the name of Lesson: " + selectedEntity.Name, mySettings);
                     if (string.IsNullOrEmpty(name))
                         return;
 
-                    string description = await metroWindow.ShowInputAsync("Edit Lesson", "Enter the description of Lesson.", mySettings); ;
+                    string description = await metroWindow.ShowInputAsync("Edit Lesson", "Enter the description of Lesson: " + selectedEntity.Name, mySettings); ;
                     selectedEntity.Name = name;
                     selectedEntity.Description = description;
                     await mainViewModel.ViewModel.Update(selectedEntity);

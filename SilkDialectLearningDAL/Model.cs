@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SilkDialectLearningDAL
@@ -320,6 +321,7 @@ namespace SilkDialectLearningDAL
             get { return description; }
             set { description = value; NotifyPropertyChanged(); }
         }
+
         //public string LevelId { get; set; }
 
         public Task<int> InsertLesson(Lesson lesson)
@@ -402,6 +404,7 @@ namespace SilkDialectLearningDAL
         public Guid Id { get; set; }
 
         private string name;
+        [MaxLength(100)]
         public string Name
         {
             get { return name; }
@@ -584,9 +587,11 @@ namespace SilkDialectLearningDAL
                     var tempSceneItems = ModelManager.Db.Query<SceneItem>("select * from SceneItem where SceneId = '" + Id.ToString() + "';");
                     tempSceneItems.ForEach((s) =>
                     {
+                        Thread.Sleep(600);
                         s.AlreadyInDb = true;
                         s.SetScene(this);
                     });
+                    Thread.Sleep(600);
                     _sceneItems = new ObservableCollection<SceneItem>(tempSceneItems);
                 }
                 return _sceneItems;
@@ -716,8 +721,10 @@ namespace SilkDialectLearningDAL
 
         #endregion
 
+        [Ignore]
         public string Name { get; set; }
 
+        [Ignore]
         public string Description { get; set; }
     }
 
@@ -733,6 +740,7 @@ namespace SilkDialectLearningDAL
             if (Stopped != null)
                 Stopped(this, new EventArgs());
         }
+        
         [Ignore]
         public AudioStatus State { get; protected set; }
     }

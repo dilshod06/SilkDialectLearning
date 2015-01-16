@@ -197,6 +197,7 @@ namespace SilkDialectLearningBLL
                 
             }
         }
+        
         /// <summary>
         /// When scene selected it will stop any playing item and highlighting
         /// </summary>
@@ -343,7 +344,7 @@ namespace SilkDialectLearningBLL
         #region Notify
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             if (PropertyChanged != null)
             {
