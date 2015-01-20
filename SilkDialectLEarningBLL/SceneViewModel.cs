@@ -262,6 +262,7 @@ namespace SilkDialectLearningBLL
                 selectedScene = value;
                 NotifyPropertyChanged();
                 NotifyPropertyChanged("SceneItems");
+                SceneActivity = Activity.Learn;
                 var sceneSelected = SceneSelected;
                 if (sceneSelected != null)
                 {
@@ -371,10 +372,17 @@ namespace SilkDialectLearningBLL
             {
                 PlayThisItemAsync(playedItem.Item);
                 HiglightThisItem(playedItem.Item, playedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Right);
+                
 
                 Action playNextAction = new Action(() =>
                 {
                     playedItem = itemsForPractice.FirstOrDefault(i => i.Status == PracticeItemStatus.Notasked);
+
+                    if (playedItem == null)
+                    {
+                        Console.WriteLine("Scene is Finished");
+                        return;
+                    }
                     playedItem.Status = PracticeItemStatus.Asking;
                     PlayThisItemAsync(playedItem.Item);
                     playedItem.Status = PracticeItemStatus.Asked;
