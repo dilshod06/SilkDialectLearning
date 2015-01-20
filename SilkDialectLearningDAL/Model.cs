@@ -587,11 +587,9 @@ namespace SilkDialectLearningDAL
                     var tempSceneItems = ModelManager.Db.Query<SceneItem>("select * from SceneItem where SceneId = '" + Id.ToString() + "';");
                     tempSceneItems.ForEach((s) =>
                     {
-                        Thread.Sleep(600);
                         s.AlreadyInDb = true;
                         s.SetScene(this);
                     });
-                    Thread.Sleep(600);
                     _sceneItems = new ObservableCollection<SceneItem>(tempSceneItems);
                 }
                 return _sceneItems;
@@ -663,16 +661,6 @@ namespace SilkDialectLearningDAL
         [Ignore]
         public bool AlreadyInDb { get; set; }
 
-        [Ignore]
-        public bool IsPhraseNull
-        {
-            get
-            {
-                if (Phrase != null)
-                    return true;
-                return false;
-            }
-        }
         Phrase _phrase;
         [Ignore]
         public Phrase Phrase

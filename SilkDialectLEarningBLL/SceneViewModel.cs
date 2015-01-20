@@ -42,13 +42,13 @@ namespace SilkDialectLearningBLL
         /// Indicates whether an item is highlighting
         /// </summary>
         protected bool isHighlighting;
-        
+
         /// <summary>
         /// Returns the instance of global ViewModel.
         /// </summary>
         public ViewModel ViewModel { get { return Global.GlobalViewModel; } }
 
-        Activity sceneActivity;
+        Activity sceneActivity = Activity.Learn;
         /// <summary>
         /// Returns the current activity
         /// </summary>
@@ -67,23 +67,30 @@ namespace SilkDialectLearningBLL
                 }
             }
         }
-        
+
         /// <summary>
         /// Stops the if there is anything that's playing and starts playing current item.
         /// </summary>
         /// <param name="sceneItem">Item to play</param>
         /// <returns></returns>
-        protected async Task PlayThisItemAsync(IPlayable sceneItem)
+        protected async void PlayThisItemAsync(IPlayable sceneItem)
         {
             await StopPlayingAsync();
             if (sceneItem != null)
             {
-                //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
-                lastPlayed = sceneItem;
-                if (sceneItem.Phrase != null)
-                    await sceneItem.Phrase.Play();
-                else
-                    throw new Exception("Scene Items Phrase cannot be null");
+                try
+                {
+                    //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
+                    lastPlayed = sceneItem;
+                    if (sceneItem.Phrase != null)
+                        await sceneItem.Phrase.Play();
+                    else
+                        throw new Exception("Scene Items Phrase cannot be null");
+                }
+                catch (Exception ex)
+                {
+                    Console.Write(ex.Message);
+                }
             }
             else
             {
@@ -109,18 +116,19 @@ namespace SilkDialectLearningBLL
         /// </summary>
         /// <param name="sceneItem">Item to highlight</param>
         /// <param name="interval">Higligh for X milliseconds</param>
-        protected void HiglightThisItem(IHighlightable sceneItem, double interval)
+        protected void HiglightThisItem(IHighlightable sceneItem, double interval, PracticeItemResult itemResult = PracticeItemResult.Default)
         {
             if (sceneItem != null)
             {
                 StopHighlight();
                 var highlightItem = HighlightItem;
+
                 //Setting the isHiglighting to true to help Stop highlighting
                 isHighlighting = true;
                 if (highlightItem != null)
                 {
                     lastHighlighted = sceneItem;
-                    highlightItem(this, new HighlightItemEventArgs(sceneItem));
+                    highlightItem(this, new HighlightItemEventArgs(sceneItem, itemResult));
                     //Timer will automatically stop the highlighting item after specific time and disposes itself.
                     Timer timer = new Timer(interval);
                     timer.Elapsed += (s, e) =>
@@ -138,6 +146,7 @@ namespace SilkDialectLearningBLL
             {
                 throw new Exception("SceneItem cannot be null");
             }
+
         }
 
         /// <summary>
@@ -165,7 +174,7 @@ namespace SilkDialectLearningBLL
         #region Notify
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
         {
             if (PropertyChanged != null)
             {
@@ -177,7 +186,7 @@ namespace SilkDialectLearningBLL
 
     }
 
-    public class SceneViewModel : BaseActivity, INotifyPropertyChanged
+    public class SceneViewModel : BaseActivity
     {
         public SceneViewModel()
         {
@@ -187,17 +196,8 @@ namespace SilkDialectLearningBLL
             };
             ActivityChanged += SceneViewModel_ActivityChanged;
             SceneSelected += SceneViewModel_SceneSelected;
-            this.PropertyChanged += SceneViewModel_PropertyChanged;
         }
 
-        void SceneViewModel_PropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == "Levels")
-            {
-                
-            }
-        }
-        
         /// <summary>
         /// When scene selected it will stop any playing item and highlighting
         /// </summary>
@@ -218,6 +218,11 @@ namespace SilkDialectLearningBLL
         {
             await StopPlayingAsync();
             StopHighlight();
+
+            if (e.NewActivity == Activity.Practice)
+            {
+                Practice();
+            }
         }
 
         #region Events
@@ -242,7 +247,7 @@ namespace SilkDialectLearningBLL
             }
         }
 
-        Scene selectedScene;
+        private Scene selectedScene;
         /// <summary>
         /// Returns the last selected scene
         /// </summary>
@@ -311,7 +316,10 @@ namespace SilkDialectLearningBLL
             {
                 Learn();
             }
-
+            else if (SceneActivity == Activity.Practice)
+            {
+                ContinuePractice();
+            }
 
         }
 
@@ -328,36 +336,80 @@ namespace SilkDialectLearningBLL
             HiglightThisItem(SelectedSceneItem, SelectedSceneItem.Phrase.SoundLength.TotalMilliseconds);
         }
 
-        private List<SceneItem> itemsForPractice = new List<SceneItem>();
+        private List<PracticeResult<SceneItem>> itemsForPractice = new List<PracticeResult<SceneItem>>();
+
+        private PracticeResult<SceneItem> playedItem;
 
         /// <summary>
         /// Prepares the items for practice.
         /// </summary>
         public void Practice()
         {
-            if (itemsForPractice.Count == 0)
-            {
-                itemsForPractice = Helper.MixItems<SceneItem>(SelectedScene.SceneItems.ToList());
-            }
+            itemsForPractice = Helper.MixItems<PracticeResult<SceneItem>>(SelectedScene.SceneItems.Select(i => new PracticeResult<SceneItem>(i)).ToList());
+            playedItem = itemsForPractice.ElementAt(0);
+            playedItem.Status = PracticeItemStatus.Asking;
+            PlayThisItemAsync(playedItem.Item);
+            playedItem.Status = PracticeItemStatus.Asked;
         }
 
-        #region Notify
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
+        public void ContinuePractice()
         {
-            if (PropertyChanged != null)
+            if (SelectedSceneItem != playedItem.Item)
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+                if (playedItem.WrongAnswersCount == 3)
+                {
+                    playedItem.WrongAnswersCount = 0;
+                    PlayThisItemAsync(playedItem.Item);
+                    HiglightThisItem(playedItem.Item, playedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Fixed);
+                    return;
+                }
+                playedItem.WrongAnswersCount++;
+                PlayThisItemAsync(playedItem.Item);
+                HiglightThisItem(SelectedSceneItem, playedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Wrong);
+            }
+            else
+            {
+                PlayThisItemAsync(playedItem.Item);
+                HiglightThisItem(playedItem.Item, playedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Right);
+
+                Action playNextAction = new Action(() =>
+                {
+                    playedItem = itemsForPractice.FirstOrDefault(i => i.Status == PracticeItemStatus.Notasked);
+                    playedItem.Status = PracticeItemStatus.Asking;
+                    PlayThisItemAsync(playedItem.Item);
+                    playedItem.Status = PracticeItemStatus.Asked;
+                });
+                RunAction(playNextAction, playedItem.Item.Phrase.SoundLength.TotalMilliseconds);
             }
         }
-
-        #endregion
+        public void RunAction(Action action, double runAfter)
+        {
+            if (runAfter < 0) runAfter = 0;
+            Timer timer = new Timer(runAfter);
+            timer.Elapsed += (s, e) =>
+            {
+                timer.Stop();
+                action.Invoke();
+            };
+            timer.Enabled = true;
+            timer.Start();
+        }
     }
 
-    public class PracticeResult
+
+    public class PracticeResult<T> where T : IEntity
     {
+        public PracticeResult(T item)
+        {
+            Item = item;
+            Status = PracticeItemStatus.Notasked;
+        }
+
+        public T Item { get; set; }
+
         public PracticeItemStatus Status { get; set; }
+
+        public int WrongAnswersCount { get; set; }
     }
 
     public enum PracticeItemStatus
@@ -367,15 +419,26 @@ namespace SilkDialectLearningBLL
         Asked = 2
     }
 
+    public enum PracticeItemResult
+    {
+        Default = 0,
+        Wrong = 1,
+        Right = 2,
+        Fixed = 4
+    }
+
     public delegate void HighlightItemEventHandler(object sender, HighlightItemEventArgs e);
 
     public class HighlightItemEventArgs : EventArgs
     {
-        public HighlightItemEventArgs(IHighlightable highlightableItem)
+        public HighlightItemEventArgs(IHighlightable highlightableItem, PracticeItemResult practiceItemResult = PracticeItemResult.Default)
         {
             HighlightableItem = highlightableItem;
+            PracticeItemResult = practiceItemResult;
         }
         public IHighlightable HighlightableItem { get; private set; }
+
+        public PracticeItemResult PracticeItemResult { get; private set; }
     }
 
 }

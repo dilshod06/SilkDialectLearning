@@ -15,9 +15,9 @@ namespace SilkDialectLearning.Views
     /// <summary>
     /// Interaction logic for SceneView.xaml
     /// </summary>
-    public partial class SceneView : UserControl
+    public partial class SceneView
     {
-        private int lastSelectedIndex = 0;
+        private int lastSelectedIndex;
 
         private bool loaded;
 
@@ -34,17 +34,21 @@ namespace SilkDialectLearning.Views
 
         private void ScenesTabControl_Loaded(object sender, RoutedEventArgs e)
         {
-            (sender as TabControl).SelectedIndex = lastSelectedIndex;
+            TabControl tabControl = sender as TabControl;
+            if (tabControl != null) tabControl.SelectedIndex = lastSelectedIndex;
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var tabControl = sender as TabControl;
-            lastSelectedIndex = tabControl.SelectedIndex;
-            if (tabControl.SelectedIndex == -1)
+            if (tabControl != null)
             {
-                lastSelectedIndex = 0;
-                tabControl.SelectedIndex = 0;
+                lastSelectedIndex = tabControl.SelectedIndex;
+                if (tabControl.SelectedIndex == -1)
+                {
+                    lastSelectedIndex = 0;
+                    tabControl.SelectedIndex = 0;
+                }
             }
             items = new Dictionary<Border, SceneItem>();
         }
@@ -62,7 +66,9 @@ namespace SilkDialectLearning.Views
         {
             try
             {
-                ViewModel.SceneViewModel.SelectedSceneItem = (sender as Border).DataContext as SceneItem;
+                Border border = sender as Border;
+                if (border != null)
+                    ViewModel.SceneViewModel.SelectedSceneItem = border.DataContext as SceneItem;
             }
             catch (Exception ex)
             {
@@ -75,7 +81,9 @@ namespace SilkDialectLearning.Views
             items = new Dictionary<Border, SceneItem>();
             if (!loaded && !DesignerProperties.GetIsInDesignMode(new DependencyObject()))
             {
-                ViewModel = (this.DataContext as MainViewModel).ViewModel;
+                MainViewModel mainViewModel = DataContext as MainViewModel;
+                if (mainViewModel != null)
+                    ViewModel = mainViewModel.ViewModel;
                 ViewModel.SceneViewModel.HighlightItem += SceneViewModel_HighlightItem;
                 ViewModel.SceneViewModel.StopHighlighting += SceneViewModel_StopHighlighting;
                 loaded = true;
@@ -88,7 +96,7 @@ namespace SilkDialectLearning.Views
             {
                 var item = items.FirstOrDefault(i => i.Value == e.HighlightableItem);
                 if (item.Key != null)
-                    (item.Key as Border).Opacity = .5;
+                    item.Key.Opacity = .5;
                 storyBoard.Stop();
                 storyBoard.Children.Clear();
 
@@ -99,15 +107,39 @@ namespace SilkDialectLearning.Views
         {
             Dispatcher.BeginInvoke(new Action(() =>
             {
+                Color? colorFrom = null;
+                Color? colorTo = null;
+                if (e.PracticeItemResult == PracticeItemResult.Default)
+                {
+                    colorFrom = (Color)ColorConverter.ConvertFromString("#CC2700B9");
+                    colorTo = (Color)ColorConverter.ConvertFromString("#F665A505");
+                    
+                }
+                else if (e.PracticeItemResult == PracticeItemResult.Wrong)
+                {
+                    colorFrom = (Color)ColorConverter.ConvertFromString("#FCB90C00");
+                    colorTo = (Color)ColorConverter.ConvertFromString("#F6FF0051");
+                }
+                else if (e.PracticeItemResult == PracticeItemResult.Fixed)
+                {
+                    colorFrom = (Color)ColorConverter.ConvertFromString("#FCECE312");
+                    colorTo = (Color)ColorConverter.ConvertFromString("#DEDBDE26");
+                }
+                else if (e.PracticeItemResult == PracticeItemResult.Right)
+                {
+                    colorFrom = (Color)ColorConverter.ConvertFromString("#B92BB313");
+                    colorTo = (Color)ColorConverter.ConvertFromString("#FC0A770F");
+                }
+
                 var item = items.FirstOrDefault(i => i.Value == e.HighlightableItem);
-                (item.Key as Border).Opacity = 1;
-                ColorAnimation colorAnimation = new ColorAnimation()
+                item.Key.Opacity = 1;
+                ColorAnimation colorAnimation = new ColorAnimation
                 {
                     AutoReverse = true,
                     Duration = new Duration(TimeSpan.FromMilliseconds(500)),
                     RepeatBehavior = RepeatBehavior.Forever,
-                    From = (Color)ColorConverter.ConvertFromString("#CC2700B9"),
-                    To = (Color)ColorConverter.ConvertFromString("#DCFF0010")
+                    From = colorFrom,
+                    To = colorTo
                 };
                 PropertyPath colorTargetPath = new PropertyPath("(Border.Background).(SolidColorBrush.Color)");
                 storyBoard = new Storyboard();

@@ -5,9 +5,9 @@
         <Border>
             <DockPanel HorizontalAlignment="Center" 
                        VerticalAlignment="Center">
-                <Image Width="20" 
-                       Height="20" 
-                       Margin="7,0"
+                <Image Width="16" 
+                       Height="16" 
+                       Margin="5,0"
                        SnapsToDevicePixels="True"
                        Source="/SilkDialectLearning;component/Resources/loading_16.png">
                     <Image.RenderTransform>

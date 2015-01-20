@@ -3,11 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:local="clr-namespace:SilkDialectLearning"
              xmlns:converters="clr-namespace:SilkDialectLearning.Converters"
-             xmlns:bll="clr-namespace:SilkDialectLearningBLL;assembly=SilkDialectLEarningBLL"
-             xmlns:view="clr-namespace:SilkDialectLearning.Views"
              mc:Ignorable="d"
              d:DesignHeight="600" d:DesignWidth="800"
              Loaded="UserControl_Loaded" 
@@ -94,7 +91,8 @@
                                                         VerticalAlignment="Top"
                                                         Loaded="Border_Loaded" 
                                                         Name="sceneDot"
-                                                        IsEnabled="{Binding Path=IsPhraseNull}" Style="{StaticResource SceneBorderStyle}">
+                                                        IsEnabled="{Binding Path=Phrase, Converter={StaticResource NullToBooleanConverter}}" 
+                                                        Style="{StaticResource SceneBorderStyle}">
                                             <Border.CornerRadius>
                                                 <Binding Path="IsRound" Converter="{StaticResource BooleanToRadiusConverter}"/>
                                             </Border.CornerRadius>

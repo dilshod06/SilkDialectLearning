@@ -4,9 +4,7 @@
 					  xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
 					  xmlns:local="clr-namespace:SilkDialectLearning"
 					  xmlns:converters="clr-namespace:SilkDialectLearning.Converters"
-					  xmlns:Actions="clr-namespace:SilkDialectLearning.Actions"
 					  xmlns:bll="clr-namespace:SilkDialectLearningBLL;assembly=SilkDialectLEarningBLL"
-					  xmlns:views="clr-namespace:SilkDialectLearning.Views"
 					  xmlns:flyouts="clr-namespace:SilkDialectLearning.Flyouts"
 					  Title="Silk Dialect Learning" 
 					  Height="597" Width="852"
@@ -55,7 +53,7 @@
 		</controls:WindowCommands>
 	</controls:MetroWindow.RightWindowCommands>
 	<controls:MetroWindow.Flyouts>
-		<controls:FlyoutsControl x:Name="flyoutsControl">
+		<controls:FlyoutsControl x:Name="FlyoutsControl">
 			<flyouts:HomeFlyout/>
 			<controls:Flyout AnimateOnPositionChange="True" 
 							 AnimateOpacity="True"
@@ -136,8 +134,10 @@
 											<TextBlock Text="Select some activity" HorizontalAlignment="Left" FontSize="20" FontFamily="{DynamicResource HeaderFontFamily}" Foreground="{DynamicResource BlackBrush}"/>
 										</StackPanel>
 										<StackPanel Margin="20 0 20 20">
-											<RadioButton Content="Learn" Margin="5" IsChecked="{Binding Path=ViewModel.SceneViewModel.SceneActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Learn}}"/>
-											<RadioButton Content="Practice" Margin="5"/>
+											<RadioButton Content="Learn" Margin="5" 
+														 IsChecked="{Binding Path=ViewModel.SceneViewModel.SceneActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Learn}}"/>
+											<RadioButton Content="Practice" Margin="5" 
+														 IsChecked="{Binding Path=ViewModel.SceneViewModel.SceneActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Practice}}"/>
 											<RadioButton Content="Play all" Margin="5"/>
 										</StackPanel>
 									</StackPanel>
