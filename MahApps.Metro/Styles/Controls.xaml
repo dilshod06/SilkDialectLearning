@@ -8,6 +8,7 @@
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/ValidationErrorTemplate.xaml" />
 
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Scrollbars.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ScrollViewer.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.ListView.xaml" />
         <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.Buttons.xaml" />
 
@@ -48,7 +49,7 @@
     <Style TargetType="Label" BasedOn="{StaticResource MetroLabel}" />
     <Style TargetType="TabItem" BasedOn="{StaticResource MetroTabItem}" />
     <Style TargetType="TabControl" BasedOn="{StaticResource MetroTabControl}" />
-    <Style TargetType="ScrollBar" BasedOn="{StaticResource MetroScrollBar}" />
+    <Style TargetType="ScrollBar" BasedOn="{StaticResource EagleScrollbar}" />
     <Style TargetType="RadioButton" BasedOn="{StaticResource MetroRadioButton}" />
     <Style TargetType="ProgressBar" BasedOn="{StaticResource MetroProgressBar}" />
     <Style TargetType="PasswordBox" BasedOn="{StaticResource MetroPasswordBox}" />
@@ -74,6 +75,6 @@
     <Style TargetType="StatusBar" BasedOn="{StaticResource MetroStatusBar}" />
     <Style TargetType="StatusBarItem" BasedOn="{StaticResource MetroStatusBarItem}" />
 
-    <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource MetroScrollViewer}" />
+    <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource EagleScrollViewer}" />
 
 </ResourceDictionary>
