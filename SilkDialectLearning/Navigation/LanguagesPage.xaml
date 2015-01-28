@@ -11,7 +11,7 @@
 	<Grid>
 		<ListBox ItemsSource="{Binding Path=ViewModel.Languages}" 
 				 Name="LanguageList" 
-				 SelectionChanged="Languages_SelectionChanged">
+				 SelectionChanged="Languages_SelectionChanged" >
 			<ListBox.ItemTemplate>
 				<DataTemplate>
 					<DockPanel>
@@ -26,7 +26,6 @@
 									CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor,AncestorType={x:Type ListBoxItem}}}"
 									ToolTip="Edit"
 									Style="{DynamicResource MetroCircleDeleteButtonStyle}"/>
-
 							<Button Width="35" 
 									Height="35" 
 									FontFamily="Segoe UI Symbol" 

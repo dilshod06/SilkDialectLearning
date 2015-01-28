@@ -1,5 +1,6 @@
 ﻿using SilkDialectLearningDAL;
 using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -45,6 +46,7 @@ namespace SilkDialectLearningBLL
             get
             {
                 languages = new ObservableCollection<Language>(Db.GetEntities<Language>());
+                SelectedLanguage = languages.FirstOrDefault();
                 return languages;
             }
         }
@@ -61,14 +63,20 @@ namespace SilkDialectLearningBLL
             }
             set
             {
-                language = value;
-                NotifyPropertyChanged();
-                NotifyPropertyChanged("Levels");
-                var languageSelected = LanguageSelected;
-                if (languageSelected != null)
+                if (value != null)
                 {
-                    languageSelected(this, new EventArgs());
+                    language = value;
+                    NotifyPropertyChanged();
+                    NotifyPropertyChanged("Levels");
+                    var languageSelected = LanguageSelected;
+                    if (languageSelected != null)
+                    {
+                        languageSelected(this, new EventArgs());
+                    }
+                    return;
                 }
+                language = value;
+                NotifyPropertyChanged();               
             }
         }
 

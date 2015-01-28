@@ -188,6 +188,7 @@ namespace SilkDialectLearningBLL
 
     public class SceneViewModel : BaseActivity
     {
+
         public SceneViewModel()
         {
             ViewModel.LessonSelected += (s, e) =>
@@ -229,6 +230,9 @@ namespace SilkDialectLearningBLL
         public event EventHandler SceneSelected;
 
         public event EventHandler SceneItemSelected;
+
+        public event PraceticeFinishedEventHandler PracticeFinished;
+
         #endregion
 
         /// <summary>
@@ -339,7 +343,7 @@ namespace SilkDialectLearningBLL
 
         private List<PracticeResult<SceneItem>> itemsForPractice = new List<PracticeResult<SceneItem>>();
 
-        private PracticeResult<SceneItem> playedItem;
+        private PracticeResult<SceneItem> lastPlayedItem;
 
         /// <summary>
         /// Prepares the items for practice.
@@ -347,47 +351,55 @@ namespace SilkDialectLearningBLL
         public void Practice()
         {
             itemsForPractice = Helper.MixItems<PracticeResult<SceneItem>>(SelectedScene.SceneItems.Select(i => new PracticeResult<SceneItem>(i)).ToList());
-            playedItem = itemsForPractice.ElementAt(0);
-            playedItem.Status = PracticeItemStatus.Asking;
-            PlayThisItemAsync(playedItem.Item);
-            playedItem.Status = PracticeItemStatus.Asked;
+            lastPlayedItem = itemsForPractice.ElementAt(0);
+            lastPlayedItem.Status = PracticeItemStatus.Asking;
+            PlayThisItemAsync(lastPlayedItem.Item);
+            lastPlayedItem.Status = PracticeItemStatus.Asked;
+        }
+
+        public void RepeatLastPlayedItem()
+        {
+            PlayThisItemAsync(lastPlayedItem.Item);
         }
 
         public void ContinuePractice()
         {
-            if (SelectedSceneItem != playedItem.Item)
+            if (SelectedSceneItem != lastPlayedItem.Item)
             {
-                if (playedItem.WrongAnswersCount == 3)
+                if (lastPlayedItem.WrongAnswersCount == 3)
                 {
-                    playedItem.WrongAnswersCount = 0;
-                    PlayThisItemAsync(playedItem.Item);
-                    HiglightThisItem(playedItem.Item, playedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Fixed);
+                    lastPlayedItem.WrongAnswersCount = 0;
+                    PlayThisItemAsync(lastPlayedItem.Item);
+                    HiglightThisItem(lastPlayedItem.Item, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Fixed);
                     return;
                 }
-                playedItem.WrongAnswersCount++;
-                PlayThisItemAsync(playedItem.Item);
-                HiglightThisItem(SelectedSceneItem, playedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Wrong);
+                lastPlayedItem.WrongAnswersCount++;
+                PlayThisItemAsync(lastPlayedItem.Item);
+                HiglightThisItem(SelectedSceneItem, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Wrong);
             }
             else
             {
-                PlayThisItemAsync(playedItem.Item);
-                HiglightThisItem(playedItem.Item, playedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Right);
-                
+                PlayThisItemAsync(lastPlayedItem.Item);
+                HiglightThisItem(lastPlayedItem.Item, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Right);
 
                 Action playNextAction = new Action(() =>
                 {
-                    playedItem = itemsForPractice.FirstOrDefault(i => i.Status == PracticeItemStatus.Notasked);
+                    lastPlayedItem = itemsForPractice.FirstOrDefault(i => i.Status == PracticeItemStatus.Notasked);
 
-                    if (playedItem == null)
+                    if (lastPlayedItem == null)
                     {
-                        Console.WriteLine("Scene is Finished");
+                        var practiceFinished = PracticeFinished;
+                        if (practiceFinished != null)
+                        {
+                            practiceFinished(this, new PraceticeFinishedEventArgs("Do you want redo this scene?"));
+                        }
                         return;
                     }
-                    playedItem.Status = PracticeItemStatus.Asking;
-                    PlayThisItemAsync(playedItem.Item);
-                    playedItem.Status = PracticeItemStatus.Asked;
+                    lastPlayedItem.Status = PracticeItemStatus.Asking;
+                    PlayThisItemAsync(lastPlayedItem.Item);
+                    lastPlayedItem.Status = PracticeItemStatus.Asked;
                 });
-                RunAction(playNextAction, playedItem.Item.Phrase.SoundLength.TotalMilliseconds);
+                RunAction(playNextAction, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds);
             }
         }
         public void RunAction(Action action, double runAfter)
@@ -403,6 +415,7 @@ namespace SilkDialectLearningBLL
             timer.Start();
         }
     }
+
 
 
     public class PracticeResult<T> where T : IEntity
@@ -449,4 +462,15 @@ namespace SilkDialectLearningBLL
         public PracticeItemResult PracticeItemResult { get; private set; }
     }
 
+    public delegate void PraceticeFinishedEventHandler(object sender, PraceticeFinishedEventArgs e);
+
+    public class PraceticeFinishedEventArgs : EventArgs
+    {
+        public string Message { get; set; }
+
+        public PraceticeFinishedEventArgs(string message)
+        {
+            this.Message = message;
+        }
+    }
 }

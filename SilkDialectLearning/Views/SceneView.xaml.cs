@@ -87,6 +87,7 @@ namespace SilkDialectLearning.Views
                 ViewModel.SceneViewModel.HighlightItem += SceneViewModel_HighlightItem;
                 ViewModel.SceneViewModel.StopHighlighting += SceneViewModel_StopHighlighting;
                 loaded = true;
+                
             }
         }
 
@@ -148,6 +149,11 @@ namespace SilkDialectLearning.Views
                 storyBoard.Children.Add(colorAnimation);
                 storyBoard.Begin();
             }));
+        }
+
+        private void Button_Loaded(object sender, RoutedEventArgs e)
+        {
+            (sender as Button).DataContext = this.DataContext;
         }
 
     }

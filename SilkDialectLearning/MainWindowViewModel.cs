@@ -43,6 +43,7 @@ namespace SilkDialectLearning
             InitializeDatabaseFile();
             MetroWinow = metroWindow;
             BrushResources = FindBrushResources();
+
         }
 
         #region Methods
@@ -98,16 +99,7 @@ namespace SilkDialectLearning
                 handler(this, new LoadingEventArgs(loading, message));
             }
         }
-
-        public virtual void OnClick(object sender, MouseButtonEventArgs e)
-        {
-            var handler = Click;
-            if (handler != null)
-            {
-                handler(sender, e);
-            }
-        }
-
+        
         #endregion
 
         #region Events
@@ -273,7 +265,7 @@ namespace SilkDialectLearning
                     if (result != MessageDialogResult.Negative)
                     {
                         //mainViewModel.OnLoading(true, "Please wait language is deleting...");
-                        var controller = await metroWindow.ShowProgressAsync("Please wait...", "Language is deleting!");                     
+                        var controller = await metroWindow.ShowProgressAsync("Please wait...", "Language is deleting!");
                         await viewModel.Delete(entity as Language);
                         viewModel.NotifyPropertyChanged("Languages");
                         await controller.CloseAsync();
@@ -576,6 +568,34 @@ namespace SilkDialectLearning
             }
         }
 
+        public ICommand RepeatCommand { get { return new RepeatCmd(this); } }
+
+        public class RepeatCmd : ICommand
+        {
+            MainViewModel mainViewModel;
+            public RepeatCmd(MainViewModel mainViewModel)
+            {
+                this.mainViewModel = mainViewModel;
+            }
+            public bool CanExecute(object parameter)
+            {
+                return true;
+            }
+
+            public event EventHandler CanExecuteChanged;
+
+            public void Execute(object parameter)
+            {
+                try
+                {
+                    mainViewModel.ViewModel.SceneViewModel.RepeatLastPlayedItem();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
         #endregion
 
         #region Notify

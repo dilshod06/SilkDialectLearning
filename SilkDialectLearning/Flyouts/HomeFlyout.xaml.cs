@@ -21,6 +21,7 @@ namespace SilkDialectLearning.Flyouts
     public partial class HomeFlyout : Flyout, IUriContext, INotifyPropertyChanged
     {
         MainViewModel mainWindowViewModel;
+        public bool IsBackEntry { get; set; }
         public HomeFlyout()
         {
             InitializeComponent();
@@ -101,7 +102,7 @@ namespace SilkDialectLearning.Flyouts
 
         //[System.Diagnostics.DebuggerNonUserCode]
         void PART_Frame_Navigated(object sender, NavigationEventArgs e)
-        {
+        {  
             PART_Title.Content = ((Page)PART_Frame.Content).Title;
             mainWindowViewModel.Name = null;
             mainWindowViewModel.Description = null;
@@ -110,8 +111,21 @@ namespace SilkDialectLearning.Flyouts
             PageContent = PART_Frame.Content;
             PART_BackButton.IsEnabled = CanGoBack ? true : false;
 
+            //This statiment finds ListBox's from content and sets null to selected item
+            if (IsBackEntry)
+            {
+                if (PART_Frame.Content != null)
+                {
+                    var page = PART_Frame.Content as Page;
+                    ListBox listBox = page.FindChildren<ListBox>().FirstOrDefault();
+                    listBox.SelectedIndex = -1;
+                }
+                IsBackEntry = false;
+            }
+
             if (Navigated != null)
                 Navigated(this, e);
+            
         }
 
         public static readonly DependencyProperty OverlayContentProperty = DependencyProperty.Register("OverlayContent", typeof(object), typeof(HomeFlyout));
@@ -196,6 +210,7 @@ namespace SilkDialectLearning.Flyouts
         //[System.Diagnostics.DebuggerNonUserCode]
         public void GoBack()
         {
+            IsBackEntry = true;
             PART_Frame.GoBack();
         }
 
@@ -220,14 +235,7 @@ namespace SilkDialectLearning.Flyouts
         /// <see cref="System.Windows.Navigation.NavigationWindow.Navigate(Object)"/>
         //[System.Diagnostics.DebuggerNonUserCode]
         public bool Navigate(Object content)
-        {
-            if (PART_Frame.NavigationService.Content != null)
-            {
-                var page = PART_Frame.NavigationService.Content as Page;
-                ListBox listBox = page.FindChildren<ListBox>().FirstOrDefault();
-                PageStatus.Add(listBox.SelectedItem);
-                listBox.SelectedValue = null;
-            }
+        {   
             return PART_Frame.Navigate(content);
         }
         /// <summary>
@@ -317,7 +325,6 @@ namespace SilkDialectLearning.Flyouts
         /// <see cref="System.Windows.Navigation.NavigationWindow.LoadCompleted"/>
         public event LoadCompletedEventHandler LoadCompleted;
 
-
         private void PART_AddButton_Click(object sender, RoutedEventArgs e)
         {
             MyPopup.IsOpen = true;
@@ -389,7 +396,6 @@ namespace SilkDialectLearning.Flyouts
 
     public class TitleToToolTipConveter : IValueConverter
     {
-
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
             if (value == null)

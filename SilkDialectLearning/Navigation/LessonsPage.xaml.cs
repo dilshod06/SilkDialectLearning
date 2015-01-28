@@ -14,7 +14,9 @@ namespace SilkDialectLearning.Navigation
     public partial class LessonsPage : Page
     {
         public MainViewModel MainViewModel { get; set; }
+        
         public HomeFlyout HomeFlyout { get; set; }
+
         public LessonsPage(HomeFlyout HomeFlyout, MainViewModel MainViewModel)
         {
             this.MainViewModel = MainViewModel;
@@ -72,8 +74,6 @@ namespace SilkDialectLearning.Navigation
 
         private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            Lesson lesson = e.AddedItems[0] as Lesson;
-            MainViewModel.ViewModel.SelectedLesson = lesson;
         }
     }
 }

@@ -21,7 +21,7 @@
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-		<Grid Grid.Row="0" Visibility="{Binding Path=ViewModel.SelectedLesson, Converter={StaticResource NullToVisibilityConverter},ConverterParameter=Header}">
+		<Grid Grid.Row="0" Visibility="{Binding Path=ViewModel.SelectedLesson, Converter={StaticResource NullToVisibilityConverter},ConverterParameter=Title}">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="30"/>
@@ -43,6 +43,6 @@
 					Text="Silk Road Professionals™ 2014" Foreground="{DynamicResource BlackBrush}"/>
 			</StackPanel>
 		</Grid>
-        <views:SceneView Grid.Row="0"/>
+		<views:SceneView Grid.Row="0"/>
 	</Grid>
 </Page>

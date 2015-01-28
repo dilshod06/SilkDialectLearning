@@ -44,7 +44,6 @@ namespace SilkDialectLearningDAL
             if (createDatabase)
             {
                 this.CreateTable<User>();
-                this.CreateTable<User>();
                 this.CreateTable<Language>();
                 this.CreateTable<LanguageToLevel>();
                 this.CreateTable<Level>();
@@ -102,12 +101,48 @@ namespace SilkDialectLearningDAL
         [PrimaryKey]
         public Guid Id { get; set; }
 
-        public Guid LastOpenedNode { get; set; }
+        public Guid SettingsId { get; set; }
 
-        public Guid LastOpenedScene { get; set; }
+        private Settings settings;
+        [Ignore]
+        public Settings Settings
+        {
+            get
+            {
+                return ModelManager.Db.Query<Settings>("select * from settings where userid = '" + this.Id.ToString() + "'").FirstOrDefault();
+            }
+            set { settings = value; }
+        }
 
     }
 
+    public class Settings
+    {
+        [PrimaryKey]
+        public Guid Id { get; set; }
+
+        public Guid LastSelectedLanguageId { get; set; }
+
+
+        private Language lastSelectedLanguage;
+
+        [Ignore]
+        public Language LastSelectedLanguage
+        {
+            get 
+            {
+                return ModelManager.Db.Query<Language>("select * from langauge where id= '" + this.LastSelectedLanguageId.ToString() + "'").FirstOrDefault();
+            }
+            set { lastSelectedLanguage = value; }
+        }
+        public Guid LastSelectedLevel { get; set; }
+
+        public Guid LastSelectedUnit { get; set; }
+
+        public Guid LastSelectedLesson { get; set; }
+
+
+    }
     public class Language : INotifyPropertyChanged, IEntity, IDisposable
     {
         [PrimaryKey]
@@ -544,7 +579,7 @@ namespace SilkDialectLearningDAL
         public Guid PictureId { get; set; }
 
         private int sceneOrder;
-        
+
         public int SceneOrder
         {
             get
@@ -728,7 +763,7 @@ namespace SilkDialectLearningDAL
             if (Stopped != null)
                 Stopped(this, new EventArgs());
         }
-        
+
         [Ignore]
         public AudioStatus State { get; protected set; }
     }
@@ -746,8 +781,12 @@ namespace SilkDialectLearningDAL
             get { return _sound; }
             set
             {
-                _sound = value; NotifyPropertyChanged();
-                if (_sound != null) { PrepareAudio(); }
+                _sound = value;
+                NotifyPropertyChanged();
+                if (_sound != null)
+                {
+                    PrepareAudio();
+                }
             }
         }
 

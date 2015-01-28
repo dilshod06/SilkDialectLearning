@@ -38,6 +38,20 @@
 					   FontFamily="{DynamicResource HeaderFontFamily}" />
 		</DataTemplate>
 	</controls:MetroWindow.TitleTemplate>
+	<controls:MetroWindow.LeftWindowCommands>
+		<controls:WindowCommands>
+			<Button Name="MainMenu" Click="MainMenu_OnClick">
+				<Rectangle Width="20"
+						   Height="20"
+						   Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+					<Rectangle.OpacityMask>
+						<VisualBrush Stretch="Fill"
+									 Visual="{DynamicResource appbar_home}" />
+					</Rectangle.OpacityMask>
+				</Rectangle>
+			</Button>
+		</controls:WindowCommands>
+	</controls:MetroWindow.LeftWindowCommands>
 	<controls:MetroWindow.RightWindowCommands>
 		<controls:WindowCommands>
 			<Button Name="SettingsButton" Click="SettingsButton_Click">
@@ -111,7 +125,7 @@
 							<TextBlock Text="Scene" HorizontalAlignment="Center"/>
 						</StackPanel>
 
-						<StackPanel Orientation="Vertical" Name="ActivitesPanel" Margin="20 0">
+						<StackPanel Orientation="Vertical" Name="ActivitesPanel" Margin="20 0" Visibility="{Binding ViewModel.SceneViewModel.SelectedScene, Converter={StaticResource NullToVisibilityConverter}}">
 							<StackPanel.Resources>
 								<converters:EnumToBooleanConverter x:Key="EnumToBooleanConverter"/>
 							</StackPanel.Resources>
@@ -123,11 +137,11 @@
 										  HorizontalAlignment="Center"
 										  IsChecked="{Binding IsOpen, ElementName=MyPopup}" />
 							<TextBlock Text="Activites" HorizontalAlignment="Center"/>
-							<Popup Name="MyPopup" Width="250"  Margin="20" PlacementRectangle="30, 30 , 0, 0"
+							<Popup Name="MyPopup" Width="250"  Margin="20" PlacementRectangle="-90, 85 , 0, 0"
 								   AllowsTransparency="True"
 								   PopupAnimation="Fade" 
 								   StaysOpen="False"
-								   Placement="Top">
+								   Placement="Bottom">
 								<Border BorderBrush="{DynamicResource BlackBrush}" BorderThickness="1.5" HorizontalAlignment="Stretch">
 									<StackPanel Background="{DynamicResource WhiteBrush}" HorizontalAlignment="Stretch">
 										<StackPanel Margin="20 20 0 5">
@@ -146,8 +160,7 @@
 						</StackPanel>
 					</StackPanel>
 
-					<StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0 40 0 0" Name="RightCommands">
-
+					<StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0 40 0 0" Name="RightCommands" Visibility="{Binding ViewModel.SceneViewModel.SelectedScene, Converter={StaticResource NullToVisibilityConverter}}">
 						<StackPanel Orientation="Vertical">
 							<Border BorderThickness="0 0 1 0 " BorderBrush="{DynamicResource WhiteBrush}" Height="50"></Border>
 						</StackPanel>
@@ -203,9 +216,7 @@
 
 				</DockPanel>
 			</controls:Flyout>
-
 			<flyouts:SettingsFlyout/>
-
 		</controls:FlyoutsControl>
 	</controls:MetroWindow.Flyouts>
 	<Grid>
@@ -262,30 +273,5 @@
 				   NavigationUIVisibility="Hidden"
 				   Margin="3 0 3 0" />
 		</Grid>
-
-		<StatusBar Grid.Row="2" Name="StatusBar" Height="25" Background="{DynamicResource AccentColorBrush}"  Visibility="Collapsed">
-			<StatusBarItem>There will be page navigation status...</StatusBarItem>
-			<Separator Style="{StaticResource MetroStatusBarSeparator}" />
-			<StatusBarItem>
-				<TextBlock Text="{Binding Path=Name, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Frame} }"/>
-			</StatusBarItem>
-			<StatusBarItem HorizontalAlignment="Right" Margin="0 0 25 0">
-				<StatusBarItem.Resources>
-					<Style TargetType="TextBlock" x:Key="HandTextBlock">
-						<Style.Triggers>
-							<Trigger Property="IsMouseOver" Value="True">
-								<Setter Property="Cursor" Value="Hand"/>
-								<Setter Property="Foreground" Value="{DynamicResource GrayBrush5}"/>
-							</Trigger>
-						</Style.Triggers>
-					</Style>
-				</StatusBarItem.Resources>
-				<TextBlock FontFamily="Segoe UI Symbol" Text=""
-						   Name="MenuTextBlock" 
-						   Visibility="{Binding Path=ViewModel.SelectedLesson, Converter={StaticResource NullToVisibilityConverter}}" 
-						   Style="{StaticResource HandTextBlock}"
-						   MouseLeftButtonDown="MenuTextBlock_MouseLeftButtonDown"/>
-			</StatusBarItem>
-		</StatusBar>
 	</Grid>
 </controls:MetroWindow>

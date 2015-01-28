@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using SilkDialectLearning.Pages;
 using SilkDialectLearningBLL;
 using System;
@@ -30,6 +31,26 @@ namespace SilkDialectLearning
             MainViewModel = new MainViewModel(this);
             this.Loaded += MainWindow_Loaded;
             this.Closing += MainWindow_Closing;
+            MainViewModel.ViewModel.SceneViewModel.PracticeFinished += SceneViewModel_PracticeFinished;
+        }
+
+        void SceneViewModel_PracticeFinished(object sender, PraceticeFinishedEventArgs e)
+        {
+            Dispatcher.BeginInvoke(new Action(async () =>
+            {
+                var mySettings = new MetroDialogSettings()
+                {
+                    AffirmativeButtonText = "Yes",
+                    NegativeButtonText = "No",
+                    AnimateHide = false,
+                    ColorScheme = MainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
+                };
+                MessageDialogResult result = await this.ShowMessageAsync(e.Message, "", MessageDialogStyle.AffirmativeAndNegative, mySettings);
+                if (result != MessageDialogResult.Negative)
+                {
+                    MainViewModel.ViewModel.SceneViewModel.Practice();
+                }
+            }));
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -112,10 +133,6 @@ namespace SilkDialectLearning
             flyout.IsOpen = !flyout.IsOpen;
         }
 
-        private void HomeButton_Click(object sender, RoutedEventArgs e)
-        {
-        }
-
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
             this.ToggleFlyout(2);
@@ -178,16 +195,6 @@ namespace SilkDialectLearning
 
             PART_NavigatePanel.Visibility = CanGoBack ? Visibility.Visible : Visibility.Collapsed;
 
-            if (PageContent is EditScenePage)
-            {
-                MenuTextBlock.Visibility = System.Windows.Visibility.Collapsed;
-                ToggleFlyout(1);
-            }
-            else
-            {
-                if (MainViewModel.ViewModel.SceneViewModel.SelectedScene != null)
-                    MenuTextBlock.Visibility = System.Windows.Visibility.Visible;
-            }
             if (Navigated != null)
                 Navigated(this, e);
         }
@@ -300,7 +307,6 @@ namespace SilkDialectLearning
         /// <see cref="System.Windows.Navigation.NavigationWindow.LoadCompleted"/>
         public event LoadCompletedEventHandler LoadCompleted;
 
-
         private void Activites_Click(object sender, RoutedEventArgs e)
         {
             if (MyPopup.IsOpen)
@@ -317,12 +323,17 @@ namespace SilkDialectLearning
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
             this.ToggleFlyout(0);
-            ToggleFlyout(1);            
+            ToggleFlyout(1);
         }
 
         private void MetroWindow_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            ToggleFlyout(1);            
+            ToggleFlyout(1);
+        }
+
+        private void MainMenu_OnClick(object sender, RoutedEventArgs e)
+        {
+            ToggleFlyout(1);
         }
     }
 }

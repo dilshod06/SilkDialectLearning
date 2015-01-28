@@ -83,6 +83,7 @@
     <Compile Include="Converters\EnumToBooleanConverter.cs" />
     <Compile Include="Converters\NullToBooleanConverter.cs" />
     <Compile Include="Converters\NullToVisibilityConverter.cs" />
+    <Compile Include="Converters\PracticeActivityToVisibilityConverter.cs" />
     <Compile Include="Flyouts\HomeFlyout.xaml.cs">
       <DependentUpon>HomeFlyout.xaml</DependentUpon>
     </Compile>

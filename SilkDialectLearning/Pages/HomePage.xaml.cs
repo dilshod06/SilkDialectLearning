@@ -31,10 +31,5 @@ namespace SilkDialectLearning.Pages
         {
             this.DataContext = MainViewModel;
         }
-
-        private void MainTabControl_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            MainViewModel.OnClick(sender, e);
-        }
     }
 }

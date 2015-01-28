@@ -43,6 +43,7 @@ namespace SilkDialectLearning.Navigation
                 this.Resources.MergedDictionaries.Add(rd);
             }
         }
+
         private void AddResourceDictionary()
         {
             if (ThemeManager.DetectAppStyle(Application.Current).Item1.Name == "Dark")
@@ -73,6 +74,7 @@ namespace SilkDialectLearning.Navigation
                 MainViewModel.ViewModel.SelectedLanguage = language;
                 this.HomeFlyout.Navigate(new LevelsPage(this.HomeFlyout, this.MainViewModel));
             }
+
         }
     }
 }
