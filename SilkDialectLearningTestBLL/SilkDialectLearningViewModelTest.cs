@@ -20,6 +20,7 @@ namespace SilkDialectLearningTestBLL
         [TestMethod]
         public void DeleteEntityTest()
         {
+
             ViewModel.SelectedLanguage = ViewModel.Languages.FirstOrDefault();
             ViewModel.SelectedLevel = ViewModel.SelectedLanguage.Levels.FirstOrDefault();
             ViewModel.SelectedUnit = ViewModel.SelectedLevel.Units.FirstOrDefault();
