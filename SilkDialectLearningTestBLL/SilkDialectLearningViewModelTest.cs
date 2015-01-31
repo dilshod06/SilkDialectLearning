@@ -28,7 +28,7 @@ namespace SilkDialectLearningTestBLL
             var startTime = DateTime.Now;
             Task.Run(async () =>
             {
-               await ViewModel.Delete(ViewModel.SelectedLanguage);
+                await ViewModel.Delete(ViewModel.SelectedLanguage);
             }).GetAwaiter().GetResult();
 
             var endTime = DateTime.Now;

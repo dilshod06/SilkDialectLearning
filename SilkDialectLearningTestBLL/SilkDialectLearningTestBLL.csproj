@@ -54,6 +54,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SilkDialectLearningAudioLayer\SilkDialectLearningAudioLayer.csproj">
+      <Project>{7d298196-72b3-433a-90f3-b24bf591476d}</Project>
+      <Name>SilkDialectLearningAudioLayer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SilkDialectLEarningBLL\SilkDialectLearningBLL.csproj">
       <Project>{563c5ece-4ad2-4ec8-abaa-7b4523c36174}</Project>
       <Name>SilkDialectLearningBLL</Name>

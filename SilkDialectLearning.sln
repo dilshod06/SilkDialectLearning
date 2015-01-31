@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningTestBLL"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningTestDAL", "SilkDialectLearningTestDAL\SilkDialectLearningTestDAL.csproj", "{47ED92AD-6938-414A-88DB-2B5B173D993D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningAudioLayer", "SilkDialectLearningAudioLayer\SilkDialectLearningAudioLayer.csproj", "{7D298196-72B3-433A-90F3-B24BF591476D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -61,6 +63,10 @@ Global
 		{47ED92AD-6938-414A-88DB-2B5B173D993D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47ED92AD-6938-414A-88DB-2B5B173D993D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47ED92AD-6938-414A-88DB-2B5B173D993D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D298196-72B3-433A-90F3-B24BF591476D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D298196-72B3-433A-90F3-B24BF591476D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D298196-72B3-433A-90F3-B24BF591476D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D298196-72B3-433A-90F3-B24BF591476D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
