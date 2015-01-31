@@ -169,6 +169,7 @@ namespace SilkDialectLearning
             bi.EndInit();
             System.Windows.Controls.Image image2 = new System.Windows.Controls.Image() { Source = bi };
             return image2;
+
         }
     }
 
