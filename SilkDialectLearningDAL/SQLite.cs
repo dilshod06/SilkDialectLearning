@@ -185,7 +185,7 @@ namespace SQLite
 		/// Specifies the path to the database file.
 		/// </param>
 		/// <param name="storeDateTimeAsTicks">
-		/// Specifies whether to store DateTime properties as ticks (true) or strings (false). You
+		/// Specifies whether to store DateTime properties as ticks (true) or str  ings (false). You
 		/// absolutely do want to store them as Ticks in all new projects. The default of false is
 		/// only here for backwards compatibility. There is a *significant* speed advantage, with no
 		/// down sides, when setting storeDateTimeAsTicks = true.
