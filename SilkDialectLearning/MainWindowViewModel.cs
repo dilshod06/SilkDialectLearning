@@ -10,10 +10,10 @@ using System.Windows.Media;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using SilkDialectLearning.Models;
 using SilkDialectLearningBLL;
-using SilkDialectLearningDAL;
 using System.Threading.Tasks;
+using SilkDialectLearningDAL;
+using SQLite.Net.Platform.Win32;
 
 namespace SilkDialectLearning
 {
@@ -50,15 +50,17 @@ namespace SilkDialectLearning
 
         private void InitializeDatabaseFile()
         {
+            bool createDatabase = false;
+            string databasePath;
             DirectoryInfo currentDir = new DirectoryInfo(".\\");
             if (currentDir.GetFiles().All(f => f.Name != "SilkDialectLearning.db"))
             {
                 MessageBox.Show("Database file not found! We will create one for you");
-                Global.CreateDatabase = true;
+                createDatabase = true;
             }
-            Global.DatabasePath = currentDir.FullName + "SilkDialectLearning.db";
+            databasePath = currentDir.FullName + "SilkDialectLearning.db";
 
-            ViewModel = Global.GlobalViewModel;
+            ViewModel = new ViewModel(new SQLitePlatformWin32(), databasePath,"","", createDatabase);
         }
 
         protected void DoChangeTheme(AppThemeMenuData selectedTheme)

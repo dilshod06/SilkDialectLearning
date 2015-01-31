@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningDAL", "SilkDialectLearningDAL\SilkDialectLearningDAL.csproj", "{B78435D5-D203-4B0D-B610-725CADE3E7BD}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningBLL", "SilkDialectLEarningBLL\SilkDialectLearningBLL.csproj", "{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdPartyLibraries", "3rdPartyLibraries", "{9C3AA7B0-B45F-4C26-AF45-568E13F8AD98}"
@@ -27,16 +25,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningTestBLL"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningTestDAL", "SilkDialectLearningTestDAL\SilkDialectLearningTestDAL.csproj", "{47ED92AD-6938-414A-88DB-2B5B173D993D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningDAL", "SilkDialectLearningDAL\SilkDialectLearningDAL.csproj", "{2EC787EA-39B7-45F4-B311-56FC8DBA5FB2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B78435D5-D203-4B0D-B610-725CADE3E7BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B78435D5-D203-4B0D-B610-725CADE3E7BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B78435D5-D203-4B0D-B610-725CADE3E7BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B78435D5-D203-4B0D-B610-725CADE3E7BD}.Release|Any CPU.Build.0 = Release|Any CPU
 		{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{563C5ECE-4AD2-4EC8-ABAA-7B4523C36174}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -61,6 +57,10 @@ Global
 		{47ED92AD-6938-414A-88DB-2B5B173D993D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47ED92AD-6938-414A-88DB-2B5B173D993D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47ED92AD-6938-414A-88DB-2B5B173D993D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EC787EA-39B7-45F4-B311-56FC8DBA5FB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EC787EA-39B7-45F4-B311-56FC8DBA5FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EC787EA-39B7-45F4-B311-56FC8DBA5FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EC787EA-39B7-45F4-B311-56FC8DBA5FB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

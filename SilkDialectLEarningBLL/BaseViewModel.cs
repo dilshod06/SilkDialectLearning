@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using SQLite.Net.Interop;
+using SQLiteNetExtensions.Extensions;
 
 namespace SilkDialectLearningBLL
 {
@@ -17,10 +19,10 @@ namespace SilkDialectLearningBLL
             User = user;
         }
 
-        public ViewModel(string dbPath, string userName = "", string password = "", bool createDatabase = false, User user = null)
+        public ViewModel(ISQLitePlatform sqlitePlatform, string dbPath, string userName = "", string password = "", bool createDatabase = false, User user = null)
         {
             User = user;
-            var db = new Entities(dbPath, createDatabase);
+            var db = new Entities(sqlitePlatform, dbPath, createDatabase);
             Db = db;
         }
 
@@ -45,7 +47,7 @@ namespace SilkDialectLearningBLL
         {
             get
             {
-                languages = new ObservableCollection<Language>(Db.GetEntities<Language>());
+                languages = new ObservableCollection<Language>();
                 SelectedLanguage = languages.FirstOrDefault();
                 return languages;
             }
@@ -259,7 +261,7 @@ namespace SilkDialectLearningBLL
                     await Delete(childEntity);
                 }
             }
-            return await Db.SqLiteAsyncConnection.DeleteAsync(entity);
+            return await Db.SQLiteAsyncConnection.DeleteAsync(entity);
         }
 
         /// <summary>
@@ -276,7 +278,7 @@ namespace SilkDialectLearningBLL
                     await DeleteLevel(level);
                 }
             }
-            return await Db.SqLiteAsyncConnection.DeleteAsync(selectedLanguage);
+            return await Db.SQLiteAsyncConnection.DeleteAsync(selectedLanguage);
         }
 
         public async Task<int> DeleteLevel(Level level)
@@ -289,8 +291,7 @@ namespace SilkDialectLearningBLL
                     await DeleteUnit(unit);
                 }
             }
-            SelectedLanguage.IsLevelsDirty = true;
-            return await Db.SqLiteAsyncConnection.DeleteAsync(level);
+            return await Db.SQLiteAsyncConnection.DeleteAsync(level);
         }
 
         public async Task<int> DeleteUnit(Unit unit)
@@ -303,8 +304,7 @@ namespace SilkDialectLearningBLL
                     await DeleteLesson(lesson);
                 }
             }
-            SelectedLevel.IsUnitsDirty = true;
-            return await Db.SqLiteAsyncConnection.DeleteAsync(unit);
+            return await Db.SQLiteAsyncConnection.DeleteAsync(unit);
         }
 
         public async Task<int> DeleteLesson(Lesson lesson)
@@ -325,8 +325,7 @@ namespace SilkDialectLearningBLL
             {
 
             }
-            SelectedUnit.IsLessonsDirty = true;
-            return await Db.SqLiteAsyncConnection.DeleteAsync(lesson);
+            return await Db.SQLiteAsyncConnection.DeleteAsync(lesson);
         }
 
         public async Task<int> DeleteScene(Scene scene)
@@ -341,8 +340,8 @@ namespace SilkDialectLearningBLL
             }
             
             if (scene.ScenePicture != null)
-                await Db.SqLiteAsyncConnection.DeleteAsync(scene.ScenePicture);
-            return await Db.SqLiteAsyncConnection.DeleteAsync(scene);
+                await Db.SQLiteAsyncConnection.DeleteAsync(scene.ScenePicture);
+            return await Db.SQLiteAsyncConnection.DeleteAsync(scene);
         }
 
         public async Task<int> DeleteSceneItem(SceneItem sceneItem)
@@ -350,46 +349,52 @@ namespace SilkDialectLearningBLL
             if (sceneItem.Phrase != null)
                 await DeletePhrase(sceneItem.Phrase);
 
-            return await Db.SqLiteAsyncConnection.DeleteAsync(sceneItem);
+            return await Db.SQLiteAsyncConnection.DeleteAsync(sceneItem);
         }
 
         private async Task<int> DeletePhrase(Phrase phrase)
         {
-            return await Db.SqLiteAsyncConnection.DeleteAsync(phrase);
+            return await Db.SQLiteAsyncConnection.DeleteAsync(phrase);
         }
 
 
         public Task<int> Update(object item)
         {
-            return Db.SqLiteAsyncConnection.UpdateAsync(item);
+            return Db.SQLiteAsyncConnection.UpdateAsync(item);
         }
 
         public Task<int> UpdateAll(IEnumerable items)
         {
-            return Db.SqLiteAsyncConnection.UpdateAllAsync(items);
+            return Db.SQLiteAsyncConnection.UpdateAllAsync(items);
         }
 
         //TODO: This method looks good, but I would say it should be in DAL. What do you think?
         public Task<int> InsertEntity(IEntity entity)
         {
-            if (entity is Language)
+            return Task.Run(() =>
             {
-                return Db.SqLiteAsyncConnection.InsertAsync(entity);
-            }
-            else if (entity is Level)
-            {
-                return SelectedLanguage.InsertLevel(entity as Level);
-
-            }
-            else if (entity is Unit)
-            {
-                return selectedLevel.InsertUnit(entity as Unit);
-            }
-            else if (entity is Lesson)
-            {
-                return SelectedUnit.InsertLesson(entity as Lesson);
-            }
-            return new Task<int>(() => 0);
+                if (entity is Language)
+                {
+                    Db.Insert(entity);
+                }
+                else if (entity is Level)
+                {
+                    SelectedLanguage.Levels.Add(entity as Level);
+                    Db.InsertOrReplaceWithChildren(SelectedLanguage, true);
+                }
+                else if (entity is Unit)
+                {
+                    SelectedLevel.Units.Add(entity as Unit);
+                    Db.InsertOrReplaceWithChildren(SelectedLevel);
+                }
+                else if (entity is Lesson)
+                {
+                    SelectedUnit.Lessons.Add(entity as Lesson);
+                    Db.InsertOrReplaceWithChildren(SelectedUnit);
+                }
+                return new Task<int>(() => 0);
+            });
+            
         }
 
         #endregion

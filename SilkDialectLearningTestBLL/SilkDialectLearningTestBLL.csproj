@@ -58,10 +58,6 @@
       <Project>{563c5ece-4ad2-4ec8-abaa-7b4523c36174}</Project>
       <Name>SilkDialectLearningBLL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SilkDialectLearningDAL\SilkDialectLearningDAL.csproj">
-      <Project>{b78435d5-d203-4b0d-b610-725cade3e7bd}</Project>
-      <Name>SilkDialectLearningDAL</Name>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
