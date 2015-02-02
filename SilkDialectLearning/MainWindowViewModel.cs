@@ -61,6 +61,7 @@ namespace SilkDialectLearning
             databasePath = currentDir.FullName + "SilkDialectLearning.db";
 
             ViewModel = new ViewModel(new SQLitePlatformWin32(), databasePath,"","", createDatabase);
+            Global.GlobalViewModel = ViewModel;
         }
 
         protected void DoChangeTheme(AppThemeMenuData selectedTheme)
@@ -260,61 +261,16 @@ namespace SilkDialectLearning
                     else
                         return;
                 }
-
-                if (entity is Language)
+                MessageDialogResult result = await ShowDeleteMessage(entity);
+                if (result != MessageDialogResult.Negative)
                 {
-                    MessageDialogResult result = await ShowDeleteMessage(entity);
-                    if (result != MessageDialogResult.Negative)
+                    if (entity != null)
                     {
-                        //mainViewModel.OnLoading(true, "Please wait language is deleting...");
-                        var controller = await metroWindow.ShowProgressAsync("Please wait...", "Language is deleting!");
-                        await viewModel.Delete(entity as Language);
-                        viewModel.NotifyPropertyChanged("Languages");
-                        await controller.CloseAsync();
+                        mainViewModel.OnLoading(true, string.Format("Please wait {0} is deleting...", entity.GetType().Name));
+                        await viewModel.AsyncDelete(entity, true);
+                        viewModel.NotifyPropertyChanged(string.Format("{0}s",entity.GetType().Name));
                     }
-                }
-                else if (entity is Level)
-                {
-                    MessageDialogResult result = await ShowDeleteMessage(entity);
-                    if (result != MessageDialogResult.Negative)
-                    {
-                        mainViewModel.OnLoading(true, "Please wait level is deleting...");
-                        await viewModel.Delete(entity as Level);
-                        viewModel.NotifyPropertyChanged("Levels");
-                    }
-                }
-
-                else if (entity is Unit)
-                {
-                    MessageDialogResult result = await ShowDeleteMessage(entity);
-                    if (result != MessageDialogResult.Negative)
-                    {
-                        mainViewModel.OnLoading(true, "Please wait unit is deleting...");
-                        await viewModel.Delete(entity as Unit);
-                        viewModel.NotifyPropertyChanged("Units");
-                    }
-                }
-                else if (entity is Lesson)
-                {
-                    MessageDialogResult result = await ShowDeleteMessage(entity);
-
-                    if (result != MessageDialogResult.Negative)
-                    {
-                        mainViewModel.OnLoading(true, "Please wait lesson is deleting...");
-                        await viewModel.Delete(entity as Lesson);
-                        viewModel.NotifyPropertyChanged("Lessons");
-                    }
-                }
-                else if (entity is Scene)
-                {
-                    MessageDialogResult result = await ShowDeleteMessage(entity);
-
-                    if (result != MessageDialogResult.Negative)
-                    {
-                        mainViewModel.OnLoading(true, "Please wait lesson is deleting...");
-                        await viewModel.Delete(entity as Scene);
-                        viewModel.SceneViewModel.NotifyPropertyChanged("Scenes");
-                    }
+                    
                 }
                 mainViewModel.OnLoading(false, "");
             }
@@ -402,7 +358,7 @@ namespace SilkDialectLearning
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
                     mainViewModel.OnLoading(true, "Saving...");
-                    await viewModel.InsertEntity(new Language
+                    await viewModel.AsyncInsertEntity(new Language
                     {
                         Id = Guid.NewGuid(),
                         Name = mainViewModel.Name,
@@ -415,12 +371,11 @@ namespace SilkDialectLearning
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
                     mainViewModel.OnLoading(true, "Saving...");
-                    await viewModel.InsertEntity(new Level
+                    await viewModel.AsyncInsertEntity(new Level
                     {
                         Id = Guid.NewGuid(),
                         Name = mainViewModel.Name,
-                        Description = mainViewModel.Description,
-                        Language = mainViewModel.ViewModel.SelectedLanguage
+                        Description = mainViewModel.Description
                     });
                     viewModel.NotifyPropertyChanged("Levels");
                 }
@@ -430,12 +385,11 @@ namespace SilkDialectLearning
                         return;
 
                     mainViewModel.OnLoading(true, "Saving...");
-                    await viewModel.InsertEntity(new Unit
+                    await viewModel.AsyncInsertEntity(new Unit
                     {
                         Id = Guid.NewGuid(),
                         Name = mainViewModel.Name,
-                        Description = mainViewModel.Description,
-                        Level = mainViewModel.ViewModel.SelectedLevel
+                        Description = mainViewModel.Description
                     });
                     viewModel.NotifyPropertyChanged("Units");
                 }
@@ -445,12 +399,11 @@ namespace SilkDialectLearning
                         return;
 
                     mainViewModel.OnLoading(true, "Saving...");
-                    await viewModel.InsertEntity(new Lesson
+                    await viewModel.AsyncInsertEntity(new Lesson
                     {
                         Id = Guid.NewGuid(),
                         Name = mainViewModel.Name,
-                        Description = mainViewModel.Description,
-                        Unit = mainViewModel.ViewModel.SelectedUnit
+                        Description = mainViewModel.Description
                     });
                     viewModel.NotifyPropertyChanged("Lessons");
                 }

@@ -87,7 +87,6 @@ namespace SilkDialectLearning.Views
                 ViewModel.SceneViewModel.HighlightItem += SceneViewModel_HighlightItem;
                 ViewModel.SceneViewModel.StopHighlighting += SceneViewModel_StopHighlighting;
                 loaded = true;
-                
             }
         }
 

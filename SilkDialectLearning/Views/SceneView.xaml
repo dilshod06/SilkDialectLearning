@@ -129,7 +129,7 @@
 								Loaded="Button_Loaded" 
 								Width="55" 
 								Height="55" 
-                                Command="{Binding Path=RepeatCommand}"
+								Command="{Binding Path=RepeatCommand}"
 								Style="{DynamicResource MetroCircleButtonStyle}"
 								Visibility="{Binding Path=ViewModel.SceneViewModel.SceneActivity, Converter={StaticResource PracticeActivityToVisibilityConverter}}">
 							<Rectangle Width="25" Height="25" 

@@ -7,11 +7,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilkDialectLearningBLL", "S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3rdPartyLibraries", "3rdPartyLibraries", "{9C3AA7B0-B45F-4C26-AF45-568E13F8AD98}"
 	ProjectSection(SolutionItems) = preProject
-		3rdPartyLibraries\NAudio.dll = 3rdPartyLibraries\NAudio.dll
-		3rdPartyLibraries\sqlite3.def = 3rdPartyLibraries\sqlite3.def
-		3rdPartyLibraries\sqlite-dll-win32-x86-3071300\sqlite3.dll = 3rdPartyLibraries\sqlite-dll-win32-x86-3071300\sqlite3.dll
-		3rdPartyLibraries\System.Data.SQLite.dll = 3rdPartyLibraries\System.Data.SQLite.dll
-		3rdPartyLibraries\System.Data.SQLite.Linq.dll = 3rdPartyLibraries\System.Data.SQLite.Linq.dll
 		3rdPartyLibraries\System.Windows.Interactivity.dll = 3rdPartyLibraries\System.Windows.Interactivity.dll
 	EndProjectSection
 EndProject

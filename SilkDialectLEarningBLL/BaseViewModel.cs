@@ -1,4 +1,5 @@
-﻿using SilkDialectLearningDAL;
+﻿using System.Xml;
+using SilkDialectLearningDAL;
 using System;
 using System.Linq;
 using System.Collections;
@@ -9,6 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SQLite.Net.Interop;
 using SQLiteNetExtensions.Extensions;
+using SilkDialectLearningAudioLayer;
 
 namespace SilkDialectLearningBLL
 {
@@ -24,6 +26,7 @@ namespace SilkDialectLearningBLL
             User = user;
             var db = new Entities(sqlitePlatform, dbPath, createDatabase);
             Db = db;
+            AudioManager = new AudioManager();
         }
 
         #region Properties
@@ -38,6 +41,8 @@ namespace SilkDialectLearningBLL
         /// </summary>
         public User User { get { return user; } private set { user = value; NotifyPropertyChanged(); } }
 
+        public AudioManager AudioManager { get; set; }
+
         ObservableCollection<Language> languages;
 
         /// <summary>
@@ -47,8 +52,7 @@ namespace SilkDialectLearningBLL
         {
             get
             {
-                languages = new ObservableCollection<Language>();
-                SelectedLanguage = languages.FirstOrDefault();
+                languages = new ObservableCollection<Language>(Db.Table<Language>().ToList());
                 return languages;
             }
         }
@@ -78,7 +82,7 @@ namespace SilkDialectLearningBLL
                     return;
                 }
                 language = value;
-                NotifyPropertyChanged();               
+                NotifyPropertyChanged();
             }
         }
 
@@ -92,7 +96,10 @@ namespace SilkDialectLearningBLL
             {
                 if (SelectedLanguage != null)
                 {
-                    levels = SelectedLanguage.Levels;
+                    levels = new ObservableCollection<Level>
+                    (
+                        Db.GetWithChildren<Language>(SelectedLanguage.Id).Levels
+                    );
                 }
                 return levels;
             }
@@ -132,7 +139,10 @@ namespace SilkDialectLearningBLL
                 ObservableCollection<Unit> units = new ObservableCollection<Unit>();
                 if (SelectedLevel != null)
                 {
-                    units = SelectedLevel.Units;
+                    units = new ObservableCollection<Unit>
+                    (
+                        Db.GetWithChildren<Level>(SelectedLevel.Id).Units
+                    );
                 }
                 return units;
             }
@@ -172,7 +182,10 @@ namespace SilkDialectLearningBLL
                 ObservableCollection<Lesson> lessons = new ObservableCollection<Lesson>();
                 if (SelectedUnit != null)
                 {
-                    lessons = SelectedUnit.Lessons;
+                    lessons = new ObservableCollection<Lesson>
+                    (
+                        Db.GetWithChildren<Unit>(SelectedUnit.Id).Lessons
+                    );
                 }
                 return lessons;
             }
@@ -200,163 +213,64 @@ namespace SilkDialectLearningBLL
         private SceneViewModel sceneViewModel;
         public SceneViewModel SceneViewModel
         {
-            get
-            {
-                if (sceneViewModel == null)
-                {
-                    sceneViewModel = new SceneViewModel();
-                }
-                return sceneViewModel;
-            }
+            get { return sceneViewModel ?? (sceneViewModel = new SceneViewModel()); }
         }
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// This method deletes selectedLanguage cascade Language.Levels.Units.Lessons.Scenes.SceneItems
-        /// </summary>
-        /// <param name="selectedLanguage">Language</param>
-        public async Task<int> Delete(IEntity entity)
-        {
-            IEnumerable<IEntity> childEntities = null;
-            Language language = entity as Language;
-            Level level = entity as Level;
-            Unit unit = entity as Unit;
-            Lesson lesson = entity as Lesson;
-            Scene scene = entity as Scene;
-            SceneItem sceneItem = entity as SceneItem;
-            Phrase phrase = entity as Phrase;
-            if (language != null)
+        public Task<int> AsyncDelete(IEntity entity, bool recurcive = false)
+        {  
+            return Task.Factory.StartNew(() =>
             {
-                childEntities = language.Levels;
-                //var langToLevel = Db.Query<LanguageToLevel>("select * from LanguageToLevel where LanguageId = '" + language.Id + "'");
-                //await Db.SqLiteAsyncConnection.DeleteAsync(langToLevel);
-            }
-            else if (level != null)
-            {
-                childEntities = level.Units;
-            }
-            else if (unit != null)
-            {
-                childEntities = unit.Lessons;
-            }
-            else if (lesson != null)
-            {
-                childEntities = lesson.Scenes;
-            }
-            else if (scene != null)
-            {
-                childEntities = scene.SceneItems;
-            }
-            else if (sceneItem != null)
-            {
-                if (sceneItem.Phrase != null)
-                    await Delete(sceneItem.Phrase);
-            }
-            if (childEntities != null)
-            {
-                foreach (var childEntity in childEntities)
+                var conn = Db.GetConnectionWithLock();
+                using (conn.Lock())
                 {
-                    await Delete(childEntity);
+                    object entityWithChildren = null;
+                    if (recurcive)
+                    {// If user want delete Entity with all childrens(recurcive) first it should get entity with childrens
+                        
+                        if (entity is Language)
+                        {
+                            entityWithChildren = conn.GetWithChildren<Language>(entity.Id, true);
+                        }
+                        else if (entity is Level)
+                        {
+                            entityWithChildren = conn.GetWithChildren<Level>(entity.Id, true);
+                        }
+                        else if (entity is Unit)
+                        {
+                            entityWithChildren = conn.GetWithChildren<Unit>(entity.Id, true);
+                        }
+                        else if (entity is Lesson)
+                        {
+                            entityWithChildren = conn.GetWithChildren<Lesson>(entity.Id, true);
+                        }
+                        else if (entity is Scene)
+                        {
+                            entityWithChildren = conn.GetWithChildren<Scene>(entity.Id, true);
+                        }
+                    }
+                    // if recurcive will be true deletes entity with all childrens else deletes only entity
+                    conn.Delete(recurcive ? entityWithChildren : entity, recurcive);
+                    return 1;
                 }
-            }
-            return await Db.SQLiteAsyncConnection.DeleteAsync(entity);
+            });
         }
 
-        /// <summary>
-        /// this Method deletes selectedLanguage cascade Language.Levels.Units.Lessons.Scenes.SceneItems
-        /// </summary>
-        /// <param name="selectedLanguage">Language</param>
-        public async Task<int> DeleteLanguage(Language selectedLanguage)
+        public Task<int> AsyncDeleteAll(IEnumerable entities, bool recurcive = false)
         {
-            ObservableCollection<Level> levels = selectedLanguage.Levels;
-            if (levels.Count > 0)
+            return Task.Factory.StartNew(() =>
             {
-                foreach (Level level in levels)
+                var conn = Db.GetConnectionWithLock();
+
+                using (conn.Lock())
                 {
-                    await DeleteLevel(level);
+                    conn.DeleteAll(entities, recurcive);
+                    return 1;
                 }
-            }
-            return await Db.SQLiteAsyncConnection.DeleteAsync(selectedLanguage);
+            });
         }
-
-        public async Task<int> DeleteLevel(Level level)
-        {
-            ObservableCollection<Unit> units = level.Units;
-            if (units.Count > 0)
-            {
-                foreach (Unit unit in units)
-                {
-                    await DeleteUnit(unit);
-                }
-            }
-            return await Db.SQLiteAsyncConnection.DeleteAsync(level);
-        }
-
-        public async Task<int> DeleteUnit(Unit unit)
-        {
-            ObservableCollection<Lesson> lessons = unit.Lessons;
-            if (lessons.Count > 0)
-            {
-                foreach (Lesson lesson in lessons)
-                {
-                    await DeleteLesson(lesson);
-                }
-            }
-            return await Db.SQLiteAsyncConnection.DeleteAsync(unit);
-        }
-
-        public async Task<int> DeleteLesson(Lesson lesson)
-        {
-            IList<Scene> scenes = lesson.Scenes;
-            if (scenes.Count > 0)
-            {
-                foreach (Scene scene in scenes)
-                {
-                    await DeleteScene(scene);
-                }
-            }
-            if (lesson.Vocabularies.Count > 0)
-            {
-
-            }
-            if (lesson.SentenceBuildings.Count > 0)
-            {
-
-            }
-            return await Db.SQLiteAsyncConnection.DeleteAsync(lesson);
-        }
-
-        public async Task<int> DeleteScene(Scene scene)
-        {
-            ObservableCollection<SceneItem> sceneItems = scene.SceneItems;
-            if (sceneItems.Count > 0)
-            {
-                foreach (SceneItem sceneItem in sceneItems)
-                {
-                    await DeleteSceneItem(sceneItem);
-                }
-            }
-            
-            if (scene.ScenePicture != null)
-                await Db.SQLiteAsyncConnection.DeleteAsync(scene.ScenePicture);
-            return await Db.SQLiteAsyncConnection.DeleteAsync(scene);
-        }
-
-        public async Task<int> DeleteSceneItem(SceneItem sceneItem)
-        {
-            if (sceneItem.Phrase != null)
-                await DeletePhrase(sceneItem.Phrase);
-
-            return await Db.SQLiteAsyncConnection.DeleteAsync(sceneItem);
-        }
-
-        private async Task<int> DeletePhrase(Phrase phrase)
-        {
-            return await Db.SQLiteAsyncConnection.DeleteAsync(phrase);
-        }
-
 
         public Task<int> Update(object item)
         {
@@ -368,33 +282,38 @@ namespace SilkDialectLearningBLL
             return Db.SQLiteAsyncConnection.UpdateAllAsync(items);
         }
 
-        //TODO: This method looks good, but I would say it should be in DAL. What do you think?
-        public Task<int> InsertEntity(IEntity entity)
+        public Task<int> AsyncInsertEntity(IEntity entity)
         {
-            return Task.Run(() =>
+            return Task.Factory.StartNew(() =>
             {
-                if (entity is Language)
+                var conn = Db.GetConnectionWithLock();
+                using (conn.Lock())
                 {
-                    Db.Insert(entity);
+                    if (entity is Language)
+                    {
+                        return conn.Insert(entity);
+                    }
+                    else if (entity is Level)
+                    {
+                        SelectedLanguage.Levels.Add(entity as Level);
+                        conn.InsertOrReplaceWithChildren(SelectedLanguage, true);
+                        return 1;
+                    }
+                    else if (entity is Unit)
+                    {
+                        SelectedLevel.Units.Add(entity as Unit);
+                        conn.InsertOrReplaceWithChildren(SelectedLevel,true);
+                        return 1;
+                    }
+                    else if (entity is Lesson)
+                    {
+                        SelectedUnit.Lessons.Add(entity as Lesson);
+                        conn.InsertOrReplaceWithChildren(SelectedUnit,true);
+                        return 1;
+                    }
                 }
-                else if (entity is Level)
-                {
-                    SelectedLanguage.Levels.Add(entity as Level);
-                    Db.InsertOrReplaceWithChildren(SelectedLanguage, true);
-                }
-                else if (entity is Unit)
-                {
-                    SelectedLevel.Units.Add(entity as Unit);
-                    Db.InsertOrReplaceWithChildren(SelectedLevel);
-                }
-                else if (entity is Lesson)
-                {
-                    SelectedUnit.Lessons.Add(entity as Lesson);
-                    Db.InsertOrReplaceWithChildren(SelectedUnit);
-                }
-                return new Task<int>(() => 0);
+                return 0;
             });
-            
         }
 
         #endregion
@@ -432,8 +351,10 @@ namespace SilkDialectLearningBLL
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
         #endregion
+
+
+
     }
 
 }

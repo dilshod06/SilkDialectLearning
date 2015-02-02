@@ -1,4 +1,6 @@
-﻿using SilkDialectLearningDAL;
+﻿using System.Runtime.InteropServices;
+using SilkDialectLearningAudioLayer;
+using SilkDialectLearningDAL;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -7,12 +9,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Timers;
+using SQLiteNetExtensions.Extensions;
 
 namespace SilkDialectLearningBLL
 {
     public abstract class BaseActivity : INotifyPropertyChanged
     {
-
         #region Events
 
         public event ActivityChangedEventHandler ActivityChanged;
@@ -83,7 +85,7 @@ namespace SilkDialectLearningBLL
                     //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
                     lastPlayed = sceneItem;
                     if (sceneItem.Phrase != null)
-                        await sceneItem.Phrase.Play();
+                        await ViewModel.AudioManager.Play(sceneItem.Phrase);
                     else
                         throw new Exception("Scene Items Phrase cannot be null");
                 }
@@ -107,7 +109,7 @@ namespace SilkDialectLearningBLL
             if (lastPlayed != null)
             {
                 if (lastPlayed.Phrase != null)
-                    await lastPlayed.Phrase.StopPlaying();
+                    await ViewModel.AudioManager.StopPlaying();
             }
         }
 
@@ -245,7 +247,10 @@ namespace SilkDialectLearningBLL
                 ObservableCollection<Scene> scenes = new ObservableCollection<Scene>();
                 if (ViewModel.SelectedLesson != null)
                 {
-                    scenes = new ObservableCollection<Scene>(ViewModel.SelectedLesson.Scenes);
+                    scenes = new ObservableCollection<Scene>
+                    (
+                        ViewModel.Db.GetWithChildren<Lesson>(ViewModel.SelectedLesson.Id, true).Scenes.OrderBy(s => s.Name)
+                    );
                 }
                 return scenes;
             }
@@ -285,7 +290,10 @@ namespace SilkDialectLearningBLL
                 ObservableCollection<SceneItem> sceneItems = new ObservableCollection<SceneItem>();
                 if (SelectedScene != null)
                 {
-                    sceneItems = SelectedScene.SceneItems;
+                    sceneItems = new ObservableCollection<SceneItem>
+                    (
+                        ViewModel.Db.GetWithChildren<Scene>(SelectedScene.Id).SceneItems
+                    );
                 }
                 return sceneItems;
             }

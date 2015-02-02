@@ -34,7 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Entities.cs" />
+    <Compile Include="IEntity.cs" />
+    <Compile Include="IHighlightable.cs" />
+    <Compile Include="IPlayable.cs" />
     <Compile Include="Model.cs" />
+    <Compile Include="ModelManager.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -8,9 +8,4 @@ using System.Threading.Tasks;
 
 namespace SilkDialectLearningTestBLL
 {
-    [TestClass]
-    public class SilkDialectLearningViewModelTest
-    {
-       
-    }
 }

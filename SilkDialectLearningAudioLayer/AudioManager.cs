@@ -1,33 +1,31 @@
 ﻿using NAudio.Wave;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
+using SilkDialectLearningDAL;
 
 namespace SilkDialectLearningAudioLayer
 {
-    public  class AudioManager : IAudioManager
+    public class AudioManager : IAudioManager
     {
-        #region Properties
+        #region Fields
 
-        public TimeSpan SoundLength { get; set; }
-        public AudioStatus State { get; protected set; }
-        private WaveOut audioOutput;
-        private Mp3FileReader mp3Reader;
+        private static TimeSpan SoundLength { get; set; }
+        private static AudioStatus State { get; set; }
+        private static WaveOut audioOutput;
+        private static Mp3FileReader mp3Reader;
 
         #endregion
 
-        public async Task Play(byte[] audio, int playFrom = 0)
+        public async Task Play(Phrase phrase, int playFrom = 0)
         {
-            if (audio == null)
+            if (phrase == null)
             {
                 throw new InvalidOperationException("Phrase.Sound is not initialized yet.");
             }
-            PrepareAudio(audio);
+            PrepareAudio(phrase);
+            //Sets for phrase's Sound Length after preparing audio
+            phrase.SoundLength = SoundLength;
             await Task.Run(() =>
             {
                 if (audioOutput.PlaybackState == PlaybackState.Playing)
@@ -40,13 +38,8 @@ namespace SilkDialectLearningAudioLayer
             });
         }
 
-        public async Task StopPlaying(byte[] audio)
+        public async Task StopPlaying()
         {
-            if (audio == null)
-            {
-                throw new InvalidOperationException("Phrase.Sound is not initialized yet.");
-            }
-            PrepareAudio(audio);
             await Task.Run(() =>
             {
                 if (audioOutput.PlaybackState != PlaybackState.Stopped)
@@ -57,11 +50,11 @@ namespace SilkDialectLearningAudioLayer
             });
         }
 
-        private void PrepareAudio(byte[] audio)
+        private void PrepareAudio(Phrase phrase)
         {
             try
             {
-                mp3Reader = new Mp3FileReader(Helper.ByteArrayToStream(audio));
+                mp3Reader = new Mp3FileReader(Helper.ByteArrayToStream(phrase.Sound));
                 SoundLength = mp3Reader.TotalTime;
                 var wc = new WaveChannel32(mp3Reader);
                 audioOutput = new WaveOut();
@@ -80,7 +73,7 @@ namespace SilkDialectLearningAudioLayer
             Stopped,
             Paused,
         }
-        private class Helper
+        private static class Helper
         {
             public static Stream ByteArrayToStream(Byte[] bytes)
             {

@@ -49,6 +49,12 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SilkDialectLearningDAL\SilkDialectLearningDAL.csproj">
+      <Project>{2ec787ea-39b7-45f4-b311-56fc8dba5fb2}</Project>
+      <Name>SilkDialectLearningDAL</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

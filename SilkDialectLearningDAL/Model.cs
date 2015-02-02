@@ -1,103 +1,12 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using SQLite.Net;
-using SQLite.Net.Async;
 using SQLite.Net.Attributes;
-using SQLite.Net.Interop;
 using SQLiteNetExtensions.Attributes;
-using SQLiteNetExtensions;
-using SQLiteNetExtensions.Extensions;
 
 namespace SilkDialectLearningDAL
 {
-    public interface IEntity
-    {
-        Guid Id { get; set; }
-
-        string Name { get; set; }
-
-        string Description { get; set; }
-
-    }
-    public interface IPlayable
-    {
-        Phrase Phrase { get; }
-    }
-
-    public interface IHighlightable
-    {
-        bool IsRound { get; set; }
-    }
-
-    public class Entities : SQLiteConnection
-    {
-        private readonly SQLiteConnectionString connectionParameters;
-
-        private readonly SQLiteConnectionPool sqliteConnectionPool;
-
-        // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once InconsistentNaming
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public SQLiteAsyncConnection SQLiteAsyncConnection { get; set; }
-
-        public Entities(ISQLitePlatform sqlitePlatform, string databasePath, bool createDatabase = false)
-            : base(sqlitePlatform, databasePath)
-        {
-            connectionParameters = new SQLiteConnectionString(databasePath, false);
-            sqliteConnectionPool = new SQLiteConnectionPool(sqlitePlatform);
-            SQLiteAsyncConnection = new SQLiteAsyncConnection(() => sqliteConnectionPool.GetConnection(connectionParameters));
-            if (createDatabase)
-            {
-                CreateTable<User>();
-                CreateTable<Language>();
-                CreateTable<LanguageToLevel>();
-                CreateTable<Level>();
-                CreateTable<LevelToUnit>();
-                CreateTable<Unit>();
-                CreateTable<UnitToLesson>();
-                CreateTable<Lesson>();
-                CreateTable<LessonToActivity>();
-                CreateTable<Scene>();
-                CreateTable<ScenePicture>();
-                CreateTable<SceneItem>();
-                CreateTable<Phrase>();
-                CreateTable<Vocabulary>();
-                CreateTable<VocabularyToWord>();
-                CreateTable<Word>();
-                CreateTable<WordToMeaning>();
-                CreateTable<Meaning>();
-                CreateTable<SentenceBuilding>();
-                CreateTable<SentenceBuildingItemPicture>();
-                CreateTable<SentenceBuildingItem>();
-                CreateTable<SentenceToWord>();
-            }
-            ModelManager.Db = this;
-        }
-    }
-
-    public static class ModelManager
-    {
-        private static Entities _db;
-
-        public static Entities Db
-        {
-            get
-            {
-                if (_db == null)
-                    throw new Exception("Instance of MainEntities not created yet.");
-                return _db;
-            }
-            set
-            {
-                _db = value;
-            }
-        }
-    }
-
-
     public abstract class BaseEntity : IEntity, INotifyPropertyChanged, IDisposable
     {
         [PrimaryKey]
@@ -119,7 +28,6 @@ namespace SilkDialectLearningDAL
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        // ReSharper disable once MemberCanBeProtected.Global
         public void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChangedEventHandler handler = PropertyChanged;
@@ -138,10 +46,10 @@ namespace SilkDialectLearningDAL
 
     public class Language : BaseEntity
     {
-        private ObservableCollection<Level> levels = new ObservableCollection<Level>();
+        private List<Level> levels = new List<Level>();
 
         [ManyToMany(typeof(LanguageToLevel), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Level> Levels
+        public List<Level> Levels
         {
             get { return levels; }
             set { levels = value; }
@@ -153,7 +61,7 @@ namespace SilkDialectLearningDAL
         }
     }
 
-    public abstract class LanguageToLevel
+    public class LanguageToLevel
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -167,10 +75,10 @@ namespace SilkDialectLearningDAL
 
     public class Level : BaseEntity
     {
-        private ObservableCollection<Unit> units = new ObservableCollection<Unit>();
+        private List<Unit> units = new List<Unit>();
 
         [ManyToMany(typeof(LevelToUnit), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Unit> Units
+        public List<Unit> Units
         {
             get { return units; }
             set { units = value; NotifyPropertyChanged(); }
@@ -185,7 +93,7 @@ namespace SilkDialectLearningDAL
         }
     }
 
-    public abstract class LevelToUnit
+    public class LevelToUnit
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -199,10 +107,10 @@ namespace SilkDialectLearningDAL
 
     public class Unit : BaseEntity
     {
-        private ObservableCollection<Lesson> lessons = new ObservableCollection<Lesson>();
+        private List<Lesson> lessons = new List<Lesson>();
 
         [ManyToMany(typeof(UnitToLesson), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Lesson> Lessons
+        public List<Lesson> Lessons
         {
             get { return lessons; }
             set { lessons = value; NotifyPropertyChanged(); }
@@ -214,7 +122,7 @@ namespace SilkDialectLearningDAL
         }
     }
 
-    public abstract class UnitToLesson
+    public class UnitToLesson
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -228,35 +136,34 @@ namespace SilkDialectLearningDAL
 
     public class Lesson : BaseEntity
     {
-        private ObservableCollection<Scene> scenes = new ObservableCollection<Scene>();
+        private List<Scene> scenes = new List<Scene>();
 
         /// <summary>
         /// Gets and Sets this Lessons Scene List 
         /// </summary>
         [ManyToMany(typeof(LessonToActivity), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Scene> Scenes
+        public List<Scene> Scenes
         {
             get { return scenes; }
             set { scenes = value; NotifyPropertyChanged(); }
         }
 
-
-        private ObservableCollection<Vocabulary> vocabularies = new ObservableCollection<Vocabulary>();
+        private List<Vocabulary> vocabularies = new List<Vocabulary>();
 
         /// <summary>
         /// Gets and sets this Lessons Vocabulary List
         /// </summary>
         [ManyToMany(typeof(LessonToActivity), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Vocabulary> Vocabularies
+        public List<Vocabulary> Vocabularies
         {
             get { return vocabularies; }
             set { vocabularies = value; NotifyPropertyChanged(); }
         }
 
-        private ObservableCollection<SentenceBuilding> sentenceBuildings = new ObservableCollection<SentenceBuilding>();
+        private List<SentenceBuilding> sentenceBuildings = new List<SentenceBuilding>();
 
         [ManyToMany(typeof(LessonToActivity), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<SentenceBuilding> SentenceBuildings
+        public List<SentenceBuilding> SentenceBuildings
         {
             get { return sentenceBuildings; }
             set { sentenceBuildings = value; NotifyPropertyChanged(); }
@@ -268,7 +175,7 @@ namespace SilkDialectLearningDAL
         }
     }
 
-    public abstract class LessonToActivity
+    public class LessonToActivity
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -283,7 +190,7 @@ namespace SilkDialectLearningDAL
         public Guid VocabularyId { get; set; }
 
         [ForeignKey(typeof(SentenceBuilding))]
-        public Guid SentenceBuilding { get; set; }
+        public Guid SentBuildingId { get; set; }
     }
 
     public class Scene : BaseEntity
@@ -292,13 +199,12 @@ namespace SilkDialectLearningDAL
         public Guid PictureId { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.All)]
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public ScenePicture ScenePicture { get; set; }
 
-        private ObservableCollection<SceneItem> sceneItems = new ObservableCollection<SceneItem>();
+        private List<SceneItem> sceneItems = new List<SceneItem>();
 
         [OneToMany(CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<SceneItem> SceneItems
+        public List<SceneItem> SceneItems
         {
             get { return sceneItems; }
             set { sceneItems = value; }
@@ -369,7 +275,6 @@ namespace SilkDialectLearningDAL
         public Guid PhraseId { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.All)]
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public Phrase Phrase { get; set; }
 
         ~SceneItem()
@@ -397,6 +302,19 @@ namespace SilkDialectLearningDAL
             }
         }
 
+        private TimeSpan soundLength;
+        public TimeSpan SoundLength 
+        {
+            get
+            {
+                return soundLength; 
+            }
+            set
+            {
+                soundLength = value; NotifyPropertyChanged();
+            } 
+        }
+
         ~Phrase()
         {
             Dispose();
@@ -405,17 +323,17 @@ namespace SilkDialectLearningDAL
 
     public class Vocabulary : BaseEntity
     {
-        private ObservableCollection<Word> words = new ObservableCollection<Word>();
+        private List<Word> words = new List<Word>();
 
         [ManyToMany(typeof(VocabularyToWord), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Word> Words
+        public List<Word> Words
         {
             get { return words; }
             set { words = value; }
         }
     }
 
-    public abstract class VocabularyToWord
+    public class VocabularyToWord
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -453,19 +371,19 @@ namespace SilkDialectLearningDAL
         /// </summary>
         public byte[] Picture { get; set; }
 
-        ObservableCollection<Meaning> meanings = new ObservableCollection<Meaning>();
+        List<Meaning> meanings = new List<Meaning>();
         /// <summary>
         /// Gets and sets this words meaning Collection
         /// </summary>
         [ManyToMany(typeof(WordToMeaning), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Meaning> Meanings
+        public List<Meaning> Meanings
         {
             get { return meanings; }
             set { meanings = value; NotifyPropertyChanged(); }
         }
     }
 
-    public abstract class WordToMeaning
+    public class WordToMeaning
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
@@ -479,10 +397,10 @@ namespace SilkDialectLearningDAL
 
     public class Meaning : BaseEntity
     {
-        ObservableCollection<Word> words = new ObservableCollection<Word>();
+        List<Word> words = new List<Word>();
 
         [ManyToMany(typeof(WordToMeaning), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Word> Words
+        public List<Word> Words
         {
             get { return words; }
 
@@ -495,10 +413,10 @@ namespace SilkDialectLearningDAL
     /// </summary>
     public class SentenceBuilding : BaseEntity
     {
-        ObservableCollection<SentenceBuildingItem> sentenceBuildingItems = new ObservableCollection<SentenceBuildingItem>();
+        List<SentenceBuildingItem> sentenceBuildingItems = new List<SentenceBuildingItem>();
 
         [OneToMany(CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<SentenceBuildingItem> SentenceBuildingItems
+        public List<SentenceBuildingItem> SentenceBuildingItems
         {
             get { return sentenceBuildingItems; }
             set { sentenceBuildingItems = value; NotifyPropertyChanged(); }
@@ -526,26 +444,26 @@ namespace SilkDialectLearningDAL
         [ForeignKey(typeof(SentenceBuildingItemPicture))]
         public Guid SentenceBuildingItemPictureId { get; set; }
 
-        [OneToOne]
+        [OneToOne(CascadeOperations = CascadeOperation.All)]
         public SentenceBuildingItemPicture SentenceBuildingItemPicture { get; set; }
 
         [ForeignKey(typeof(Phrase))]
         public Guid PhraseId { get; set; }
 
-        [OneToOne]
+        [OneToOne(CascadeOperations = CascadeOperation.All)]
         public Phrase Phrase { get; set; }
 
-        ObservableCollection<Word> words = new ObservableCollection<Word>();
+        List<Word> words = new List<Word>();
 
         [ManyToMany(typeof(SentenceToWord), CascadeOperations = CascadeOperation.All)]
-        public ObservableCollection<Word> Words
+        public List<Word> Words
         {
             get { return words; }
             set { words = value; NotifyPropertyChanged(); }
         }
     }
 
-    public abstract class SentenceToWord
+    public class SentenceToWord
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }

@@ -3,34 +3,34 @@ using System.Collections.Generic;
 
 namespace SilkDialectLearningBLL
 {
-    public class Helper
+    public static class Helper
     {
         static Helper()
         {
-            random = new Random(DateTime.Now.Millisecond);
+            Random = new Random(DateTime.Now.Millisecond);
         }
 
-        public static Random random;
+        private static readonly Random Random;
 
         public static List<T> MixItems<T>(List<T> items)
         {
-            List<T> _items = new List<T>();
+            List<T> listItems = new List<T>();
             List<int> randomNumbers = new List<int>();
             for (int i = 1; i <= items.Count; i++)
             {
                 int rnd;
                 while (true)
                 {
-                    rnd = random.Next(0, items.Count);
+                    rnd = Random.Next(0, items.Count);
                     if (!randomNumbers.Contains(rnd))
                     {
                         randomNumbers.Add(rnd);
                         break;
                     }
                 }
-                _items.Add(items[rnd]);
+                listItems.Add(items[rnd]);
             }
-            return _items;
+            return listItems;
         }
     }
 }

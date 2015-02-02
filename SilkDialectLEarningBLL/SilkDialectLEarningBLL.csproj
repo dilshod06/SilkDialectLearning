@@ -62,6 +62,10 @@
     <Compile Include="VocabViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SilkDialectLearningAudioLayer\SilkDialectLearningAudioLayer.csproj">
+      <Project>{7D298196-72B3-433A-90F3-B24BF591476D}</Project>
+      <Name>SilkDialectLearningAudioLayer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SilkDialectLearningDAL\SilkDialectLearningDAL.csproj">
       <Project>{2ec787ea-39b7-45f4-b311-56fc8dba5fb2}</Project>
       <Name>SilkDialectLearningDAL</Name>
