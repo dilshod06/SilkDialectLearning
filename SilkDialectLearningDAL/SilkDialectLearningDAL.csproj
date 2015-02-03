@@ -35,6 +35,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Entities.cs" />
+    <Compile Include="IAudioManager.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IHighlightable.cs" />
     <Compile Include="IPlayable.cs" />

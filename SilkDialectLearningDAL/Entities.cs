@@ -52,6 +52,12 @@ namespace SilkDialectLearningDAL
             ModelManager.Db = this;
         }
 
+        public void Vacuum()
+        {
+            SQLiteCommand cmd = this.CreateCommand("VACUUM;");
+            cmd.ExecuteNonQuery();
+        }
+
         public SQLiteConnectionWithLock GetConnectionWithLock()
         {
             return sqliteConnectionPool.GetConnection(connectionParameters);

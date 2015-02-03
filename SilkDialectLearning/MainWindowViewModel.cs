@@ -14,6 +14,7 @@ using SilkDialectLearningBLL;
 using System.Threading.Tasks;
 using SilkDialectLearningDAL;
 using SQLite.Net.Platform.Win32;
+using SilkDialectLearningAudioLayer;
 
 namespace SilkDialectLearning
 {
@@ -60,7 +61,7 @@ namespace SilkDialectLearning
             }
             databasePath = currentDir.FullName + "SilkDialectLearning.db";
 
-            ViewModel = new ViewModel(new SQLitePlatformWin32(), databasePath,"","", createDatabase);
+            ViewModel = new ViewModel(new SQLitePlatformWin32(), new AudioManager(), databasePath, "","", createDatabase);
             Global.GlobalViewModel = ViewModel;
         }
 
@@ -268,7 +269,7 @@ namespace SilkDialectLearning
                     {
                         mainViewModel.OnLoading(true, string.Format("Please wait {0} is deleting...", entity.GetType().Name));
                         await viewModel.AsyncDelete(entity, true);
-                        viewModel.NotifyPropertyChanged(string.Format("{0}s",entity.GetType().Name));
+                        var properties = viewModel.GetType().GetProperties();
                     }
                     
                 }

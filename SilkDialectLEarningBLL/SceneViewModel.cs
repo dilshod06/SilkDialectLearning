@@ -1,15 +1,15 @@
-﻿using System.Runtime.InteropServices;
-using SilkDialectLearningAudioLayer;
-using SilkDialectLearningDAL;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Timers;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
 using SQLiteNetExtensions.Extensions;
+using SilkDialectLearningDAL;
+using SilkDialectLearningBLL.Timers;
+
 
 namespace SilkDialectLearningBLL
 {
@@ -89,9 +89,8 @@ namespace SilkDialectLearningBLL
                     else
                         throw new Exception("Scene Items Phrase cannot be null");
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    Console.Write(ex.Message);
                 }
             }
             else
@@ -124,7 +123,7 @@ namespace SilkDialectLearningBLL
             {
                 StopHighlight();
                 var highlightItem = HighlightItem;
-
+                
                 //Setting the isHiglighting to true to help Stop highlighting
                 isHighlighting = true;
                 if (highlightItem != null)
@@ -140,7 +139,6 @@ namespace SilkDialectLearningBLL
                         timer.Dispose();
                     };
                     timer.Enabled = true;
-                    timer.Start();
                     highlightTimer = timer;
                 }
             }
@@ -247,10 +245,15 @@ namespace SilkDialectLearningBLL
                 ObservableCollection<Scene> scenes = new ObservableCollection<Scene>();
                 if (ViewModel.SelectedLesson != null)
                 {
-                    scenes = new ObservableCollection<Scene>
-                    (
-                        ViewModel.Db.GetWithChildren<Lesson>(ViewModel.SelectedLesson.Id, true).Scenes.OrderBy(s => s.Name)
-                    );
+                    try
+                    {
+                        scenes = new ObservableCollection<Scene>
+                        (
+                            ViewModel.Db.GetWithChildren<Lesson>(ViewModel.SelectedLesson.Id, true).Scenes.OrderBy(s => s.Name)
+                        );
+                    }
+                    catch (Exception) { }
+                    
                 }
                 return scenes;
             }
@@ -290,10 +293,14 @@ namespace SilkDialectLearningBLL
                 ObservableCollection<SceneItem> sceneItems = new ObservableCollection<SceneItem>();
                 if (SelectedScene != null)
                 {
-                    sceneItems = new ObservableCollection<SceneItem>
-                    (
-                        ViewModel.Db.GetWithChildren<Scene>(SelectedScene.Id).SceneItems
-                    );
+                    try
+                    {
+                        sceneItems = new ObservableCollection<SceneItem>
+                        (
+                            ViewModel.Db.GetWithChildren<Scene>(SelectedScene.Id).SceneItems
+                        );
+                    }
+                    catch (Exception) { }
                 }
                 return sceneItems;
             }

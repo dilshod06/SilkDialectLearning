@@ -94,7 +94,6 @@ namespace SilkDialectLearning
                 MetroProgressBar progressBar = new MetroProgressBar()
                 {
                     IsIndeterminate = true,
-
                     Minimum = 0,
                     Maximum = 100,
                     Width = 200,

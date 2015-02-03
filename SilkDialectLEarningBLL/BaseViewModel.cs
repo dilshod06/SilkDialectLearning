@@ -10,7 +10,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SQLite.Net.Interop;
 using SQLiteNetExtensions.Extensions;
-using SilkDialectLearningAudioLayer;
+
 
 namespace SilkDialectLearningBLL
 {
@@ -21,15 +21,28 @@ namespace SilkDialectLearningBLL
             User = user;
         }
 
-        public ViewModel(ISQLitePlatform sqlitePlatform, string dbPath, string userName = "", string password = "", bool createDatabase = false, User user = null)
+        public ViewModel(
+            ISQLitePlatform sqlitePlatform, // When user uses another platform it will take X platform instance, for example Win32, Android, iOS, Windows Phone, Windows Store App platforms 
+            IAudioManager audioManager, // When user uses another platform every platform has other ways how to play audio 
+            string dbPath, 
+            string userName = "", 
+            string password = "", 
+            bool createDatabase = false, 
+            User user = null)
         {
             User = user;
+            AudioManager = audioManager;
             var db = new Entities(sqlitePlatform, dbPath, createDatabase);
             Db = db;
-            AudioManager = new AudioManager();
         }
 
         #region Properties
+        /// <summary>
+        /// Access to Play audio and StopAudio
+        /// </summary>
+        public IAudioManager AudioManager { get; set; }
+
+
         /// <summary>
         /// Access to the database
         /// </summary>
@@ -41,7 +54,6 @@ namespace SilkDialectLearningBLL
         /// </summary>
         public User User { get { return user; } private set { user = value; NotifyPropertyChanged(); } }
 
-        public AudioManager AudioManager { get; set; }
 
         ObservableCollection<Language> languages;
 
@@ -96,10 +108,17 @@ namespace SilkDialectLearningBLL
             {
                 if (SelectedLanguage != null)
                 {
-                    levels = new ObservableCollection<Level>
-                    (
-                        Db.GetWithChildren<Language>(SelectedLanguage.Id).Levels
-                    );
+                    try
+                    {
+                        levels = new ObservableCollection<Level>
+                        (
+                            Db.GetWithChildren<Language>(SelectedLanguage.Id).Levels
+                        );
+                    }
+                    catch (Exception)
+                    {
+                    }
+                    
                 }
                 return levels;
             }
@@ -139,10 +158,17 @@ namespace SilkDialectLearningBLL
                 ObservableCollection<Unit> units = new ObservableCollection<Unit>();
                 if (SelectedLevel != null)
                 {
-                    units = new ObservableCollection<Unit>
-                    (
-                        Db.GetWithChildren<Level>(SelectedLevel.Id).Units
-                    );
+                    try
+                    {
+                        units = new ObservableCollection<Unit>
+                        (
+                            Db.GetWithChildren<Level>(SelectedLevel.Id).Units
+                        );
+                    }
+                    catch (Exception)
+                    {
+                    }
+                        
                 }
                 return units;
             }
@@ -182,10 +208,16 @@ namespace SilkDialectLearningBLL
                 ObservableCollection<Lesson> lessons = new ObservableCollection<Lesson>();
                 if (SelectedUnit != null)
                 {
-                    lessons = new ObservableCollection<Lesson>
-                    (
-                        Db.GetWithChildren<Unit>(SelectedUnit.Id).Lessons
-                    );
+                    try
+                    {
+                        lessons = new ObservableCollection<Lesson>
+                        (
+                            Db.GetWithChildren<Unit>(SelectedUnit.Id).Lessons
+                        );
+                    }
+                    catch (Exception)
+                    {
+                    }
                 }
                 return lessons;
             }
@@ -220,40 +252,98 @@ namespace SilkDialectLearningBLL
         #region Methods
 
         public Task<int> AsyncDelete(IEntity entity, bool recurcive = false)
-        {  
+        {
             return Task.Factory.StartNew(() =>
             {
                 var conn = Db.GetConnectionWithLock();
                 using (conn.Lock())
                 {
-                    object entityWithChildren = null;
-                    if (recurcive)
-                    {// If user want delete Entity with all childrens(recurcive) first it should get entity with childrens
-                        
+                    IEntity entityWithChildren = null;
+                    if (!recurcive)
+                    {
+                        try
+                        {
+                            conn.Delete(entity);
+                            Db.Vacuum();
+                        }
+                        catch (Exception)
+                        {
+                            return 0;
+                        }
+                        return 1;
+                    }
+
+                    // If user want delete Entity with all childrens(recurcive) first it should get entity with childrens
+                    try
+                    {
                         if (entity is Language)
                         {
                             entityWithChildren = conn.GetWithChildren<Language>(entity.Id, true);
+                            // if recurcive will be true deletes entity with all childrens else deletes only entity
+                            conn.Delete(entityWithChildren, recurcive);
+                            NotifyPropertyChanged("Languages");
+                            if (recurcive)
+                            {
+                                NotifyPropertyChanged("Levels");
+                                NotifyPropertyChanged("Units");
+                                NotifyPropertyChanged("Lessons");
+                                SceneViewModel.NotifyPropertyChanged("Scenes");
+                                SceneViewModel.NotifyPropertyChanged("SceneItems");
+                            }
                         }
                         else if (entity is Level)
                         {
                             entityWithChildren = conn.GetWithChildren<Level>(entity.Id, true);
+                            conn.Delete(entityWithChildren, recurcive);
+                            NotifyPropertyChanged("Levels");
+                            if (recurcive)
+                            {
+                                NotifyPropertyChanged("Units");
+                                NotifyPropertyChanged("Lessons");
+                                SceneViewModel.NotifyPropertyChanged("Scenes");
+                                SceneViewModel.NotifyPropertyChanged("SceneItems");
+                            }
                         }
                         else if (entity is Unit)
                         {
                             entityWithChildren = conn.GetWithChildren<Unit>(entity.Id, true);
+                            conn.Delete(entityWithChildren, recurcive);
+                            NotifyPropertyChanged("Units");
+                            if (recurcive)
+                            {
+                                NotifyPropertyChanged("Lessons");
+                                SceneViewModel.NotifyPropertyChanged("Scenes");
+                                SceneViewModel.NotifyPropertyChanged("SceneItems");
+                            }
                         }
                         else if (entity is Lesson)
                         {
                             entityWithChildren = conn.GetWithChildren<Lesson>(entity.Id, true);
+                            conn.Delete(entityWithChildren, recurcive);
+                            NotifyPropertyChanged("Lessons");
+                            if (recurcive)
+                            {
+                                SceneViewModel.NotifyPropertyChanged("Scenes");
+                                SceneViewModel.NotifyPropertyChanged("SceneItems");
+                            }
                         }
                         else if (entity is Scene)
                         {
                             entityWithChildren = conn.GetWithChildren<Scene>(entity.Id, true);
+                            conn.Delete(entityWithChildren, recurcive);
+                            SceneViewModel.NotifyPropertyChanged("Scenes");
+                            if (recurcive)
+                            {
+                                SceneViewModel.NotifyPropertyChanged("SceneItems");
+                            }
                         }
+                        Db.Vacuum();
+                        return 1;
                     }
-                    // if recurcive will be true deletes entity with all childrens else deletes only entity
-                    conn.Delete(recurcive ? entityWithChildren : entity, recurcive);
-                    return 1;
+                    catch (Exception)
+                    {
+                        return 0;
+                    }
                 }
             });
         }
@@ -302,13 +392,13 @@ namespace SilkDialectLearningBLL
                     else if (entity is Unit)
                     {
                         SelectedLevel.Units.Add(entity as Unit);
-                        conn.InsertOrReplaceWithChildren(SelectedLevel,true);
+                        conn.InsertOrReplaceWithChildren(SelectedLevel, true);
                         return 1;
                     }
                     else if (entity is Lesson)
                     {
                         SelectedUnit.Lessons.Add(entity as Lesson);
-                        conn.InsertOrReplaceWithChildren(SelectedUnit,true);
+                        conn.InsertOrReplaceWithChildren(SelectedUnit, true);
                         return 1;
                     }
                 }

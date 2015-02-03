@@ -248,8 +248,12 @@
       <Project>{942d11c4-29f5-46c4-8c14-4b976d56c637}</Project>
       <Name>MahApps.Metro.NET45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SilkDialectLEarningBLL\SilkDialectLearningBLL.csproj">
-      <Project>{563c5ece-4ad2-4ec8-abaa-7b4523c36174}</Project>
+    <ProjectReference Include="..\SilkDialectLearningAudioLayer\SilkDialectLearningAudioLayer.csproj">
+      <Project>{7d298196-72b3-433a-90f3-b24bf591476d}</Project>
+      <Name>SilkDialectLearningAudioLayer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SilkDialectLearningBLL\SilkDialectLearningBLL.csproj">
+      <Project>{f92c9b78-638d-4921-9b1d-dd253877f345}</Project>
       <Name>SilkDialectLearningBLL</Name>
     </ProjectReference>
     <ProjectReference Include="..\SilkDialectLearningDAL\SilkDialectLearningDAL.csproj">
