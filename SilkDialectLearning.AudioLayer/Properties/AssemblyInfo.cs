@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SilkDialectLearningAudioLayer")]
+[assembly: AssemblyTitle("SilkDialectLearning.AudioLayer")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SilkDialectLearningAudioLayer")]
+[assembly: AssemblyProduct("SilkDialectLearning.AudioLayer")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("4361a389-f149-4ede-8dda-140394dd0c04")]
+[assembly: Guid("288d7ec9-7bab-4ae7-8b4f-afb3a0dc78c7")]
 
 // Version information for an assembly consists of the following four values:
 //

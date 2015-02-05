@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SilkDialectLearningBLL
+namespace SilkDialectLearning.BLL
 {
     /// <summary>
     /// Activity types

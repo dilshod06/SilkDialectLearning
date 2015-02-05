@@ -2,12 +2,10 @@
 using SQLite.Net.Async;
 using SQLite.Net.Interop;
 
-namespace SilkDialectLearningDAL
+namespace SilkDialectLearning.DAL
 {
     public class Entities : SQLiteConnection
     {
-        private readonly ISQLitePlatform sqlitePlatform;
-
         private readonly SQLiteConnectionString connectionParameters;
 
         private readonly SQLiteConnectionPool sqliteConnectionPool;
@@ -15,15 +13,14 @@ namespace SilkDialectLearningDAL
         /// <summary>
         /// Gets and sets SQLiteAsync connection for awaitable stuffs
         /// </summary>
-        public SQLiteAsyncConnection SQLiteAsyncConnection { get; set; }
+        public SQLiteAsyncConnection SqLiteAsyncConnection { get; private set; }
 
         public Entities(ISQLitePlatform sqlitePlatform, string databasePath, bool createDatabase = false)
             : base(sqlitePlatform, databasePath)
         {
-            this.sqlitePlatform = sqlitePlatform;
             connectionParameters = new SQLiteConnectionString(databasePath, false);
             sqliteConnectionPool = new SQLiteConnectionPool(sqlitePlatform);
-            SQLiteAsyncConnection = new SQLiteAsyncConnection(() => GetConnectionWithLock());
+            SqLiteAsyncConnection = new SQLiteAsyncConnection(GetConnectionWithLock);
             if (createDatabase)
             {
                 CreateTable<User>();

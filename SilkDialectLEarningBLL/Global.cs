@@ -1,4 +1,4 @@
-﻿namespace SilkDialectLearningBLL
+﻿namespace SilkDialectLearning.BLL
 {
     public static class Global
     {

@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Linq;
-using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using SilkDialectLearning.BLL.Timers;
+using SilkDialectLearning.DAL;
 using SQLiteNetExtensions.Extensions;
-using SilkDialectLearningDAL;
-using SilkDialectLearningBLL.Timers;
 
-
-namespace SilkDialectLearningBLL
+namespace SilkDialectLearning.BLL
 {
     public abstract class BaseActivity : INotifyPropertyChanged
     {
@@ -75,23 +73,17 @@ namespace SilkDialectLearningBLL
         /// </summary>
         /// <param name="sceneItem">Item to play</param>
         /// <returns></returns>
-        protected async void PlayThisItemAsync(IPlayable sceneItem)
+        protected async Task PlayThisItemAsync(IPlayable sceneItem)
         {
             await StopPlayingAsync();
             if (sceneItem != null)
             {
-                try
-                {
-                    //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
-                    lastPlayed = sceneItem;
-                    if (sceneItem.Phrase != null)
-                        await ViewModel.AudioManager.Play(sceneItem.Phrase);
-                    else
-                        throw new Exception("Scene Items Phrase cannot be null");
-                }
-                catch (Exception)
-                {
-                }
+                //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
+                lastPlayed = sceneItem;
+                if (sceneItem.Phrase != null)
+                    await ViewModel.AudioManager.Play(sceneItem.Phrase);
+                else
+                    throw new Exception("Scene Items Phrase cannot be null");
             }
             else
             {
@@ -123,7 +115,7 @@ namespace SilkDialectLearningBLL
             {
                 StopHighlight();
                 var highlightItem = HighlightItem;
-                
+
                 //Setting the isHiglighting to true to help Stop highlighting
                 isHighlighting = true;
                 if (highlightItem != null)
@@ -136,7 +128,6 @@ namespace SilkDialectLearningBLL
                     {
                         timer.Stop();
                         StopHighlight();
-                        timer.Dispose();
                     };
                     timer.Enabled = true;
                     highlightTimer = timer;
@@ -253,7 +244,7 @@ namespace SilkDialectLearningBLL
                         );
                     }
                     catch (Exception) { }
-                    
+
                 }
                 return scenes;
             }
@@ -327,32 +318,40 @@ namespace SilkDialectLearningBLL
         /// </summary>
         private void OnSceneItemChanged()
         {
-            var sceneItemSelected = SceneItemSelected;
-            if (sceneItemSelected != null)
+            try
             {
-                sceneItemSelected(this, new EventArgs());
+                var sceneItemSelected = SceneItemSelected;
+                if (sceneItemSelected != null)
+                {
+                    sceneItemSelected(this, new EventArgs());
+                }
+                if (SceneActivity == Activity.Learn)
+                {
+                    Learn();
+                }
+                else if (SceneActivity == Activity.Practice)
+                {
+                    ContinuePractice();
+                }
             }
-            if (SceneActivity == Activity.Learn)
+            catch (Exception ex)
             {
-                Learn();
+                
             }
-            else if (SceneActivity == Activity.Practice)
-            {
-                ContinuePractice();
-            }
+            
 
         }
 
         /// <summary>
         /// Plays the selected item
         /// </summary>
-        private void Learn()
+        private async void Learn()
         {
             if (SelectedSceneItem == null)
             {
                 throw new Exception("SelectedSceneItem is null.");
             }
-            PlayThisItemAsync(SelectedSceneItem);
+            await PlayThisItemAsync(SelectedSceneItem);
             HiglightThisItem(SelectedSceneItem, SelectedSceneItem.Phrase.SoundLength.TotalMilliseconds);
         }
 
@@ -363,41 +362,41 @@ namespace SilkDialectLearningBLL
         /// <summary>
         /// Prepares the items for practice.
         /// </summary>
-        public void Practice()
+        public async void Practice()
         {
             itemsForPractice = Helper.MixItems<PracticeResult<SceneItem>>(SelectedScene.SceneItems.Select(i => new PracticeResult<SceneItem>(i)).ToList());
             lastPlayedItem = itemsForPractice.ElementAt(0);
             lastPlayedItem.Status = PracticeItemStatus.Asking;
-            PlayThisItemAsync(lastPlayedItem.Item);
+            await PlayThisItemAsync(lastPlayedItem.Item);
             lastPlayedItem.Status = PracticeItemStatus.Asked;
         }
 
-        public void RepeatLastPlayedItem()
+        public async void RepeatLastPlayedItem()
         {
-            PlayThisItemAsync(lastPlayedItem.Item);
+            await PlayThisItemAsync(lastPlayedItem.Item);
         }
 
-        public void ContinuePractice()
+        private async void ContinuePractice()
         {
             if (SelectedSceneItem != lastPlayedItem.Item)
             {
                 if (lastPlayedItem.WrongAnswersCount == 3)
                 {
                     lastPlayedItem.WrongAnswersCount = 0;
-                    PlayThisItemAsync(lastPlayedItem.Item);
+                    await PlayThisItemAsync(lastPlayedItem.Item);
                     HiglightThisItem(lastPlayedItem.Item, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Fixed);
                     return;
                 }
                 lastPlayedItem.WrongAnswersCount++;
-                PlayThisItemAsync(lastPlayedItem.Item);
+                await PlayThisItemAsync(lastPlayedItem.Item);
                 HiglightThisItem(SelectedSceneItem, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Wrong);
             }
             else
             {
-                PlayThisItemAsync(lastPlayedItem.Item);
+                await PlayThisItemAsync(lastPlayedItem.Item);
                 HiglightThisItem(lastPlayedItem.Item, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds, PracticeItemResult.Right);
 
-                Action playNextAction = new Action(() =>
+                Action playNextAction = new Action(async () =>
                 {
                     lastPlayedItem = itemsForPractice.FirstOrDefault(i => i.Status == PracticeItemStatus.Notasked);
 
@@ -411,13 +410,14 @@ namespace SilkDialectLearningBLL
                         return;
                     }
                     lastPlayedItem.Status = PracticeItemStatus.Asking;
-                    PlayThisItemAsync(lastPlayedItem.Item);
+                    await PlayThisItemAsync(lastPlayedItem.Item);
                     lastPlayedItem.Status = PracticeItemStatus.Asked;
                 });
                 RunAction(playNextAction, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds);
             }
         }
-        public void RunAction(Action action, double runAfter)
+
+        private void RunAction(Action action, double runAfter)
         {
             if (runAfter < 0) runAfter = 0;
             Timer timer = new Timer(runAfter);
@@ -427,11 +427,8 @@ namespace SilkDialectLearningBLL
                 action.Invoke();
             };
             timer.Enabled = true;
-            timer.Start();
         }
     }
-
-
 
     public class PracticeResult<T> where T : IEntity
     {
@@ -441,7 +438,7 @@ namespace SilkDialectLearningBLL
             Status = PracticeItemStatus.Notasked;
         }
 
-        public T Item { get; set; }
+        public T Item { get; private set; }
 
         public PracticeItemStatus Status { get; set; }
 

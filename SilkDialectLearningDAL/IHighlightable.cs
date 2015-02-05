@@ -1,5 +1,5 @@
 ﻿
-namespace SilkDialectLearningDAL
+namespace SilkDialectLearning.DAL
 {
     public interface IHighlightable
     {

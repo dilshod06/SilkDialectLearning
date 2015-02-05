@@ -1,18 +1,15 @@
-﻿using System.Xml;
-using SilkDialectLearningDAL;
-using System;
-using System.Linq;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using SilkDialectLearning.DAL;
 using SQLite.Net.Interop;
 using SQLiteNetExtensions.Extensions;
 
-
-namespace SilkDialectLearningBLL
+namespace SilkDialectLearning.BLL
 {
     public class ViewModel : INotifyPropertyChanged
     {
@@ -23,7 +20,7 @@ namespace SilkDialectLearningBLL
 
         public ViewModel(
             ISQLitePlatform sqlitePlatform, // When user uses another platform it will take X platform instance, for example Win32, Android, iOS, Windows Phone, Windows Store App platforms 
-            IAudioManager audioManager, // When user uses another platform every platform has other ways how to play audio 
+            IAudioManager audioManager, // When user uses another platform will be used because, every platform has other methods to play audio 
             string dbPath, 
             string userName = "", 
             string password = "", 
@@ -258,24 +255,23 @@ namespace SilkDialectLearningBLL
                 var conn = Db.GetConnectionWithLock();
                 using (conn.Lock())
                 {
-                    IEntity entityWithChildren = null;
-                    if (!recurcive)
-                    {
-                        try
-                        {
-                            conn.Delete(entity);
-                            Db.Vacuum();
-                        }
-                        catch (Exception)
-                        {
-                            return 0;
-                        }
-                        return 1;
-                    }
-
                     // If user want delete Entity with all childrens(recurcive) first it should get entity with childrens
                     try
                     {
+                        if (!recurcive)
+                        {
+                            try
+                            {
+                                conn.Delete(entity);
+                                Db.Vacuum();
+                            }
+                            catch (Exception)
+                            {
+                                return 0;
+                            }
+                            return 1;
+                        }
+                        IEntity entityWithChildren = null;
                         if (entity is Language)
                         {
                             entityWithChildren = conn.GetWithChildren<Language>(entity.Id, true);
@@ -364,12 +360,12 @@ namespace SilkDialectLearningBLL
 
         public Task<int> Update(object item)
         {
-            return Db.SQLiteAsyncConnection.UpdateAsync(item);
+            return Db.SqLiteAsyncConnection.UpdateAsync(item);
         }
 
         public Task<int> UpdateAll(IEnumerable items)
         {
-            return Db.SQLiteAsyncConnection.UpdateAllAsync(items);
+            return Db.SqLiteAsyncConnection.UpdateAllAsync(items);
         }
 
         public Task<int> AsyncInsertEntity(IEntity entity)

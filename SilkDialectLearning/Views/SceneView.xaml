@@ -5,6 +5,7 @@
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:local="clr-namespace:SilkDialectLearning"
 			 xmlns:converters="clr-namespace:SilkDialectLearning.Converters"
+			 xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
 			 mc:Ignorable="d"
 			 d:DesignHeight="600" d:DesignWidth="800"
 			 Loaded="UserControl_Loaded" 
@@ -57,7 +58,7 @@
 			
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<Grid Name="mainGrid">
+					<Grid Name="mainGrid" HorizontalAlignment="Center">
 						<Image Name="sceneImage" Source="{Binding Path=ScenePicture.Picture, Converter={StaticResource ByteToImageConverter}}">
 							<Image.Style>
 								<Style TargetType="Image">

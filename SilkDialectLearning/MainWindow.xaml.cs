@@ -1,7 +1,7 @@
 ﻿using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
+using SilkDialectLearning.BLL;
 using SilkDialectLearning.Pages;
-using SilkDialectLearningBLL;
 using System;
 using System.Collections;
 using System.ComponentModel;
