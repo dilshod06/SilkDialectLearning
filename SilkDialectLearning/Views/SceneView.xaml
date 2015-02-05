@@ -58,7 +58,7 @@
 			
 			<TabControl.ContentTemplate>
 				<DataTemplate>
-					<Grid Name="mainGrid" HorizontalAlignment="Center">
+					<Grid Name="mainGrid">
 						<Image Name="sceneImage" Source="{Binding Path=ScenePicture.Picture, Converter={StaticResource ByteToImageConverter}}">
 							<Image.Style>
 								<Style TargetType="Image">

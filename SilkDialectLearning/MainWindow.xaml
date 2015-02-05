@@ -148,9 +148,9 @@
 											<TextBlock Text="Select some activity" HorizontalAlignment="Left" FontSize="20" FontFamily="{DynamicResource HeaderFontFamily}" Foreground="{DynamicResource BlackBrush}"/>
 										</StackPanel>
 										<StackPanel Margin="20 0 20 20">
-											<RadioButton Content="Learn" Margin="5" 
+											<RadioButton Content="Learn" Margin="5" Checked="RadioButton_Checked" 
 														 IsChecked="{Binding Path=ViewModel.SceneViewModel.SceneActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Learn}}"/>
-											<RadioButton Content="Practice" Margin="5" 
+											<RadioButton Content="Practice" Margin="5" Checked="RadioButton_Checked" 
 														 IsChecked="{Binding Path=ViewModel.SceneViewModel.SceneActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Practice}}"/>
 											<RadioButton Content="Play all" Margin="5"/>
 										</StackPanel>

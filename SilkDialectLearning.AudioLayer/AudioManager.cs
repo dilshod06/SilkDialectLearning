@@ -43,10 +43,10 @@ namespace SilkDialectLearning.AudioLayer
             });
         }
 
-        public async Task PlayAsync(Phrase p)
+        public async Task PlayAsync(Phrase phrase)
         {
             player = new WasapiOut(AudioClientShareMode.Shared, 200);
-            using (Stream stream = Helper.ByteArrayToStream(p.Sound))
+            using (Stream stream = Helper.ByteArrayToStream(phrase.Sound))
             {
                 await Task.Run(() =>
                 {

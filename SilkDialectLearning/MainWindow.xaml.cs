@@ -24,7 +24,7 @@ namespace SilkDialectLearning
     public partial class MainWindow : MetroWindow, IUriContext
     {
         public MainViewModel MainViewModel;
-
+        private bool IsFlyoutOpened;
         public MainWindow()
         {
             InitializeComponent();
@@ -67,7 +67,6 @@ namespace SilkDialectLearning
             PART_Frame.Navigated += PART_Frame_Navigated;
             PART_Frame.Navigating += PART_Frame_Navigating;
             PART_Frame.LoadCompleted += PART_Frame_LoadCompleted;
-
             PART_BackButton.Click += PART_BackButton_Click;
         }
 
@@ -126,6 +125,7 @@ namespace SilkDialectLearning
 
         private void ToggleFlyout(int index)
         {
+            IsFlyoutOpened = true;
             var flyout = this.Flyouts.Items[index] as Flyout;
             if (flyout == null)
                 return;
@@ -333,6 +333,15 @@ namespace SilkDialectLearning
         private void MainMenu_OnClick(object sender, RoutedEventArgs e)
         {
             ToggleFlyout(1);
+        }
+
+        private void RadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (IsFlyoutOpened)
+            {
+                ToggleFlyout(1);
+                MyPopup.IsOpen = false;
+            }           
         }
     }
 }

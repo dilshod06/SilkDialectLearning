@@ -335,8 +335,7 @@ namespace SilkDialectLearning.BLL
                 }
             }
             catch (Exception ex)
-            {
-                
+            {   
             }
             
 
