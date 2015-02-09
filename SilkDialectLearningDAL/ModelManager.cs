@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SilkDialectLearningDAL
+namespace SilkDialectLearning.DAL
 {
     public static class ModelManager
     {

@@ -1,10 +1,10 @@
-﻿using SilkDialectLearningDAL;
-using System;
+﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using SilkDialectLearning.DAL;
 
-namespace SilkDialectLearningBLL
+namespace SilkDialectLearning.BLL
 {
     public class VocabViewModel : BaseActivity, INotifyPropertyChanged
     {

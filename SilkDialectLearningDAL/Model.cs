@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using SQLite.Net.Attributes;
 using SQLiteNetExtensions.Attributes;
 
-namespace SilkDialectLearningDAL
+namespace SilkDialectLearning.DAL
 {
     public abstract class BaseEntity : IEntity, INotifyPropertyChanged, IDisposable
     {
@@ -191,6 +191,7 @@ namespace SilkDialectLearningDAL
 
         [ForeignKey(typeof(SentenceBuilding))]
         public Guid SentBuildingId { get; set; }
+
     }
 
     public class Scene : BaseEntity
@@ -303,6 +304,7 @@ namespace SilkDialectLearningDAL
         }
 
         private TimeSpan soundLength;
+        [Ignore]
         public TimeSpan SoundLength 
         {
             get

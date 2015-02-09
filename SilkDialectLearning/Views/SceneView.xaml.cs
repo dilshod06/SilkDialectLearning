@@ -1,5 +1,5 @@
-﻿using SilkDialectLearningBLL;
-using SilkDialectLearningDAL;
+﻿using SilkDialectLearning.BLL;
+using SilkDialectLearning.DAL;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SilkDialectLearningBLL
+namespace SilkDialectLearning.BLL
 {
     public static class Helper
     {

@@ -1,7 +1,6 @@
 ﻿using MahApps.Metro;
 using SilkDialectLearning.Flyouts;
-using SilkDialectLearningBLL;
-using SilkDialectLearningDAL;
+using SilkDialectLearning.DAL;
 using System;
 using System.Windows;
 using System.Windows.Controls;

@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace SilkDialectLearningBLL.Timers
+namespace SilkDialectLearning.BLL.Timers
 {
     internal delegate void TimerCallback(object state);
     internal sealed class PclTimer : CancellationTokenSource, IDisposable

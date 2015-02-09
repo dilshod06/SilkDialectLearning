@@ -10,15 +10,15 @@ using System.Windows.Media;
 using MahApps.Metro;
 using MahApps.Metro.Controls;
 using MahApps.Metro.Controls.Dialogs;
-using SilkDialectLearningBLL;
+using SilkDialectLearning.BLL;
 using System.Threading.Tasks;
-using SilkDialectLearningDAL;
+using SilkDialectLearning.DAL;
 using SQLite.Net.Platform.Win32;
-using SilkDialectLearningAudioLayer;
+using SilkDialectLearning.AudioLayer;
 
 namespace SilkDialectLearning
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public sealed class MainViewModel : INotifyPropertyChanged
     {
         public MainViewModel(MetroWindow metroWindow)
         {
@@ -65,14 +65,14 @@ namespace SilkDialectLearning
             Global.GlobalViewModel = ViewModel;
         }
 
-        protected void DoChangeTheme(AppThemeMenuData selectedTheme)
+        private void DoChangeTheme(AppThemeMenuData selectedTheme)
         {
             var theme = ThemeManager.DetectAppStyle(Application.Current);
             var appTheme = ThemeManager.GetAppTheme(selectedTheme.Name);
             ThemeManager.ChangeAppStyle(Application.Current, theme.Item2, appTheme);
         }
 
-        protected void DoChangeAccentColor(AccentColorMenuData selectedAccent)
+        private void DoChangeAccentColor(AccentColorMenuData selectedAccent)
         {
             var theme = ThemeManager.DetectAppStyle(Application.Current);
             var accent = ThemeManager.GetAccent(selectedAccent.Name);
@@ -95,7 +95,7 @@ namespace SilkDialectLearning
             return resources;
         }
 
-        public virtual void OnLoading(bool loading, string message)
+        public void OnLoading(bool loading, string message)
         {
             var handler = Loading;
             if (handler != null)
@@ -557,7 +557,8 @@ namespace SilkDialectLearning
         #region Notify
 
         public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
+
+        private void NotifyPropertyChanged([System.Runtime.CompilerServices.CallerMemberName] string propertyName = "")
         {
             if (PropertyChanged != null)
             {
