@@ -67,21 +67,40 @@ namespace SilkDialectLearning.BLL
                 }
             }
         }
+        Activity vocabActivity = Activity.Learn;
+        /// <summary>
+        /// Returns the current vocabulary activity
+        /// </summary>
+        public Activity VocabActivity
+        {
+            get { return vocabActivity; }
+            set
+            {
+                var oldValue = vocabActivity;
+                vocabActivity = value;
+                NotifyPropertyChanged();
+                var activityChanged = ActivityChanged;
+                if (activityChanged != null)
+                {
+                    activityChanged(this, new ActivityChangedEventArgs(vocabActivity, oldValue));
+                }
+            }
+        }
 
         /// <summary>
         /// Stops the if there is anything that's playing and starts playing current item.
         /// </summary>
-        /// <param name="sceneItem">Item to play</param>
+        /// <param name="item">Item to play</param>
         /// <returns></returns>
-        protected async Task PlayThisItemAsync(IPlayable sceneItem)
+        protected async Task PlayThisItemAsync(IPlayable item)
         {
             await StopPlayingAsync();
-            if (sceneItem != null)
+            if (item != null)
             {
                 //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
-                lastPlayed = sceneItem;
-                if (sceneItem.Phrase != null)
-                    await ViewModel.AudioManager.Play(sceneItem.Phrase);
+                lastPlayed = item;
+                if (item.Phrase != null)
+                    await ViewModel.AudioManager.Play(item.Phrase);
                 else
                     throw new Exception("Scene Items Phrase cannot be null");
             }
@@ -199,6 +218,8 @@ namespace SilkDialectLearning.BLL
         {
             await StopPlayingAsync();
             StopHighlight();
+            SceneActivity = Activity.Learn;
+
         }
 
         /// <summary>
@@ -240,7 +261,7 @@ namespace SilkDialectLearning.BLL
                     {
                         scenes = new ObservableCollection<Scene>
                         (
-                            ViewModel.Db.GetWithChildren<Lesson>(ViewModel.SelectedLesson.Id, true).Scenes.OrderBy(s => s.Name)
+                            ViewModel.Db.GetWithChildren<Lesson>(ViewModel.SelectedLesson.Id, true).Scenes
                         );
                     }
                     catch (Exception) { }
@@ -264,8 +285,6 @@ namespace SilkDialectLearning.BLL
             {
                 selectedScene = value;
                 NotifyPropertyChanged();
-                NotifyPropertyChanged("SceneItems");
-                SceneActivity = Activity.Learn;
                 var sceneSelected = SceneSelected;
                 if (sceneSelected != null)
                 {
@@ -274,29 +293,6 @@ namespace SilkDialectLearning.BLL
             }
         }
 
-        /// <summary>
-        /// Returns the list of SceneItems 
-        /// </summary>
-        public ObservableCollection<SceneItem> SceneItems
-        {
-            get
-            {
-                ObservableCollection<SceneItem> sceneItems = new ObservableCollection<SceneItem>();
-                if (SelectedScene != null)
-                {
-                    try
-                    {
-                        sceneItems = new ObservableCollection<SceneItem>
-                        (
-                            ViewModel.Db.GetWithChildren<Scene>(SelectedScene.Id).SceneItems
-                        );
-                    }
-                    catch (Exception) { }
-                }
-                return sceneItems;
-            }
-
-        }
 
         SceneItem selectedSceneItem;
         /// <summary>
@@ -429,7 +425,7 @@ namespace SilkDialectLearning.BLL
         }
     }
 
-    public class PracticeResult<T> where T : IEntity
+    public class PracticeResult<T> : IDisposable where T : IEntity
     {
         public PracticeResult(T item)
         {
@@ -442,6 +438,16 @@ namespace SilkDialectLearning.BLL
         public PracticeItemStatus Status { get; set; }
 
         public int WrongAnswersCount { get; set; }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
+        }
+
+        ~PracticeResult()
+        {
+            Dispose();
+        }
     }
 
     public enum PracticeItemStatus

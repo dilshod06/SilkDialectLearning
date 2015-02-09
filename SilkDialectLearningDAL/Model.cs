@@ -349,7 +349,7 @@ namespace SilkDialectLearning.DAL
         public bool DoNotIncludeToExam { get; set; }
     }
 
-    public class Word : BaseEntity
+    public class Word : BaseEntity, IPlayable, IHighlightable
     {
         private Guid phraseId;
         /// <summary>

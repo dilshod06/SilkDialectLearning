@@ -36,10 +36,12 @@ namespace SilkDialectLearning.Views
         {
             TabControl tabControl = sender as TabControl;
             if (tabControl != null) tabControl.SelectedIndex = lastSelectedIndex;
+
+            
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        {   
             var tabControl = sender as TabControl;
             if (tabControl != null)
             {
@@ -152,8 +154,8 @@ namespace SilkDialectLearning.Views
 
         private void Button_Loaded(object sender, RoutedEventArgs e)
         {
-            (sender as Button).DataContext = this.DataContext;
+            Button button = sender as Button;
+            if (button != null) button.DataContext = DataContext;
         }
-
     }
 }

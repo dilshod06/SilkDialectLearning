@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -8,6 +9,31 @@ namespace SilkDialectLearning.BLL
 {
     public class VocabViewModel : BaseActivity, INotifyPropertyChanged
     {
+        public VocabViewModel()
+        {
+            ViewModel.LessonSelected += (s, e) =>
+            {
+                NotifyPropertyChanged("Vocabularies");
+            };
+
+            VocabularySelected += VocabViewModel_VocabularySelected;
+        }
+
+        /// <summary>
+        /// When vocabulary selected it will stop any playing item and highlighting
+        /// </summary>
+        async void VocabViewModel_VocabularySelected(object sender, EventArgs e)
+        {
+            await StopPlayingAsync();
+            StopHighlight();
+        }
+
+        private List<PracticeResult<Vocabulary>> vocabulariesForPractice = new List<PracticeResult<Vocabulary>>();
+
+        public void Practice()
+        {
+
+        }
         public event EventHandler VocabularySelected;
 
         public event EventHandler WordSelected;
@@ -86,7 +112,36 @@ namespace SilkDialectLearning.BLL
             {
                 selectedWord = value;
                 NotifyPropertyChanged();
+                OnVocabWordChanged();
             }
+        }
+
+        private void OnVocabWordChanged()
+        {
+            var sceneItemSelected = WordSelected;
+            if (sceneItemSelected != null)
+            {
+                sceneItemSelected(this, new EventArgs());
+            }
+            if (SceneActivity == Activity.Learn)
+            {
+                Learn();
+            }
+            else if (SceneActivity == Activity.Practice)
+            {
+                //ContinuePractice();
+            }
+
+        }
+
+        private void Learn()
+        {
+            if (selectedWord == null)
+            {
+                throw new Exception("Selected word is null.");
+            }
+            PlayThisItemAsync(SelectedWord);
+            HiglightThisItem(SelectedWord, SelectedWord.Phrase.SoundLength.TotalMilliseconds);
         }
 
         #region Notify

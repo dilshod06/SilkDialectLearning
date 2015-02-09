@@ -244,6 +244,7 @@ namespace SilkDialectLearning.BLL
         {
             get { return sceneViewModel ?? (sceneViewModel = new SceneViewModel()); }
         }
+
         #endregion
 
         #region Methods
@@ -333,7 +334,7 @@ namespace SilkDialectLearning.BLL
                                 SceneViewModel.NotifyPropertyChanged("SceneItems");
                             }
                         }
-                        Db.Vacuum();
+                        conn.CreateCommand("VACUUM;").ExecuteNonQuery();
                         return 1;
                     }
                     catch (Exception)
@@ -375,14 +376,16 @@ namespace SilkDialectLearning.BLL
                 var conn = Db.GetConnectionWithLock();
                 using (conn.Lock())
                 {
+                    IEntity entityWithChild = null;
                     if (entity is Language)
                     {
                         return conn.Insert(entity);
                     }
                     else if (entity is Level)
                     {
-                        SelectedLanguage.Levels.Add(entity as Level);
-                        conn.InsertOrReplaceWithChildren(SelectedLanguage, true);
+                        entityWithChild = conn.GetWithChildren<Language>(SelectedLanguage.Id);
+                        (entityWithChild as Language).Levels.Add(entity as Level);
+                        conn.InsertOrReplaceWithChildren(entityWithChild);
                         return 1;
                     }
                     else if (entity is Unit)
@@ -394,7 +397,7 @@ namespace SilkDialectLearning.BLL
                     else if (entity is Lesson)
                     {
                         SelectedUnit.Lessons.Add(entity as Lesson);
-                        conn.InsertOrReplaceWithChildren(SelectedUnit, true);
+                        conn.InsertWithChildren(SelectedUnit, true);
                         return 1;
                     }
                 }
@@ -425,6 +428,21 @@ namespace SilkDialectLearning.BLL
         /// </summary>
         public event EventHandler LessonSelected;
 
+        /// <summary>
+        /// Will be raised when Loaded some Entity
+        /// </summary>
+        public event LoadingEventHandler Loading;
+
+        public delegate void LoadingEventHandler(object sender, LoadingEventArgs e);
+
+        public void OnLoading(bool loading, string message)
+        {
+            LoadingEventHandler handler = Loading;
+            if (handler != null)
+            {
+                handler(this, new LoadingEventArgs(loading, message));
+            }
+        }
         #endregion
 
         #region NotifyPropertyChanged
@@ -439,8 +457,18 @@ namespace SilkDialectLearning.BLL
         }
         #endregion
 
+    }
 
+    public class LoadingEventArgs : EventArgs
+    {
+        public bool Loading { get; set; }
+        public string Message { get; set; }
 
+        public LoadingEventArgs(bool loading, string message)
+        {
+            Loading = loading;
+            Message = message;
+        }
     }
 
 }

@@ -20,8 +20,8 @@
 		<converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
 		<converters:PracticeActivityToVisibilityConverter x:Key="PracticeActivityToVisibilityConverter"/>
 	</UserControl.Resources>
-	<DockPanel>
-		<DockPanel.Resources>
+	<Grid>
+		<Grid.Resources>
 			<Style TargetType="Border" x:Key="SceneBorderStyle">
 				<Style.Triggers>
 					<Trigger Property="IsEnabled" Value="True">
@@ -41,13 +41,12 @@
 				</Style.Triggers>
 			</Style>
 			<!--<ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Controls.AnimatedSingleRowTabControl.xaml" />-->
-		</DockPanel.Resources>
+		</Grid.Resources>
 		<TabControl Name="ScenesTabControl"
 							ItemsSource="{Binding Path=ViewModel.SceneViewModel.Scenes, IsAsync=True}" 
 							SelectionChanged="TabControl_SelectionChanged"
 							SelectedItem="{Binding Path=ViewModel.SceneViewModel.SelectedScene}"
 							Loaded="ScenesTabControl_Loaded">
-			
 			<TabControl.ItemTemplate>
 				<DataTemplate>
 					<StackPanel Orientation="Horizontal">
@@ -55,7 +54,7 @@
 					</StackPanel>
 				</DataTemplate>
 			</TabControl.ItemTemplate>
-			
+
 			<TabControl.ContentTemplate>
 				<DataTemplate>
 					<Grid Name="mainGrid">
@@ -71,7 +70,7 @@
 							</Image.Style>
 						</Image>
 						<Grid Name="bordersGrid" Width="{Binding ActualWidth, ElementName=sceneImage, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=sceneImage, Mode=OneWay}">
-							<ItemsControl ItemsSource="{Binding Path=SceneItems, IsAsync=True}" Name="items">
+							<ItemsControl ItemsSource="{Binding Path=SceneItems, IsAsync=True}" Name="items" VirtualizingPanel.IsVirtualizing="True">
 								<ItemsControl.Style>
 									<Style TargetType="{x:Type ItemsControl}">
 										<Style.Triggers>
@@ -145,5 +144,5 @@
 				</DataTemplate>
 			</TabControl.ContentTemplate>
 		</TabControl>
-	</DockPanel>
+	</Grid>
 </UserControl>

@@ -60,8 +60,7 @@ namespace SilkDialectLearning
 
             this.Navigate(new HomePage(MainViewModel));
 
-            MainViewModel.Loading += ViewModel_Loading;
-            MainViewModel.Click += MainViewModel_Click;
+            MainViewModel.ViewModel.Loading += ViewModel_Loading;
 
 
             PART_Frame.Navigated += PART_Frame_Navigated;
@@ -77,50 +76,48 @@ namespace SilkDialectLearning
                 if (MainViewModel.ViewModel.SelectedLesson != null)
                     ToggleFlyout(1);
             }
-
         }
 
         private void ViewModel_Loading(object sender, LoadingEventArgs e)
         {
             if (e.Loading)
             {
-                StackPanel panel = new StackPanel()
-                {
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    Orientation = Orientation.Vertical
-                };
-                MetroProgressBar progressBar = new MetroProgressBar()
-                {
-                    IsIndeterminate = true,
-                    Minimum = 0,
-                    Maximum = 100,
-                    Width = 200,
-                    Foreground = (Brush)FindResource("AccentColorBrush"),
-                    Margin = new Thickness(0, 10, 0, 0)
-                };
-                ProgressRing progressRing = new ProgressRing()
-                {
-                    IsActive = true,
-                    Width = 40,
-                    Height = 40
-                };
-                TextBlock message = new TextBlock()
-                {
-                    FontFamily = (FontFamily)FindResource("HeaderFontFamily"),
-                    FontSize = (double)FindResource("WindowTitleFontSize"),
-                    Foreground = (Brush)FindResource("WhiteBrush"),
-                    Text = e.Message,
-                    Margin = new Thickness(0, 25, 0, 0)
-                };
-                panel.Children.Add(progressRing);
-                panel.Children.Add(message);
-                this.ShowOverlay(panel);
+                ShowLoadingMessage(e.Message);
             }
             else
             {
-                this.HideOverlay();
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    this.HideOverlay();
+                }));
             }
+        }
+
+        public void ShowLoadingMessage(string message = "Loading...")
+        {
+            StackPanel panel = new StackPanel()
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Orientation = Orientation.Vertical
+            };
+            ProgressRing progressRing = new ProgressRing()
+            {
+                IsActive = true,
+                Width = 40,
+                Height = 40
+            };
+            TextBlock messageTextBlock = new TextBlock()
+            {
+                FontFamily = (FontFamily)FindResource("HeaderFontFamily"),
+                FontSize = (double)FindResource("WindowTitleFontSize"),
+                Foreground = (Brush)FindResource("WhiteBrush"),
+                Text = message,
+                Margin = new Thickness(0, 25, 0, 0)
+            };
+            panel.Children.Add(progressRing);
+            panel.Children.Add(messageTextBlock);
+            this.ShowOverlay(panel);
         }
 
         private void ToggleFlyout(int index)
@@ -148,7 +145,7 @@ namespace SilkDialectLearning
                 LoadCompleted(this, e);
         }
 
-        void PART_Frame_Navigating(object sender, NavigatingCancelEventArgs e)
+        async void PART_Frame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
 
             var sceneEditPage = (sender as Frame).Content as EditScenePage;
@@ -156,9 +153,9 @@ namespace SilkDialectLearning
             {//This will be raised after pressing back button and updated Changed SceneItems
                 if (sceneEditPage.ChangedItems.Count > 0)
                 {
-                    MainViewModel.OnLoading(true, "Saving...");
-                    MainViewModel.ViewModel.UpdateAll(sceneEditPage.ChangedItems);
-                    MainViewModel.OnLoading(false, "");
+                    MainViewModel.ViewModel.OnLoading(true, "Saving...");
+                    await MainViewModel.ViewModel.UpdateAll(sceneEditPage.ChangedItems);
+                    MainViewModel.ViewModel.OnLoading(false, "");
                 }
             }
             if (Navigating != null)
@@ -176,9 +173,7 @@ namespace SilkDialectLearning
             PART_Frame.Navigating -= PART_Frame_Navigating;
             PART_Frame.LoadCompleted -= PART_Frame_LoadCompleted;
             PART_Frame.Navigated -= PART_Frame_Navigated;
-
             PART_BackButton.Click -= PART_BackButton_Click;
-
             this.Loaded -= MainWindow_Loaded;
             this.Closing -= MainWindow_Closing;
         }

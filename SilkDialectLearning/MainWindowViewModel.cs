@@ -94,30 +94,10 @@ namespace SilkDialectLearning
 
             return resources;
         }
-
-        public void OnLoading(bool loading, string message)
-        {
-            var handler = Loading;
-            if (handler != null)
-            {
-                handler(this, new LoadingEventArgs(loading, message));
-            }
-        }
-        
+       
         #endregion
 
         #region Events
-
-        /// <summary>
-        /// Will be raised when Deleting some Entity
-        /// </summary>
-        public event LoadingEventHandler Loading;
-
-        public delegate void LoadingEventHandler(object sender, LoadingEventArgs e);
-
-        public event ClickEventHandler Click;
-
-        public delegate void ClickEventHandler(object sender, MouseButtonEventArgs e);
 
         #endregion
 
@@ -267,13 +247,13 @@ namespace SilkDialectLearning
                 {
                     if (entity != null)
                     {
-                        mainViewModel.OnLoading(true, string.Format("Please wait {0} is deleting...", entity.GetType().Name));
+                        mainViewModel.ViewModel.OnLoading(true, string.Format("Please wait {0} is deleting...", entity.GetType().Name));
                         await viewModel.AsyncDelete(entity, true);
                         var properties = viewModel.GetType().GetProperties();
                     }
                     
                 }
-                mainViewModel.OnLoading(false, "");
+                mainViewModel.ViewModel.OnLoading(false, "");
             }
 
             private Task<MessageDialogResult> ShowDeleteMessage(IEntity entity)
@@ -358,7 +338,7 @@ namespace SilkDialectLearning
                 {
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
-                    mainViewModel.OnLoading(true, "Saving...");
+                    mainViewModel.ViewModel.OnLoading(true, "Saving...");
                     await viewModel.AsyncInsertEntity(new Language
                     {
                         Id = Guid.NewGuid(),
@@ -371,7 +351,7 @@ namespace SilkDialectLearning
                 {
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
-                    mainViewModel.OnLoading(true, "Saving...");
+                    mainViewModel.ViewModel.OnLoading(true, "Saving...");
                     await viewModel.AsyncInsertEntity(new Level
                     {
                         Id = Guid.NewGuid(),
@@ -385,7 +365,7 @@ namespace SilkDialectLearning
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
 
-                    mainViewModel.OnLoading(true, "Saving...");
+                    mainViewModel.ViewModel.OnLoading(true, "Saving...");
                     await viewModel.AsyncInsertEntity(new Unit
                     {
                         Id = Guid.NewGuid(),
@@ -399,7 +379,7 @@ namespace SilkDialectLearning
                     if (string.IsNullOrEmpty(mainViewModel.Name))
                         return;
 
-                    mainViewModel.OnLoading(true, "Saving...");
+                    mainViewModel.ViewModel.OnLoading(true, "Saving...");
                     await viewModel.AsyncInsertEntity(new Lesson
                     {
                         Id = Guid.NewGuid(),
@@ -409,7 +389,7 @@ namespace SilkDialectLearning
                     viewModel.NotifyPropertyChanged("Lessons");
                 }
                 ResetNameAndDescription();
-                mainViewModel.OnLoading(false, "");
+                mainViewModel.ViewModel.OnLoading(false, "");
             }
 
             /// <summary>
@@ -576,17 +556,4 @@ namespace SilkDialectLearning
     }
 
     public class AppThemeMenuData : AccentColorMenuData { }
-
-    public class LoadingEventArgs : EventArgs
-    {
-        public bool Loading { get; set; }
-        public string Message { get; set; }
-
-        public LoadingEventArgs(bool loading, string message)
-        {
-            Loading = loading;
-            Message = message;
-        }
-    }
-
 }
