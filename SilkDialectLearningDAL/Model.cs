@@ -303,16 +303,16 @@ namespace SilkDialectLearningDAL
         }
 
         private TimeSpan soundLength;
-        public TimeSpan SoundLength
+        public TimeSpan SoundLength 
         {
             get
             {
-                return soundLength;
+                return soundLength; 
             }
             set
             {
                 soundLength = value; NotifyPropertyChanged();
-            }
+            } 
         }
 
         ~Phrase()
@@ -347,7 +347,7 @@ namespace SilkDialectLearningDAL
         public bool DoNotIncludeToExam { get; set; }
     }
 
-    public class Word : BaseEntity, IPlayable, IHighlightable
+    public class Word : BaseEntity
     {
         private Guid phraseId;
         /// <summary>

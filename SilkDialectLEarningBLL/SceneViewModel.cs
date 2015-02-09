@@ -70,41 +70,22 @@ namespace SilkDialectLearningBLL
             }
         }
 
-        Activity vocabActivity = Activity.Learn;
-        /// <summary>
-        /// Returns the current vocabulary activity
-        /// </summary>
-        public Activity VocabActivity
-        {
-            get { return vocabActivity; }
-            set
-            {
-                var oldValue = vocabActivity;
-                vocabActivity = value;
-                NotifyPropertyChanged();
-                var activityChanged = ActivityChanged;
-                if (activityChanged != null)
-                {
-                    activityChanged(this, new ActivityChangedEventArgs(vocabActivity, oldValue));
-                }
-            }
-        }
         /// <summary>
         /// Stops the if there is anything that's playing and starts playing current item.
         /// </summary>
-        /// <param name="item">Item to play</param>
+        /// <param name="sceneItem">Item to play</param>
         /// <returns></returns>
-        protected async void PlayThisItemAsync(IPlayable item)
+        protected async void PlayThisItemAsync(IPlayable sceneItem)
         {
             await StopPlayingAsync();
-            if (item != null)
+            if (sceneItem != null)
             {
                 try
                 {
                     //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
-                    lastPlayed = item;
-                    if (item.Phrase != null)
-                        await ViewModel.AudioManager.Play(item.Phrase);
+                    lastPlayed = sceneItem;
+                    if (sceneItem.Phrase != null)
+                        await ViewModel.AudioManager.Play(sceneItem.Phrase);
                     else
                         throw new Exception("Scene Items Phrase cannot be null");
                 }
@@ -134,11 +115,11 @@ namespace SilkDialectLearningBLL
         /// <summary>
         /// Stops the any highlighting item and starts highlighting current item
         /// </summary>
-        /// <param name="iItem">Item to highlight</param>
+        /// <param name="sceneItem">Item to highlight</param>
         /// <param name="interval">Higligh for X milliseconds</param>
-        protected void HiglightThisItem(IHighlightable iItem, double interval, PracticeItemResult itemResult = PracticeItemResult.Default)
+        protected void HiglightThisItem(IHighlightable sceneItem, double interval, PracticeItemResult itemResult = PracticeItemResult.Default)
         {
-            if (iItem != null)
+            if (sceneItem != null)
             {
                 StopHighlight();
                 var highlightItem = HighlightItem;
@@ -147,8 +128,8 @@ namespace SilkDialectLearningBLL
                 isHighlighting = true;
                 if (highlightItem != null)
                 {
-                    lastHighlighted = iItem;
-                    highlightItem(this, new HighlightItemEventArgs(iItem, itemResult));
+                    lastHighlighted = sceneItem;
+                    highlightItem(this, new HighlightItemEventArgs(sceneItem, itemResult));
                     //Timer will automatically stop the highlighting item after specific time and disposes itself.
                     Timer timer = new Timer(interval);
                     timer.Elapsed += (s, e) =>
