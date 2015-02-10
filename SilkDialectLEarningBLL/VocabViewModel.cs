@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using SilkDialectLearning.DAL;
+using System.Linq;
 
 namespace SilkDialectLearning.BLL
 {
@@ -16,7 +17,19 @@ namespace SilkDialectLearning.BLL
                 NotifyPropertyChanged("Vocabularies");
             };
 
-            VocabularySelected += VocabViewModel_VocabularySelected;
+            EntitySelected += VocabViewModel_VocabularySelected;
+            ActivityChanged += VocabViewModel_ActivityChanged;
+        }
+
+        async void VocabViewModel_ActivityChanged(object sender, ActivityChangedEventArgs e)
+        {
+            await StopPlayingAsync();
+            StopHighlight();
+
+            if (e.NewActivity == Activity.Practice)
+            {
+                Practice();
+            }
         }
 
         /// <summary>
@@ -26,31 +39,11 @@ namespace SilkDialectLearning.BLL
         {
             await StopPlayingAsync();
             StopHighlight();
-        }
-
-        private List<PracticeResult<Vocabulary>> vocabulariesForPractice = new List<PracticeResult<Vocabulary>>();
-
-        public void Practice()
-        {
-
-        }
-        public event EventHandler VocabularySelected;
-
-        public event EventHandler WordSelected;
-
-        /// <summary>
-        /// Returns the instance of ViewModel
-        /// </summary>
-        public ViewModel ViewModel
-        {
-            get
-            {
-                return Global.GlobalViewModel;
-            }
+            VocabActivity = Activity.Learn;
         }
 
         /// <summary>
-        /// Returns the list of Vocabularies under selected lesson
+        /// Returns the list of vocabularies under selected lesson
         /// </summary>
         public ObservableCollection<Vocabulary> Vocabularies
         {
@@ -64,97 +57,5 @@ namespace SilkDialectLearning.BLL
                 return vocabularies;
             }
         }
-
-        Vocabulary selectedVocabulary;
-        /// <summary>
-        /// Returns the last selected vocabulary
-        /// </summary>
-        public Vocabulary SelectedVocabulary
-        {
-            get
-            {
-                return selectedVocabulary;
-            }
-            set
-            {
-                selectedVocabulary = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        /// <summary>
-        /// Returns the list of words under selected vocabulary
-        /// </summary>
-        public ObservableCollection<Word> Words
-        {
-            get
-            {
-                ObservableCollection<Word> words = new ObservableCollection<Word>();
-                if (SelectedVocabulary != null)
-                {
-                    words = new ObservableCollection<Word>(SelectedVocabulary.Words);
-                }
-                return words;
-            }
-        }
-
-        Word selectedWord;
-        /// <summary>
-        /// Returns the last selected word
-        /// </summary>
-        public Word SelectedWord
-        {
-            get
-            {
-                return selectedWord;
-            }
-            set
-            {
-                selectedWord = value;
-                NotifyPropertyChanged();
-                OnVocabWordChanged();
-            }
-        }
-
-        private void OnVocabWordChanged()
-        {
-            var sceneItemSelected = WordSelected;
-            if (sceneItemSelected != null)
-            {
-                sceneItemSelected(this, new EventArgs());
-            }
-            if (SceneActivity == Activity.Learn)
-            {
-                Learn();
-            }
-            else if (SceneActivity == Activity.Practice)
-            {
-                //ContinuePractice();
-            }
-
-        }
-
-        private void Learn()
-        {
-            if (selectedWord == null)
-            {
-                throw new Exception("Selected word is null.");
-            }
-            PlayThisItemAsync(SelectedWord);
-            HiglightThisItem(SelectedWord, SelectedWord.Phrase.SoundLength.TotalMilliseconds);
-        }
-
-        #region Notify
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        #endregion
     }
 }

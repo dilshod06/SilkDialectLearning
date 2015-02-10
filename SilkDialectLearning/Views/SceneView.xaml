@@ -45,7 +45,7 @@
 		<TabControl Name="ScenesTabControl"
 							ItemsSource="{Binding Path=ViewModel.SceneViewModel.Scenes, IsAsync=True}" 
 							SelectionChanged="TabControl_SelectionChanged"
-							SelectedItem="{Binding Path=ViewModel.SceneViewModel.SelectedScene}"
+							SelectedItem="{Binding Path=ViewModel.SceneViewModel.SelectedEntity}"
 							Loaded="ScenesTabControl_Loaded">
 			<TabControl.ItemTemplate>
 				<DataTemplate>

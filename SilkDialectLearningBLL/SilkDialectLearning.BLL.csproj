@@ -35,9 +35,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Activity.cs" />
+    <Compile Include="BaseActivity.cs" />
     <Compile Include="BaseViewModel.cs" />
     <Compile Include="Global.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="PracticeResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SceneViewModel.cs" />
     <Compile Include="Timers\Timer.cs" />

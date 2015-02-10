@@ -38,7 +38,7 @@ namespace SilkDialectLearning.Pages
 
         void EditScenePage_Loaded(object sender, RoutedEventArgs e)
         {
-            mainGrid.DataContext = MainViewModel.ViewModel.SceneViewModel.SelectedScene;
+            mainGrid.DataContext = MainViewModel.ViewModel.SceneViewModel.SelectedEntity;
         }
 
 

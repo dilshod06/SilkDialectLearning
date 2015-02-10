@@ -70,7 +70,7 @@ namespace SilkDialectLearning.Views
             {
                 Border border = sender as Border;
                 if (border != null)
-                    ViewModel.SceneViewModel.SelectedSceneItem = border.DataContext as SceneItem;
+                    ViewModel.SceneViewModel.SelectedEntityItem = border.DataContext as SceneItem;
             }
             catch (Exception ex)
             {
