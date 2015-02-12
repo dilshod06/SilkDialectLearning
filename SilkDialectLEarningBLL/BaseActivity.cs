@@ -31,7 +31,8 @@ namespace SilkDialectLearning.BLL
 
         private IEntity selectedEntity;
         /// <summary>
-        /// Returns the last selected scene
+        /// Returns the last selected ViewModelEntity. If ViewModel entity is A Scene then returns last selected scene.
+        /// If ViewModelEntity is a Vocabulary then returns last selected Vocabulary
         /// </summary>
         public IEntity SelectedEntity
         {
@@ -51,10 +52,10 @@ namespace SilkDialectLearning.BLL
             }
         }
 
-
         IEntity selectedEntityItem;
         /// <summary>
-        /// Returns the last selected scene item
+        /// Returns the last selected ViewModelEntityItem. If ViewModel entity is A Scene then returns last selected sceneItem.
+        /// If ViewModelEntity is a Vocabulary then returns last selected Word
         /// </summary>
         public IEntity SelectedEntityItem
         {
@@ -63,14 +64,14 @@ namespace SilkDialectLearning.BLL
             {
                 selectedEntityItem = value;
                 NotifyPropertyChanged();
-                OnSceneItemChanged();
+                OnViewModelEntityItemChanged();
             }
         }
 
         /// <summary>
-        /// This method will be fired when a SceneItem gets selected. And will fire the appropriate method based on Activity. 
+        /// This method will be fired when a ViewmodelEntityItems change. And will fire the appropriate method based on Activity. 
         /// </summary>
-        private void OnSceneItemChanged()
+        private void OnViewModelEntityItemChanged()
         {
             try
             {
@@ -79,11 +80,11 @@ namespace SilkDialectLearning.BLL
                 {
                     sceneItemSelected(this, new EventArgs());
                 }
-                if (SceneActivity == Activity.Learn)
+                if (ViewModelActivity == Activity.Learn)
                 {
                     Learn();
                 }
-                else if (SceneActivity == Activity.Practice)
+                else if (ViewModelActivity == Activity.Practice)
                 {
                     ContinuePractice();
                 }
@@ -100,13 +101,14 @@ namespace SilkDialectLearning.BLL
             await PlayThisItemAsync(lastPlayedItem.Item);
         }
         /// <summary>
-        /// Plays the selected item
+        /// Plays the selected ViewModelEntityItem. If ViewModel entity is A Scene then plays selected scene.
+        /// If ViewModelEntity is a Vocabulary then plays selected Word
         /// </summary>
         private async void Learn()
         {
             if (SelectedEntityItem == null)
             {
-                throw new Exception("SelectedEntityItem is null.");
+                throw new Exception("SelectedViewModelEntityItem is null.");
             }
             await PlayThisItemAsync(SelectedEntityItem as IPlayable);
             double a = 2;
@@ -115,25 +117,42 @@ namespace SilkDialectLearning.BLL
 
         private List<PracticeResult> itemsForPractice = new List<PracticeResult>();
 
+
         private PracticeResult lastPlayedItem;
 
         /// <summary>
-        /// Prepares the items for practice.
+        /// Prepares the ViewModelEntityItems for practice.
         /// </summary>
         public async void Practice()
         {
-            if (SelectedEntity is Scene)
-                itemsForPractice = Helper.MixItems<PracticeResult>((SelectedEntity as Scene).SceneItems.Select(i => new PracticeResult(i)).ToList());
+            Scene scene = SelectedEntity as Scene;
+            if (scene != null)
+            {
+                itemsForPractice = Helper.MixItems<PracticeResult>((SelectedEntity as Scene).SceneItems.Select(i => new PracticeResult(i)).ToList());                            }
             else
-                itemsForPractice = Helper.MixItems<PracticeResult>((SelectedEntity as Vocabulary).Words.Select(i => new PracticeResult(i)).ToList());
-            
-            lastPlayedItem = itemsForPractice.ElementAt(0);
-            lastPlayedItem.Status = PracticeItemStatus.Asking;
-            await PlayThisItemAsync(lastPlayedItem.Item);
-            lastPlayedItem.Status = PracticeItemStatus.Asked;
+            {
+                Vocabulary vocab = SelectedEntity as Vocabulary;
+                if (vocab != null)
+                {
+                    itemsForPractice = Helper.MixItems<PracticeResult>((SelectedEntity as Vocabulary).Words.Select(i => new PracticeResult(i)).ToList());
+                }
+            }
+
+            if (itemsForPractice != null)
+            {
+                lastPlayedItem = itemsForPractice.FirstOrDefault();
+                lastPlayedItem.Status = PracticeItemStatus.Asking;
+                await PlayThisItemAsync(lastPlayedItem.Item);
+                lastPlayedItem.Status = PracticeItemStatus.Asked;
+            }
+            else
+            {
+                throw new Exception("ItemsForPractice should not be a null");
+            }
+
         }
         /// <summary>
-        /// Contains the last highlighted item
+        /// Contains the last highlighted ViewModelEntityItem
         /// </summary>
         protected IHighlightable lastHighlighted;
 
@@ -143,7 +162,7 @@ namespace SilkDialectLearning.BLL
         protected Timer highlightTimer;
 
         /// <summary>
-        /// Contains the last played item
+        /// Contains the last played ViewModelEntity item
         /// </summary>
         protected IPlayable lastPlayed;
 
@@ -157,47 +176,28 @@ namespace SilkDialectLearning.BLL
         /// </summary>
         public ViewModel ViewModel { get { return Global.GlobalViewModel; } }
 
-        Activity sceneActivity = Activity.Learn;
+        Activity viewModelActivity = Activity.Learn;
         /// <summary>
-        /// Returns the current activity
+        /// Returns the current viewModelActivity
         /// </summary>
-        public Activity SceneActivity
+        public Activity ViewModelActivity
         {
-            get { return sceneActivity; }
+            get { return viewModelActivity; }
             set
             {
-                var oldValue = sceneActivity;
-                sceneActivity = value;
+                var oldValue = viewModelActivity;
+                viewModelActivity = value;
                 NotifyPropertyChanged();
                 var activityChanged = ActivityChanged;
                 if (activityChanged != null)
                 {
-                    activityChanged(this, new ActivityChangedEventArgs(sceneActivity, oldValue));
-                }
-            }
-        }
-        Activity vocabActivity = Activity.Learn;
-        /// <summary>
-        /// Returns the current vocabulary activity
-        /// </summary>
-        public Activity VocabActivity
-        {
-            get { return vocabActivity; }
-            set
-            {
-                var oldValue = vocabActivity;
-                vocabActivity = value;
-                NotifyPropertyChanged();
-                var activityChanged = ActivityChanged;
-                if (activityChanged != null)
-                {
-                    activityChanged(this, new ActivityChangedEventArgs(vocabActivity, oldValue));
+                    activityChanged(this, new ActivityChangedEventArgs(viewModelActivity, oldValue));
                 }
             }
         }
 
         /// <summary>
-        /// Stops the if there is anything that's playing and starts playing current item.
+        /// Stops the if there is anything that's playing and starts playing current ViewModelEntityItem.
         /// </summary>
         /// <param name="item">Item to play</param>
         /// <returns></returns>
@@ -220,7 +220,7 @@ namespace SilkDialectLearning.BLL
         }
 
         /// <summary>
-        /// Stops the the current playing item
+        /// Stops the the current playing ViewModelEntityItem
         /// </summary>
         /// <returns></returns>
         protected async Task StopPlayingAsync()
@@ -233,13 +233,13 @@ namespace SilkDialectLearning.BLL
         }
 
         /// <summary>
-        /// Stops the any highlighting item and starts highlighting current item
+        /// Stops the any highlighting item and starts highlighting current ViewModelEntityItem
         /// </summary>
-        /// <param name="sceneItem">Item to highlight</param>
+        /// <param name="EntityItem">Item to highlight</param>
         /// <param name="interval">Higligh for X milliseconds</param>
-        protected void HiglightThisItem(IHighlightable sceneItem, double interval, PracticeItemResult itemResult = PracticeItemResult.Default)
+        protected void HiglightThisItem(IHighlightable EntityItem, double interval, PracticeItemResult itemResult = PracticeItemResult.Default)
         {
-            if (sceneItem != null)
+            if (EntityItem != null)
             {
                 StopHighlight();
                 var highlightItem = HighlightItem;
@@ -248,8 +248,8 @@ namespace SilkDialectLearning.BLL
                 isHighlighting = true;
                 if (highlightItem != null)
                 {
-                    lastHighlighted = sceneItem;
-                    highlightItem(this, new HighlightItemEventArgs(sceneItem, itemResult));
+                    lastHighlighted = EntityItem;
+                    highlightItem(this, new HighlightItemEventArgs(EntityItem, itemResult));
                     //Timer will automatically stop the highlighting item after specific time and disposes itself.
                     Timer timer = new Timer(interval);
                     timer.Elapsed += (s, e) =>
@@ -269,7 +269,7 @@ namespace SilkDialectLearning.BLL
         }
 
         /// <summary>
-        /// Stops the current highlighting item
+        /// Stops the current highlighting ViewModelEntityItem
         /// </summary>
         protected void StopHighlight()
         {
