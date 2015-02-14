@@ -1,19 +1,10 @@
-﻿using SilkDialectLearning.DAL;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.Win32;
+using SilkDialectLearning.DAL;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SilkDialectLearning.Pages
 {
@@ -22,11 +13,13 @@ namespace SilkDialectLearning.Pages
     /// </summary>
     public partial class EditScenePage : Page
     {
+        private Border selectedSceneDot;
+
         public ObservableCollection<SceneItem> ChangedItems { get; set; }
 
         public MainViewModel MainViewModel { get; set; }
-        
-        private bool isRectDragInProg = false;
+
+        private bool isRectDragInProg;
 
         public EditScenePage(MainViewModel mainViewModel)
         {
@@ -41,10 +34,11 @@ namespace SilkDialectLearning.Pages
             mainGrid.DataContext = MainViewModel.ViewModel.SceneViewModel.SelectedEntity;
         }
 
-
-        private void Dots_Click(object sender, MouseButtonEventArgs e)
+        private void dot_Click(object sender, MouseButtonEventArgs e)
         {
-
+            selectedSceneDot = sender as Border;
+            if (selectedSceneDot != null)
+                selectedSceneDot.BorderThickness = new Thickness(2);
         }
 
         private void sceneDot_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -86,10 +80,42 @@ namespace SilkDialectLearning.Pages
                 var imageWidth = sceneImage.ActualWidth;
                 var imageHeight = sceneImage.ActualHeight;
                 SceneItem selectedItem = border.DataContext as SceneItem;
-                selectedItem.XPos = ((border.Margin.Left + (border.Width / 2)) * 100) / imageWidth;
-                selectedItem.YPos = ((border.Margin.Top + (border.Height / 2)) * 100) / imageHeight;
-                ChangedItems.Add(selectedItem);
+                if (selectedItem != null)
+                {
+                    selectedItem.XPos = ((border.Margin.Left + (border.Width / 2)) * 100) / imageWidth;
+                    selectedItem.YPos = ((border.Margin.Top + (border.Height / 2)) * 100) / imageHeight;
+                    ChangedItems.Add(selectedItem);
+                }
             }
+        }
+
+        private async void MainGrid_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (selectedSceneDot == null)
+                return;
+            Point point = Mouse.GetPosition(bordersGrid);
+            byte[] sound = Assistant.SoundToByte(OpenAudio());
+            MainViewModel.ViewModel.OnLoading(true, "Please wait saving...");
+            await MainViewModel.ViewModel.InsertSceneItem
+            (
+                sceneImage.ActualWidth,
+                sceneImage.ActualHeight,
+                point.X,
+                point.Y,
+                selectedSceneDot.Height,
+                selectedSceneDot.CornerRadius.BottomLeft == 0 ? false : true,
+                sound
+            );
+            MainViewModel.ViewModel.OnLoading(false, "");
+
+        }
+
+        private string OpenAudio()
+        {
+            OpenFileDialog fopen = new OpenFileDialog();
+            fopen.Filter = "mp3(*.mp3)|*.mp3";
+            fopen.ShowDialog();
+            return fopen.FileName;
         }
     }
 }

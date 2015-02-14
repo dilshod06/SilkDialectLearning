@@ -9,14 +9,15 @@ namespace SilkDialectLearning
 {
     public class Assistant
     {
-        public static Byte[] SoundToByte(string soundPath)
+        public static byte[] SoundToByte(string soundPath)
         {
-            FileStream fs = new FileStream(soundPath, FileMode.Open);
-            System.IO.Stream stream;
-            stream = fs;
-            Byte[] blob;
-            blob = StreamHelper.ReadToEnd(stream);
-            return blob;
+            if (string.IsNullOrEmpty(soundPath))
+                return new byte[0];
+            using (FileStream fileStreams = new FileStream(soundPath, FileMode.Open))
+            {
+                return StreamHelper.ReadToEnd(fileStreams);
+            }
+
         }
 
         public static BitmapImage GetBitmapImageFrom(string fileName)
@@ -56,9 +57,9 @@ namespace SilkDialectLearning
 
     }
 
-    public class StreamHelper
+    public static class StreamHelper
     {
-        public static byte[] ReadToEnd(System.IO.Stream stream)
+        public static byte[] ReadToEnd(Stream stream)
         {
             long originalPosition = 0;
 
@@ -109,7 +110,7 @@ namespace SilkDialectLearning
             }
         }
     }
-    
+
     public class Converter
     {
         public static Byte[] BitmapToByte(Bitmap bitmap)

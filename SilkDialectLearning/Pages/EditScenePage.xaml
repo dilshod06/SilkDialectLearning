@@ -17,10 +17,21 @@
 	</Page.Resources>
 	<Grid>
 		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<Grid Name="mainGrid" AllowDrop="True" Grid.Row="0" >
+		<Grid HorizontalAlignment="Stretch">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="Auto"/>
+			</Grid.ColumnDefinitions>
+			<TextBox HorizontalAlignment="Stretch" Grid.Column="0"></TextBox>
+			<Button Width="40" Grid.Column="1">...</Button>
+			<Button Grid.Column="2">Select from DB</Button>
+		</Grid>
+		<Grid Name="mainGrid" AllowDrop="True" Grid.Row="1" MouseLeftButtonDown="MainGrid_MouseLeftButtonDown">
 			<Image Name="sceneImage" Source="{Binding Path=ScenePicture.Picture, Converter={StaticResource ByteToImageConverter}}"/>
 			<Grid Name="bordersGrid" Width="{Binding ActualWidth, ElementName=sceneImage, Mode=OneWay}" Height="{Binding ActualHeight, ElementName=sceneImage, Mode=OneWay}">
 				<ItemsControl ItemsSource="{Binding Path=SceneItems, IsAsync=True}" Name="bordersList">
@@ -81,22 +92,22 @@
 				</ItemsControl>
 			</Grid>
 		</Grid>
-		<StackPanel Name="stcBorders" Orientation="Horizontal"  Margin="10,10,0,10" Grid.Row="1" VerticalAlignment="Center" Height="60">
-			<Border Height="50" Width="50" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="40" Width="40" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="35" Width="35" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="30" Width="30" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="25" Width="25" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="20" Width="20" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="15" Width="15" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+		<StackPanel Name="stcBorders" Orientation="Horizontal"  Margin="10,10,0,10" Grid.Row="2" VerticalAlignment="Center" Height="60">
+			<Border Height="50" Width="50" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="40" Width="40" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="35" Width="35" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="30" Width="30" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="25" Width="25" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="20" Width="20" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="15" Width="15" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
 
-			<Border Height="50" CornerRadius="90" Width="50" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="40" CornerRadius="90" Width="40" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="35" CornerRadius="90" Width="35" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="30" CornerRadius="90" Width="30" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="25" CornerRadius="90" Width="25" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="20" CornerRadius="90" Width="20" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
-			<Border Height="15" CornerRadius="90" Width="15" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="Dots_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="50" CornerRadius="90" Width="50" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="40" CornerRadius="90" Width="40" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="35" CornerRadius="90" Width="35" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="30" CornerRadius="90" Width="30" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="25" CornerRadius="90" Width="25" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="20" CornerRadius="90" Width="20" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
+			<Border Height="15" CornerRadius="90" Width="15" Margin="5,0,0,0" Background="#FF686868" MouseLeftButtonUp="dot_Click" BorderBrush="#FFFB0404"/>
 		</StackPanel>
 
 	</Grid>

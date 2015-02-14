@@ -5,14 +5,13 @@ using SilkDialectLearning.Pages;
 using System;
 using System.Collections;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Navigation;
+using SilkDialectLearning.Views;
 
 namespace SilkDialectLearning
 {
@@ -21,62 +20,63 @@ namespace SilkDialectLearning
     /// </summary>
 
     [ContentProperty("OverlayContent")]
+// ReSharper disable once RedundantExtendsListEntry
     public partial class MainWindow : MetroWindow, IUriContext
     {
-        public MainViewModel MainViewModel;
-        private bool IsFlyoutOpened;
+        private const int LeftMenu = 0;
+        private const int HomeMenu = 1;
+        private const int SettingsMenu = 2;
+
+        private readonly MainViewModel mainViewModel;
+        private bool isFlyoutOpened;
+
         public MainWindow()
         {
             InitializeComponent();
-            MainViewModel = new MainViewModel(this);
+            this.mainViewModel = new MainViewModel(this);
             this.Loaded += MainWindow_Loaded;
             this.Closing += MainWindow_Closing;
-            MainViewModel.ViewModel.SceneViewModel.PracticeFinished += SceneViewModel_PracticeFinished;
+            this.MouseRightButtonDown += MetroWindow_MouseRightButtonDown;
+            this.mainViewModel.ViewModel.SceneViewModel.PracticeFinished += SceneViewModel_PracticeFinished;
+            this.mainViewModel.ViewModel.LessonSelected += ViewModel_LessonSelected;
+        }
+
+        void ViewModel_LessonSelected(object sender, EventArgs e)
+        {
+            Navigate(new SceneView()); // If some lesson will be selected it will be navigate to SceneView page
         }
 
         void SceneViewModel_PracticeFinished(object sender, PraceticeFinishedEventArgs e)
         {
             Dispatcher.BeginInvoke(new Action(async () =>
             {
-                var mySettings = new MetroDialogSettings()
+                var mySettings = new MetroDialogSettings
                 {
                     AffirmativeButtonText = "Yes",
                     NegativeButtonText = "No",
                     AnimateHide = false,
-                    ColorScheme = MainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
+                    ColorScheme = mainViewModel.UseAccentForDialogs ? MetroDialogColorScheme.Accented : MetroDialogColorScheme.Theme
                 };
                 MessageDialogResult result = await this.ShowMessageAsync(e.Message, "", MessageDialogStyle.AffirmativeAndNegative, mySettings);
                 if (result != MessageDialogResult.Negative)
                 {
-                    MainViewModel.ViewModel.SceneViewModel.Practice();
+                    mainViewModel.ViewModel.SceneViewModel.Practice();
                 }
             }));
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            this.DataContext = MainViewModel;
-            PART_NavigatePanel.DataContext = this;
-
-            this.Navigate(new HomePage(MainViewModel));
-
-            MainViewModel.ViewModel.Loading += ViewModel_Loading;
-
-
-            PART_Frame.Navigated += PART_Frame_Navigated;
-            PART_Frame.Navigating += PART_Frame_Navigating;
-            PART_Frame.LoadCompleted += PART_Frame_LoadCompleted;
-            PART_BackButton.Click += PART_BackButton_Click;
+            this.DataContext = mainViewModel;
+            this.PART_NavigatePanel.DataContext = this;
+            this.mainViewModel.ViewModel.Loading += ViewModel_Loading;
+            this.PART_Frame.Navigated += PART_Frame_Navigated;
+            this.PART_Frame.Navigating += PART_Frame_Navigating;
+            this.PART_Frame.LoadCompleted += PART_Frame_LoadCompleted;
+            this.PART_BackButton.Click += PART_BackButton_Click;
+            this.Navigate(new HomePage(mainViewModel));
         }
 
-        void MainViewModel_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Right)
-            {
-                if (MainViewModel.ViewModel.SelectedLesson != null)
-                    ToggleFlyout(1);
-            }
-        }
 
         private void ViewModel_Loading(object sender, LoadingEventArgs e)
         {
@@ -86,28 +86,25 @@ namespace SilkDialectLearning
             }
             else
             {
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    this.HideOverlay();
-                }));
+                HideOverlay();
             }
         }
 
-        public void ShowLoadingMessage(string message = "Loading...")
+        private void ShowLoadingMessage(string message = "Loading...")
         {
-            StackPanel panel = new StackPanel()
+            StackPanel panel = new StackPanel
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
                 Orientation = Orientation.Vertical
             };
-            ProgressRing progressRing = new ProgressRing()
+            ProgressRing progressRing = new ProgressRing
             {
                 IsActive = true,
                 Width = 40,
                 Height = 40
             };
-            TextBlock messageTextBlock = new TextBlock()
+            TextBlock messageTextBlock = new TextBlock
             {
                 FontFamily = (FontFamily)FindResource("HeaderFontFamily"),
                 FontSize = (double)FindResource("WindowTitleFontSize"),
@@ -117,13 +114,13 @@ namespace SilkDialectLearning
             };
             panel.Children.Add(progressRing);
             panel.Children.Add(messageTextBlock);
-            this.ShowOverlay(panel);
+            ShowOverlay(panel);
         }
 
         private void ToggleFlyout(int index)
         {
-            IsFlyoutOpened = true;
-            var flyout = this.Flyouts.Items[index] as Flyout;
+            isFlyoutOpened = true;
+            var flyout = Flyouts.Items[index] as Flyout;
             if (flyout == null)
                 return;
             flyout.IsOpen = !flyout.IsOpen;
@@ -131,12 +128,7 @@ namespace SilkDialectLearning
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            this.ToggleFlyout(2);
-        }
-
-        private void MenuTextBlock_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (MainViewModel.ViewModel.SelectedLesson != null) { }
+            ToggleFlyout(SettingsMenu);
         }
 
         void PART_Frame_LoadCompleted(object sender, NavigationEventArgs e)
@@ -147,15 +139,19 @@ namespace SilkDialectLearning
 
         async void PART_Frame_Navigating(object sender, NavigatingCancelEventArgs e)
         {
-
-            var sceneEditPage = (sender as Frame).Content as EditScenePage;
-            if (sceneEditPage != null)
-            {//This will be raised after pressing back button and updated Changed SceneItems
-                if (sceneEditPage.ChangedItems.Count > 0)
-                {
-                    MainViewModel.ViewModel.OnLoading(true, "Saving...");
-                    await MainViewModel.ViewModel.UpdateAll(sceneEditPage.ChangedItems);
-                    MainViewModel.ViewModel.OnLoading(false, "");
+            Frame frame = sender as Frame;
+            if (frame != null)
+            {
+                var sceneEditPage = frame.Content as EditScenePage;
+                if (sceneEditPage != null)
+                {//This will be raised after pressing back button and updated Changed SceneItems
+                    this.MouseRightButtonDown += MetroWindow_MouseRightButtonDown;
+                    if (sceneEditPage.ChangedItems.Count > 0)
+                    {
+                        mainViewModel.ViewModel.OnLoading(true, "Saving...");
+                        await mainViewModel.ViewModel.UpdateAll(sceneEditPage.ChangedItems);
+                        mainViewModel.ViewModel.OnLoading(false, "");
+                    }
                 }
             }
             if (Navigating != null)
@@ -176,17 +172,29 @@ namespace SilkDialectLearning
             PART_BackButton.Click -= PART_BackButton_Click;
             this.Loaded -= MainWindow_Loaded;
             this.Closing -= MainWindow_Closing;
+            this.MouseRightButtonDown -= MetroWindow_MouseRightButtonDown;
+            this.mainViewModel.ViewModel.SceneViewModel.PracticeFinished -= SceneViewModel_PracticeFinished;
+            this.mainViewModel.ViewModel.LessonSelected -= ViewModel_LessonSelected;
         }
 
         void PART_Frame_Navigated(object sender, NavigationEventArgs e)
         {
             PART_Title.Content = ((Page)PART_Frame.Content).Title;
-            (this as IUriContext).BaseUri = e.Uri;
-
             PageContent = PART_Frame.Content;
-
+            if (PageContent is EditScenePage)
+            {
+                ToggleFlyout(HomeMenu);
+                this.MouseRightButtonDown -= MetroWindow_MouseRightButtonDown;
+            }
+            else if (PageContent is SceneView)
+            {
+                var entry = PART_Frame.RemoveBackEntry();
+                while (entry != null)
+                {
+                    entry = PART_Frame.RemoveBackEntry();
+                }
+            }
             PART_BackButton.Visibility = CanGoBack ? Visibility.Visible : Visibility.Hidden;
-
             PART_NavigatePanel.Visibility = CanGoBack ? Visibility.Visible : Visibility.Collapsed;
 
             if (Navigated != null)
@@ -301,42 +309,40 @@ namespace SilkDialectLearning
         /// <see cref="System.Windows.Navigation.NavigationWindow.LoadCompleted"/>
         public event LoadCompletedEventHandler LoadCompleted;
 
-        private void Activites_Click(object sender, RoutedEventArgs e)
-        {
-            if (MyPopup.IsOpen)
-                MyPopup.IsOpen = false;
-            else
-                MyPopup.IsOpen = true;
-        }
-
         private void EditButton_Click(object sender, RoutedEventArgs e)
         {
-            PART_Frame.Navigate(new EditScenePage(MainViewModel));
+            PART_Frame.Navigate(new EditScenePage(mainViewModel));
         }
 
         private void MenuButton_Click(object sender, RoutedEventArgs e)
         {
-            this.ToggleFlyout(0);
-            ToggleFlyout(1);
+            ToggleFlyout(LeftMenu);
+            ToggleFlyout(HomeMenu);
         }
 
         private void MetroWindow_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            ToggleFlyout(1);
+            ToggleFlyout(HomeMenu); // Shows or Hides home menu with mouse right clicking
         }
 
         private void MainMenu_OnClick(object sender, RoutedEventArgs e)
         {
-            ToggleFlyout(1);
+            ToggleFlyout(HomeMenu); //Shows or Hides home menu with clicking home button
         }
 
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
-            if (IsFlyoutOpened)
+            if (isFlyoutOpened)
             {
-                ToggleFlyout(1);
+                ToggleFlyout(HomeMenu);
                 MyPopup.IsOpen = false;
-            }           
+                isFlyoutOpened = false;
+            }
+        }
+
+        private void SceneButton_Click(object sender, RoutedEventArgs e)
+        {
+            Navigate(new SceneView());
         }
     }
 }

@@ -3,16 +3,12 @@
 	  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 	  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-	  xmlns:views="clr-namespace:SilkDialectLearning.Views"
 	  xmlns:converters="clr-namespace:SilkDialectLearning.Converters"
 	  mc:Ignorable="d" 
 	  d:DesignHeight="300" d:DesignWidth="300"
 	  Title="HomePage" Loaded="Page_Loaded">
 	<Page.Resources>
 		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<!--<ResourceDictionary Source="../Styles/RightTabControl.xaml"/>-->
-			</ResourceDictionary.MergedDictionaries>
 			<converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
 		</ResourceDictionary>
 	</Page.Resources>
@@ -21,7 +17,7 @@
 			<RowDefinition Height="*"/>
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
-		<Grid Grid.Row="0" Visibility="{Binding Path=ViewModel.SelectedLesson, Converter={StaticResource NullToVisibilityConverter},ConverterParameter=Title}">
+		<Grid Grid.Row="0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
 				<RowDefinition Height="30"/>
@@ -43,6 +39,5 @@
 					Text="Silk Road Professionals™ 2014" Foreground="{DynamicResource BlackBrush}"/>
 			</StackPanel>
 		</Grid>
-		<views:SceneView Grid.Row="0"/>
 	</Grid>
 </Page>

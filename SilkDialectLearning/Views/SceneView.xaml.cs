@@ -36,8 +36,6 @@ namespace SilkDialectLearning.Views
         {
             TabControl tabControl = sender as TabControl;
             if (tabControl != null) tabControl.SelectedIndex = lastSelectedIndex;
-
-            
         }
 
         private void TabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)

@@ -70,9 +70,5 @@ namespace SilkDialectLearning.Navigation
                 this.Resources.MergedDictionaries.Add(rd);
             }
         }
-
-        private void ListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-        }
     }
 }

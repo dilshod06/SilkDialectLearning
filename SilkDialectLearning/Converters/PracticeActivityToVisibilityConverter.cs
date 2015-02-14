@@ -16,8 +16,7 @@ namespace SilkDialectLearning.Converters
         {
             if ((Activity)value == Activity.Practice)
                 return Visibility.Visible;
-            else
-                return Visibility.Collapsed;
+            return Visibility.Collapsed;
 
         }
 

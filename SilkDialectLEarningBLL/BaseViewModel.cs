@@ -21,10 +21,10 @@ namespace SilkDialectLearning.BLL
         public ViewModel(
             ISQLitePlatform sqlitePlatform, // When user uses another platform it will take X platform instance, for example Win32, Android, iOS, Windows Phone, Windows Store App platforms 
             IAudioManager audioManager, // When user uses another platform will be used because, every platform has other methods to play audio 
-            string dbPath, 
-            string userName = "", 
-            string password = "", 
-            bool createDatabase = false, 
+            string dbPath,
+            string userName = "",
+            string password = "",
+            bool createDatabase = false,
             User user = null)
         {
             User = user;
@@ -115,7 +115,7 @@ namespace SilkDialectLearning.BLL
                     catch (Exception)
                     {
                     }
-                    
+
                 }
                 return levels;
             }
@@ -165,7 +165,7 @@ namespace SilkDialectLearning.BLL
                     catch (Exception)
                     {
                     }
-                        
+
                 }
                 return units;
             }
@@ -243,6 +243,13 @@ namespace SilkDialectLearning.BLL
         public SceneViewModel SceneViewModel
         {
             get { return sceneViewModel ?? (sceneViewModel = new SceneViewModel()); }
+        }
+
+        private VocabViewModel vocabViewModel;
+        public VocabViewModel VocabViewModel
+        {
+            get { return vocabViewModel; }
+            set { vocabViewModel = value; }
         }
 
         #endregion
@@ -400,9 +407,38 @@ namespace SilkDialectLearning.BLL
                         conn.InsertWithChildren(SelectedUnit, true);
                         return 1;
                     }
+                    else if(entity is SceneItem)
+                    {
+                        Scene selectedScene = SceneViewModel.SelectedEntity as Scene;
+                        if (selectedScene != null)
+                        {
+                            selectedScene.SceneItems.Add(entity as SceneItem);
+                            conn.InsertOrReplaceWithChildren(selectedScene, true);
+                            selectedScene.NotifyPropertyChanged("SceneItems");
+                            return 1;
+                        }
+                    }
                 }
                 return 0;
             });
+        }
+
+        public async Task<int> InsertSceneItem(double sceneImageWidth, double sceneImageHeight, double xPos, double yPos, double size, bool isRound, byte[] sound)
+        {
+            SceneItem sceneItem = new SceneItem
+            {
+                Id = Guid.NewGuid(),
+                XPos = (xPos * 100) / sceneImageWidth,
+                YPos = (yPos * 100) / sceneImageHeight,
+                Size = (size * 100) / sceneImageHeight,
+                IsRound = isRound,
+                Phrase = new Phrase
+                {
+                    Id = Guid.NewGuid(), 
+                    Sound = sound
+                }
+            };
+            return await AsyncInsertEntity(sceneItem);
         }
 
         #endregion
@@ -461,8 +497,8 @@ namespace SilkDialectLearning.BLL
 
     public class LoadingEventArgs : EventArgs
     {
-        public bool Loading { get; set; }
-        public string Message { get; set; }
+        public bool Loading { get; private set; }
+        public string Message { get; private set; }
 
         public LoadingEventArgs(bool loading, string message)
         {

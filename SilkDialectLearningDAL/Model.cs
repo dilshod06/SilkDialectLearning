@@ -368,11 +368,6 @@ namespace SilkDialectLearning.DAL
         [OneToOne(CascadeOperations = CascadeOperation.All)]
         public Phrase Phrase { get; set; }
 
-        /// <summary>
-        /// Gets and sets picture in blob format
-        /// </summary>
-        public byte[] Picture { get; set; }
-
         List<Meaning> meanings = new List<Meaning>();
         /// <summary>
         /// Gets and sets this words meaning Collection
@@ -399,6 +394,11 @@ namespace SilkDialectLearning.DAL
 
     public class Meaning : BaseEntity
     {
+        /// <summary>
+        /// Gets and sets picture in blob format
+        /// </summary>
+        public byte[] Picture { get; set; }
+
         List<Word> words = new List<Word>();
 
         [ManyToMany(typeof(WordToMeaning), CascadeOperations = CascadeOperation.All)]
@@ -415,6 +415,7 @@ namespace SilkDialectLearning.DAL
     /// </summary>
     public class SentenceBuilding : BaseEntity
     {
+
         List<SentenceBuildingItem> sentenceBuildingItems = new List<SentenceBuildingItem>();
 
         [OneToMany(CascadeOperations = CascadeOperation.All)]

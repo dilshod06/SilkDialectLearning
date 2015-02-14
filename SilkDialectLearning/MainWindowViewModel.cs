@@ -20,88 +20,14 @@ namespace SilkDialectLearning
 {
     public sealed class MainViewModel : INotifyPropertyChanged
     {
-        public MainViewModel(MetroWindow metroWindow)
-        {
-            // create accent color menu items for the demo
-            this.AccentColors = ThemeManager.Accents
-                                            .Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
-                                            .ToList();
-
-            // create metro theme color menu items for the demo
-            this.AppThemes = ThemeManager.AppThemes
-                                           .Select(a => new AppThemeMenuData() { Name = a.Name, BorderColorBrush = a.Resources["BlackColorBrush"] as Brush, ColorBrush = a.Resources["WhiteColorBrush"] as Brush })
-                                           .ToList();
-            //Select selected default theme
-            this.selectedTheme = this.AppThemes
-                                      .Where(a => a.Name == ThemeManager.DetectAppStyle(Application.Current).Item1.Name)
-                                      .FirstOrDefault();
-
-            //Select selected default accent color
-            this.selectedAccent = this.AccentColors
-                                      .Where(a => a.Name == ThemeManager.DetectAppStyle(Application.Current).Item2.Name)
-                                      .FirstOrDefault();
-
-            InitializeDatabaseFile();
-            MetroWinow = metroWindow;
-            BrushResources = FindBrushResources();
-
-        }
-
-        #region Methods
-
-        private void InitializeDatabaseFile()
-        {
-            bool createDatabase = false;
-            string databasePath;
-            DirectoryInfo currentDir = new DirectoryInfo(".\\");
-            if (currentDir.GetFiles().All(f => f.Name != "SilkDialectLearning.db"))
-            {
-                MessageBox.Show("Database file not found! We will create one for you");
-                createDatabase = true;
-            }
-            databasePath = currentDir.FullName + "SilkDialectLearning.db";
-
-            ViewModel = new ViewModel(new SQLitePlatformWin32(), new AudioManager(), databasePath, "","", createDatabase);
-            Global.GlobalViewModel = ViewModel;
-        }
-
-        private void DoChangeTheme(AppThemeMenuData selectedTheme)
-        {
-            var theme = ThemeManager.DetectAppStyle(Application.Current);
-            var appTheme = ThemeManager.GetAppTheme(selectedTheme.Name);
-            ThemeManager.ChangeAppStyle(Application.Current, theme.Item2, appTheme);
-        }
-
-        private void DoChangeAccentColor(AccentColorMenuData selectedAccent)
-        {
-            var theme = ThemeManager.DetectAppStyle(Application.Current);
-            var accent = ThemeManager.GetAccent(selectedAccent.Name);
-            ThemeManager.ChangeAppStyle(Application.Current, accent, theme.Item1);
-        }
-
-        private IEnumerable<string> FindBrushResources()
-        {
-            var rd = new ResourceDictionary
-            {
-                Source = new Uri(@"/MahApps.Metro;component/Styles/Colors.xaml", UriKind.RelativeOrAbsolute)
-            };
-
-            var resources = rd.Keys.Cast<object>()
-                    .Where(key => rd[key] is Brush)
-                    .Select(key => key.ToString())
-                    .OrderBy(s => s)
-                    .ToList();
-
-            return resources;
-        }
-       
-        #endregion
-
-        #region Events
-
-        #endregion
-
         #region Properties
+
+        public AudioManager AudioManager { get; set; }
+
+        /// <summary>
+        /// Gets and sets instance of ViewModel
+        /// </summary>
+        public ViewModel ViewModel { get; private set; }
 
         /// <summary>
         /// This property gets and sets name of Entities
@@ -123,10 +49,7 @@ namespace SilkDialectLearning
             set { description = value; NotifyPropertyChanged(); }
         }
 
-        /// <summary>
-        /// Gets and sets instance of ViewModel
-        /// </summary>
-        public ViewModel ViewModel { get; private set; }
+
 
         /// <summary>
         /// gets and sets instance of MainWindow
@@ -183,6 +106,92 @@ namespace SilkDialectLearning
         /// Gets and sets Brush Resources
         /// </summary>
         public IEnumerable<string> BrushResources { get; private set; }
+
+        #endregion
+
+        #region Constructors
+
+        public MainViewModel(MetroWindow metroWindow)
+        {
+            // create accent color menu items for the demo
+            this.AccentColors = ThemeManager.Accents
+                                            .Select(a => new AccentColorMenuData() { Name = a.Name, ColorBrush = a.Resources["AccentColorBrush"] as Brush })
+                                            .ToList();
+
+            // create metro theme color menu items for the demo
+            this.AppThemes = ThemeManager.AppThemes
+                                           .Select(a => new AppThemeMenuData() { Name = a.Name, BorderColorBrush = a.Resources["BlackColorBrush"] as Brush, ColorBrush = a.Resources["WhiteColorBrush"] as Brush })
+                                           .ToList();
+            //Select selected default theme
+            this.selectedTheme = this.AppThemes
+                                      .Where(a => a.Name == ThemeManager.DetectAppStyle(Application.Current).Item1.Name)
+                                      .FirstOrDefault();
+
+            //Select selected default accent color
+            this.selectedAccent = this.AccentColors
+                                      .Where(a => a.Name == ThemeManager.DetectAppStyle(Application.Current).Item2.Name)
+                                      .FirstOrDefault();
+
+            InitializeDatabaseFile();
+            MetroWinow = metroWindow;
+            BrushResources = FindBrushResources();
+
+        }
+
+        public MainViewModel() { }
+
+        #endregion
+        
+        #region Methods
+
+        private void InitializeDatabaseFile()
+        {
+            bool createDatabase = false;
+            DirectoryInfo currentDir = new DirectoryInfo(".\\");
+            if (currentDir.GetFiles().All(f => f.Name != "SilkDialectLearning.db"))
+            {
+                MessageBox.Show("Database file not found! We will create one for you");
+                createDatabase = true;
+            }
+            string databasePath = currentDir.FullName + "SilkDialectLearning.db";
+            AudioManager = new AudioManager();
+            ViewModel = new ViewModel(new SQLitePlatformWin32(), AudioManager, databasePath, "","", createDatabase);
+            Global.GlobalViewModel = ViewModel;
+        }
+
+        private void DoChangeTheme(AppThemeMenuData selectedTheme)
+        {
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            var appTheme = ThemeManager.GetAppTheme(selectedTheme.Name);
+            ThemeManager.ChangeAppStyle(Application.Current, theme.Item2, appTheme);
+        }
+
+        private void DoChangeAccentColor(AccentColorMenuData selectedAccent)
+        {
+            var theme = ThemeManager.DetectAppStyle(Application.Current);
+            var accent = ThemeManager.GetAccent(selectedAccent.Name);
+            ThemeManager.ChangeAppStyle(Application.Current, accent, theme.Item1);
+        }
+
+        private IEnumerable<string> FindBrushResources()
+        {
+            var rd = new ResourceDictionary
+            {
+                Source = new Uri(@"/MahApps.Metro;component/Styles/Colors.xaml", UriKind.RelativeOrAbsolute)
+            };
+
+            var resources = rd.Keys.Cast<object>()
+                    .Where(key => rd[key] is Brush)
+                    .Select(key => key.ToString())
+                    .OrderBy(s => s)
+                    .ToList();
+
+            return resources;
+        }
+       
+        #endregion
+
+        #region Events
 
         #endregion
 

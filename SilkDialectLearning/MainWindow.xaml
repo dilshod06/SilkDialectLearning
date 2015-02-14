@@ -13,8 +13,7 @@
 					  SaveWindowPosition="True"
 					  WindowStartupLocation="CenterScreen"
 					  ResizeMode="CanResizeWithGrip"
-					  GlowBrush="{DynamicResource AccentColorBrush}" 
-					  MouseRightButtonDown="MetroWindow_MouseRightButtonDown">
+					  GlowBrush="{DynamicResource AccentColorBrush}">
 
 	<controls:MetroWindow.Resources>
 		<ResourceDictionary>
@@ -79,6 +78,7 @@
 							 Theme="Inverse">
 				<DockPanel Height="120">
 					<StackPanel DockPanel.Dock="Left" Margin="0 40 0 0" HorizontalAlignment="Left" Orientation="Horizontal" Name="LeftCommands">
+						
 						<StackPanel Orientation="Vertical" Name="ProjectMenu" Margin="20 0">
 							<Button Width="45" 
 									HorizontalAlignment="Center"
@@ -96,32 +96,31 @@
 						</StackPanel>
 
 						<StackPanel Orientation="Vertical" Name="VocabularyButton" Margin="20 0">
-							<Button Width="45" HorizontalAlignment="Center"
+							<ToggleButton Width="45" HorizontalAlignment="Center"
 							Height="45"
-								Style="{DynamicResource MetroCircleButtonStyle}">
+								Style="{DynamicResource MetroCircleToggleButtonStyle}">
 								<Rectangle Width="15"
-								   Height="15" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+								   Height="15" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}">
 									<Rectangle.OpacityMask>
 										<VisualBrush Stretch="Fill"
 									 Visual="{DynamicResource appbar_book_open_writing}" />
 									</Rectangle.OpacityMask>
 								</Rectangle>
-							</Button>
+							</ToggleButton>
 							<TextBlock Text="Vocabulary" HorizontalAlignment="Center"/>
 						</StackPanel>
 
 						<StackPanel Orientation="Vertical" Name="ScenePanel" Margin="20 0">
-							<Button Width="45" HorizontalAlignment="Center"
-							Height="45"
-								Style="{DynamicResource MetroCircleButtonStyle}">
+							<ToggleButton Width="45" HorizontalAlignment="Center" Height="45" Click="SceneButton_Click"
+								Style="{DynamicResource MetroCircleToggleButtonStyle}">
 								<Rectangle Width="15"
-								   Height="15" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+								   Height="15" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ToggleButton}}}">
 									<Rectangle.OpacityMask>
 										<VisualBrush Stretch="Fill"
 									 Visual="{DynamicResource appbar_chat}" />
 									</Rectangle.OpacityMask>
 								</Rectangle>
-							</Button>
+							</ToggleButton>
 							<TextBlock Text="Scene" HorizontalAlignment="Center"/>
 						</StackPanel>
 
@@ -159,7 +158,6 @@
 							</Popup>
 						</StackPanel>
 					</StackPanel>
-
 					<StackPanel DockPanel.Dock="Right" HorizontalAlignment="Right" Orientation="Horizontal" Margin="0 40 0 0" Name="RightCommands" Visibility="{Binding ViewModel.SceneViewModel.SelectedScene, Converter={StaticResource NullToVisibilityConverter}}">
 						<StackPanel Orientation="Vertical">
 							<Border BorderThickness="0 0 1 0 " BorderBrush="{DynamicResource WhiteBrush}" Height="50"></Border>
@@ -181,12 +179,15 @@
 						</StackPanel>
 
 						<StackPanel Orientation="Vertical" Name="EditPanel"  Margin="10 0">
-							<Button Width="45" Height="45" Name="EditButton"
-						  Style="{DynamicResource MetroCircleButtonStyle}" 
-						  FontSize="14" 
-						  HorizontalAlignment="Center" Click="EditButton_Click">
+							<Button Width="45" Height="45" 
+									Name="EditButton" 
+									Style="{DynamicResource MetroCircleButtonStyle}" 
+									FontSize="14" 
+									HorizontalAlignment="Center" 
+									Click="EditButton_Click">
 								<Rectangle Width="14"
-								   Height="14" Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
+										   Height="14" 
+										   Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
 									<Rectangle.OpacityMask>
 										<VisualBrush Stretch="Fill"
 									 Visual="{DynamicResource appbar_edit}" />
@@ -226,8 +227,7 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 
-		<StackPanel Grid.Row="0" Name="PART_NavigatePanel"
-					Orientation="Horizontal">
+		<StackPanel Grid.Row="0" Name="PART_NavigatePanel" Orientation="Horizontal">
 			<Button x:Name="PART_BackButton"
 					Style="{DynamicResource MetroCircleButtonStyle}"
 					Height="40"
@@ -261,17 +261,13 @@
 					<ScaleTransform ScaleX="-1" />
 				</Button.LayoutTransform>
 			</Button>
-			<Label FontSize="25"
-				   x:Name="PART_Title"
-				   Margin="0 5 0 0" />
+			<Label FontSize="25" x:Name="PART_Title" Margin="0 5 0 0" />
 		</StackPanel>
 
 		<Grid Grid.Row="1">
 			<ContentPresenter Panel.ZIndex="1"
 							  Content="{Binding OverlayContent, RelativeSource={RelativeSource AncestorType=local:MainWindow,Mode=FindAncestor}}" />
-			<Frame Name="PART_Frame"
-				   NavigationUIVisibility="Hidden"
-				   Margin="3 0 3 0" />
+			<Frame Name="PART_Frame" NavigationUIVisibility="Hidden" Margin="3 0 3 0" />
 		</Grid>
 	</Grid>
 </controls:MetroWindow>
