@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace SilkDialectLearning.BLL
 {
-    public class VocabViewModel : BaseActivity
+    public class VocabViewModel : BaseActivity, INotifyPropertyChanged
     {
         public VocabViewModel()
         {

@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using SilkDialectLearning.BLL.Timers;
 using SilkDialectLearning.DAL;
+using SQLiteNetExtensions.Extensions;
 
 namespace SilkDialectLearning.BLL
 {
@@ -27,8 +28,6 @@ namespace SilkDialectLearning.BLL
         public event PraceticeFinishedEventHandler PracticeFinished;
 
         #endregion
-
-        #region Properties and Fields
 
         private IEntity selectedEntity;
         /// <summary>
@@ -53,16 +52,12 @@ namespace SilkDialectLearning.BLL
             }
         }
 
-<<<<<<< HEAD
-        private IEntity selectedEntityItem;
-=======
         IEntity selectedEntityItem;
->>>>>>> origin/master
         /// <summary>
         /// Returns the last selected ViewModelEntityItem. If ViewModel entity is A Scene then returns last selected sceneItem.
         /// If ViewModelEntity is a Vocabulary then returns last selected Word
         /// </summary>
-        public IEntity SelectedEntityItem // It should be SceneItem or Word
+        public IEntity SelectedEntityItem
         {
             get { return selectedEntityItem; }
             set
@@ -74,32 +69,12 @@ namespace SilkDialectLearning.BLL
         }
 
         /// <summary>
-<<<<<<< HEAD
-        /// Returns the instance of global ViewModel.
-        /// </summary>
-        public ViewModel ViewModel { get { return Global.GlobalViewModel; } }
-
-        Activity sceneActivity = Activity.Learn;
-        /// <summary>
-        /// Returns the current activity
-        /// </summary>
-        public Activity SceneActivity
-=======
         /// This method will be fired when a ViewmodelEntityItems change. And will fire the appropriate method based on Activity. 
         /// </summary>
         private void OnViewModelEntityItemChanged()
->>>>>>> origin/master
         {
-            get { return sceneActivity; }
-            set
+            try
             {
-<<<<<<< HEAD
-                var oldValue = sceneActivity;
-                sceneActivity = value;
-                NotifyPropertyChanged();
-                var activityChanged = ActivityChanged;
-                if (activityChanged != null)
-=======
                 var sceneItemSelected = EntityItemSelected;
                 if (sceneItemSelected != null)
                 {
@@ -110,51 +85,41 @@ namespace SilkDialectLearning.BLL
                     Learn();
                 }
                 else if (ViewModelActivity == Activity.Practice)
->>>>>>> origin/master
                 {
-                    activityChanged(this, new ActivityChangedEventArgs(sceneActivity, oldValue));
+                    ContinuePractice();
                 }
             }
+            catch (Exception ex)
+            {
+            }
+
+
         }
-        
-        Activity vocabActivity = Activity.Learn;
+
+        public async void RepeatLastPlayedItem()
+        {
+            await PlayThisItemAsync(lastPlayedItem.Item);
+        }
         /// <summary>
-<<<<<<< HEAD
-        /// Returns the current vocabulary activity
-=======
         /// Plays the selected ViewModelEntityItem. If ViewModel entity is A Scene then plays selected scene.
         /// If ViewModelEntity is a Vocabulary then plays selected Word
->>>>>>> origin/master
         /// </summary>
-        public Activity VocabActivity
+        private async void Learn()
         {
-            get { return vocabActivity; }
-            set
+            if (SelectedEntityItem == null)
             {
-<<<<<<< HEAD
-                var oldValue = vocabActivity;
-                vocabActivity = value;
-                NotifyPropertyChanged();
-                var activityChanged = ActivityChanged;
-                if (activityChanged != null)
-                {
-                    activityChanged(this, new ActivityChangedEventArgs(vocabActivity, oldValue));
-                }
-=======
                 throw new Exception("SelectedViewModelEntityItem is null.");
->>>>>>> origin/master
+            }
+            var playableItem = SelectedEntityItem as IPlayable;
+            if (playableItem != null)
+            {
+                await PlayThisItemAsync(playableItem);
+                HiglightThisItem(SelectedEntityItem as IHighlightable, playableItem.Phrase.SoundLength.TotalMilliseconds);
             }
         }
 
         private List<PracticeResult> itemsForPractice = new List<PracticeResult>();
 
-<<<<<<< HEAD
-        /// <summary>
-        /// Contains Last Played Item for only practice activity
-        /// </summary>
-        private PracticeResult lastPlayedItem;
-
-=======
 
         private PracticeResult lastPlayedItem;
 
@@ -166,7 +131,8 @@ namespace SilkDialectLearning.BLL
             Scene scene = SelectedEntity as Scene;
             if (scene != null)
             {
-                itemsForPractice = Helper.MixItems<PracticeResult>((SelectedEntity as Scene).SceneItems.Select(i => new PracticeResult(i)).ToList());                            }
+                itemsForPractice = Helper.MixItems<PracticeResult>((SelectedEntity as Scene).SceneItems.Select(i => new PracticeResult(i)).ToList());
+            }
             else
             {
                 Vocabulary vocab = SelectedEntity as Vocabulary;
@@ -189,48 +155,31 @@ namespace SilkDialectLearning.BLL
             }
 
         }
->>>>>>> origin/master
         /// <summary>
         /// Contains the last highlighted ViewModelEntityItem
         /// </summary>
-        protected IHighlightable LastHighlighted;
+        protected IHighlightable lastHighlighted;
 
         /// <summary>
         /// Contains the timer for the heghlight
         /// </summary>
-        protected Timer HighlightTimer;
+        protected Timer highlightTimer;
 
         /// <summary>
         /// Contains the last played ViewModelEntity item
         /// </summary>
-        protected IPlayable LastPlayed;
+        protected IPlayable lastPlayed;
 
         /// <summary>
         /// Indicates whether an item is highlighting
         /// </summary>
-        protected bool IsHighlighting;
+        protected bool isHighlighting;
 
-        #endregion
-
-        #region Methods
-
-<<<<<<< HEAD
         /// <summary>
-        /// This method will be fired when a SceneItem gets selected. And will fire the appropriate method based on Activity. 
+        /// Returns the instance of global ViewModel.
         /// </summary>
-        private void OnSceneItemChanged()
-        {
-            try
-            {
-                var sceneItemSelected = EntityItemSelected;
-                if (sceneItemSelected != null)
-                {
-                    sceneItemSelected(this, new EventArgs());
-                }
-                if (SceneActivity == Activity.Learn)
-                {
-                    Learn();
-=======
+        public ViewModel ViewModel { get { return Global.GlobalViewModel; } }
+
         Activity viewModelActivity = Activity.Learn;
         /// <summary>
         /// Returns the current viewModelActivity
@@ -247,19 +196,8 @@ namespace SilkDialectLearning.BLL
                 if (activityChanged != null)
                 {
                     activityChanged(this, new ActivityChangedEventArgs(viewModelActivity, oldValue));
->>>>>>> origin/master
-                }
-                else if (SceneActivity == Activity.Practice)
-                {
-                    ContinuePractice();
                 }
             }
-            catch (Exception ex)
-            {
-                Debug.WriteLine(ex.InnerException);
-            }
-
-
         }
 
         /// <summary>
@@ -273,7 +211,7 @@ namespace SilkDialectLearning.BLL
             if (item != null)
             {
                 //Sets the lastPlayed item so that we play again or helpfull if need to stop it before it finished playing
-                LastPlayed = item;
+                lastPlayed = item;
                 if (item.Phrase != null)
                     await ViewModel.AudioManager.Play(item.Phrase);
                 else
@@ -291,9 +229,9 @@ namespace SilkDialectLearning.BLL
         /// <returns></returns>
         protected async Task StopPlayingAsync()
         {
-            if (LastPlayed != null)
+            if (lastPlayed != null)
             {
-                if (LastPlayed.Phrase != null)
+                if (lastPlayed.Phrase != null)
                     await ViewModel.AudioManager.StopPlaying();
             }
         }
@@ -301,16 +239,9 @@ namespace SilkDialectLearning.BLL
         /// <summary>
         /// Stops the any highlighting item and starts highlighting current ViewModelEntityItem
         /// </summary>
-<<<<<<< HEAD
-        /// <param name="sceneItem">Item to highlight</param>
-        /// <param name="interval">Higlight for X milliseconds</param>
-        /// <param name="itemResult">Result for practice highlighting</param>
-        protected void HiglightThisItem(IHighlightable sceneItem, double interval, PracticeItemResult itemResult = PracticeItemResult.Default)
-=======
         /// <param name="EntityItem">Item to highlight</param>
         /// <param name="interval">Higligh for X milliseconds</param>
         protected void HiglightThisItem(IHighlightable EntityItem, double interval, PracticeItemResult itemResult = PracticeItemResult.Default)
->>>>>>> origin/master
         {
             if (EntityItem != null)
             {
@@ -318,16 +249,11 @@ namespace SilkDialectLearning.BLL
                 var highlightItem = HighlightItem;
 
                 //Setting the isHiglighting to true to help Stop highlighting
-                IsHighlighting = true;
+                isHighlighting = true;
                 if (highlightItem != null)
                 {
-<<<<<<< HEAD
-                    LastHighlighted = sceneItem;
-                    highlightItem(this, new HighlightItemEventArgs(sceneItem, itemResult));
-=======
                     lastHighlighted = EntityItem;
                     highlightItem(this, new HighlightItemEventArgs(EntityItem, itemResult));
->>>>>>> origin/master
                     //Timer will automatically stop the highlighting item after specific time and disposes itself.
                     Timer timer = new Timer(interval);
                     timer.Elapsed += (s, e) =>
@@ -336,7 +262,7 @@ namespace SilkDialectLearning.BLL
                         StopHighlight();
                     };
                     timer.Enabled = true;
-                    HighlightTimer = timer;
+                    highlightTimer = timer;
                 }
             }
             else
@@ -351,67 +277,35 @@ namespace SilkDialectLearning.BLL
         /// </summary>
         protected void StopHighlight()
         {
-            if (IsHighlighting)
+            if (isHighlighting)
             {
-                if (LastHighlighted != null)
+                if (lastHighlighted != null)
                 {
                     //highlightingTimer is created by HighlightThisItem() method. So we are just disabling the timer and disposing.
-                    HighlightTimer.Enabled = false;
-                    HighlightTimer.Dispose();
+                    highlightTimer.Enabled = false;
+                    highlightTimer.Dispose();
                     var stopHighlighting = StopHighlighting;
-                    IsHighlighting = false;
+                    isHighlighting = false;
                     if (stopHighlighting != null)
                     {
-                        stopHighlighting(this, new HighlightItemEventArgs(LastHighlighted));
+                        stopHighlighting(this, new HighlightItemEventArgs(lastHighlighted));
                     }
                 }
             }
         }
 
-        /// <summary>
-        /// Will be call to repeat last played item
-        /// </summary>
-        public async void RepeatLastPlayedItem()
+        protected void RunAction(Action action, double runAfter)
         {
-            await PlayThisItemAsync(lastPlayedItem.Item);
-        }
-        
-        /// <summary>
-        /// Plays the selected item
-        /// </summary>
-        private async void Learn()
-        {
-            if (SelectedEntityItem == null)
+            if (runAfter < 0) runAfter = 0;
+            Timer timer = new Timer(runAfter);
+            timer.Elapsed += (s, e) =>
             {
-                throw new Exception("SelectedEntityItem is null.");
-            }
-            IPlayable playableItem = SelectedEntityItem as IPlayable;
-            if (playableItem != null)
-            {
-                await PlayThisItemAsync(playableItem);
-                HiglightThisItem(SelectedEntityItem as IHighlightable, playableItem.Phrase.SoundLength.TotalMilliseconds);
-            }
+                timer.Stop();
+                action.Invoke();
+            };
+            timer.Enabled = true;
         }
 
-        /// <summary>
-        /// Prepares the items for practice.
-        /// </summary>
-        public async void Practice()
-        {
-            if (SelectedEntity is Scene)
-                itemsForPractice = Helper.MixItems<PracticeResult>((SelectedEntity as Scene).SceneItems.Select(i => new PracticeResult(i)).ToList());
-            else if(SelectedEntity is Vocabulary)
-                itemsForPractice = Helper.MixItems<PracticeResult>((SelectedEntity as Vocabulary).Words.Select(i => new PracticeResult(i)).ToList());
-
-            lastPlayedItem = itemsForPractice.FirstOrDefault();
-            lastPlayedItem.Status = PracticeItemStatus.Asking;
-            await PlayThisItemAsync(lastPlayedItem.Item);
-            lastPlayedItem.Status = PracticeItemStatus.Asked;
-        }
-
-        /// <summary>
-        /// When user select some item it will be compare last played item if its equal play's next random item else repeat last played item  
-        /// </summary>
         protected async void ContinuePractice()
         {
             if (SelectedEntityItem != lastPlayedItem.Item)
@@ -452,20 +346,6 @@ namespace SilkDialectLearning.BLL
                 RunAction(playNextAction, lastPlayedItem.Item.Phrase.SoundLength.TotalMilliseconds);
             }
         }
-
-        protected void RunAction(Action action, double runAfter)
-        {
-            if (runAfter < 0) runAfter = 0;
-            Timer timer = new Timer(runAfter);
-            timer.Elapsed += (s, e) =>
-            {
-                timer.Stop();
-                action.Invoke();
-            };
-            timer.Enabled = true;
-        }
-
-        #endregion
 
         #region Notify
 
