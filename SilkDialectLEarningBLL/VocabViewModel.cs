@@ -39,7 +39,7 @@ namespace SilkDialectLearning.BLL
         {
             await StopPlayingAsync();
             StopHighlight();
-            VocabActivity = Activity.Learn;
+            ViewModelActivity = Activity.Learn;
         }
 
         /// <summary>

@@ -130,7 +130,7 @@
 								Height="55" 
 								Command="{Binding Path=RepeatCommand}"
 								Style="{DynamicResource MetroCircleButtonStyle}"
-								Visibility="{Binding Path=ViewModel.SceneViewModel.SceneActivity, Converter={StaticResource PracticeActivityToVisibilityConverter}}">
+								Visibility="{Binding Path=ViewModel.SceneViewModel.ViewModelActivity, Converter={StaticResource PracticeActivityToVisibilityConverter}}">
 							<Rectangle Width="25" Height="25" 
 									   Fill="{Binding Path=Foreground, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Button}}}">
 								<Rectangle.OpacityMask>

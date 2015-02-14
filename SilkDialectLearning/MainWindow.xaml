@@ -148,9 +148,9 @@
 										</StackPanel>
 										<StackPanel Margin="20 0 20 20">
 											<RadioButton Content="Learn" Margin="5" Checked="RadioButton_Checked" 
-														 IsChecked="{Binding Path=ViewModel.SceneViewModel.SceneActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Learn}}"/>
+														 IsChecked="{Binding Path=ViewModel.SceneViewModel.ViewModelActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Learn}}"/>
 											<RadioButton Content="Practice" Margin="5" Checked="RadioButton_Checked" 
-														 IsChecked="{Binding Path=ViewModel.SceneViewModel.SceneActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Practice}}"/>
+														 IsChecked="{Binding Path=ViewModel.SceneViewModel.ViewModelActivity,Converter={StaticResource EnumToBooleanConverter}, ConverterParameter={x:Static bll:Activity.Practice}}"/>
 											<RadioButton Content="Play all" Margin="5"/>
 										</StackPanel>
 									</StackPanel>

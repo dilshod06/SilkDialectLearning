@@ -27,8 +27,7 @@ namespace SilkDialectLearning.BLL
         {
             await StopPlayingAsync();
             StopHighlight();
-            SceneActivity = Activity.Learn;
-
+            ViewModelActivity = Activity.Learn;
         }
 
         /// <summary>
